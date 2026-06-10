@@ -2,9 +2,13 @@
 // The factory golem, pixel edition. 28x26, 3 frames: idle A/B (breathing), cast (summon).
 // Enrage = palette swap in textures (E and G go red); hit flash = material tint.
 
+import { compose } from './bodies';
+import { up2, outline, rimLight } from './ops';
+
 export const BOSS_PALETTE = {
   K: '#0d1016', M: '#5b6b7d', D: '#3a4654', E: '#ff5d5d',
   G: '#7fe7ff', C: '#e8eef4', W: '#6b5b4a', L: '#bfefff',
+  O: '#ff9d3d', R: '#9fbdd4',
 };
 
 // Correction: plan had all rows at 27 chars; padded each with trailing '.' to reach 28.
@@ -95,3 +99,49 @@ export const SLASH = [
   '....LLLL..',
   '......LL..',
 ];
+
+/* Damage stages: crack overlays composed onto every frame as HP drops.
+   Sparse overlays in 28×26 space — short rows are fine, compose clips.
+   'O' is the molten core glowing through; 'K' the crack shadow. */
+
+const CRACK_1 = [
+  '', '', '', '', '',
+  '......KO',
+  '.......KO',
+  '', '', '', '',
+  '..................OK',
+  '.................OK',
+];
+const CRACK_2 = [
+  '', '', '', '', '', '', '', '',
+  '..........KOO',
+  '...........KOO',
+  '............KO',
+  '', '', '', '', '',
+  '.......OK',
+  '........OK',
+];
+const CRACK_3 = [
+  '', '',
+  '.....KO',
+  '......O',
+  '', '', '', '', '', '', '', '',
+  '...............OOK',
+  '..............OOK',
+  '.............OK',
+  '', '', '',
+  '....................OK',
+  '.....................OK',
+];
+const CRACKS = [null, CRACK_1, CRACK_2, CRACK_3];
+
+// Staged frames: cracks accumulate, then 2× upscale + outline + rim.
+// stage 0..3 — stage 4 (dead) is a scene animation, not a sheet.
+export function bossFrames(stage) {
+  const s = Math.max(0, Math.min(3, stage));
+  return BOSS_FRAMES.map((f) => {
+    let out = f;
+    for (let i = 1; i <= s; i++) out = compose(out, CRACKS[i], 0, 0);
+    return rimLight(outline(up2(out)));
+  });
+}

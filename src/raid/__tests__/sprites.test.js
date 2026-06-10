@@ -5,7 +5,7 @@ import {
   framesFor, headlessFramesFor, paletteFor, ROSTER, FRAME,
   HEAD_ANCHORS15, SPRITE_W, SPRITE_H,
 } from '../sprites/roster';
-import { BOSS_FRAMES, BOSS_PALETTE, MINION_FRAMES, SLASH } from '../sprites/boss';
+import { BOSS_FRAMES, BOSS_PALETTE, MINION_FRAMES, SLASH, bossFrames } from '../sprites/boss';
 import { rasterize } from '../sprites/rasterize';
 
 const FRAME_COUNT = Object.keys(FRAME).length; // 15
@@ -64,11 +64,19 @@ describe('headless (avatar-headed) frames', () => {
 });
 
 describe('boss / minion / slash', () => {
-  it('boss frames are renderable and equal-sized', () => {
-    for (const f of BOSS_FRAMES) {
-      expect(f).toHaveLength(BOSS_FRAMES[0].length);
-      expect(() => rasterize(f, BOSS_PALETTE)).not.toThrow();
+  it('staged boss frames are renderable, 56×52, and crack progressively', () => {
+    for (const stage of [0, 1, 2, 3]) {
+      const frames = bossFrames(stage);
+      expect(frames).toHaveLength(BOSS_FRAMES.length); // idle A/B + cast
+      for (const f of frames) {
+        expect(f).toHaveLength(52);
+        expect(f[0]).toHaveLength(56);
+        expect(() => rasterize(f, BOSS_PALETTE)).not.toThrow();
+      }
     }
+    const core = (fs) => fs[0].join('').split('O').length;
+    expect(core(bossFrames(1))).toBeGreaterThan(core(bossFrames(0)));
+    expect(core(bossFrames(3))).toBeGreaterThan(core(bossFrames(1)));
   });
   it('minion and slash render', () => {
     for (const f of MINION_FRAMES) expect(() => rasterize(f, BOSS_PALETTE)).not.toThrow();
