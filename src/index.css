@@ -476,3 +476,27 @@ html[data-theme='light'] .standup { background: rgba(231, 228, 220, 0.88); }
 /* ── raid arena ─────────────────────────────────────────────── */
 .raidview { display: flex; flex-direction: column; min-height: 0; gap: 0.6rem; }
 .arena { position: relative; flex: 1; min-height: 0; border: 1px solid var(--line); border-radius: 10px; overflow: hidden; background: var(--bg); }
+
+/* ── raid HUD overlay ───────────────────────────────────────── */
+.raid-hud { position: absolute; inset: 0; display: flex; flex-direction: column; justify-content: space-between; padding: 0.7rem; pointer-events: none; }
+.raid-hud button, .raid-hud .hpbar, .raid-hud .enrage { pointer-events: auto; }
+.hud-top { display: flex; gap: 0.8rem; align-items: flex-start; }
+.hud-hp { flex: 1; min-width: 0; }
+.hud-bottom { display: flex; gap: 0.8rem; align-items: flex-end; }
+.party { flex: 1; display: flex; flex-wrap: wrap; gap: 0.4rem; }
+.pframe { background: color-mix(in srgb, var(--panel) 82%, transparent); border: 1px solid var(--line); border-radius: 8px; backdrop-filter: blur(4px); }
+.pframe[data-status='down'] { border-color: var(--red); }
+.pframe[data-status='exhausted'] { opacity: 0.75; }
+.pframe-head { display: flex; align-items: center; gap: 0.4rem; padding: 0.3rem 0.5rem; }
+.pframe-name { font-size: 0.72rem; font-weight: 700; }
+.pframe-status { font-size: 0.72rem; }
+.pframe-counts { font-size: 0.62rem; color: var(--faint); }
+.pframe-counts .warn { color: var(--amber); }
+.pframe-list { display: flex; flex-direction: column; padding: 0 0.4rem 0.4rem; }
+.pframe-row { font-size: 0.62rem; text-align: left; padding: 0.15rem 0.2rem; color: var(--dim); }
+.pframe-row:hover { color: var(--ink); }
+.ticker { display: flex; align-items: center; gap: 0.9rem; overflow-x: auto; white-space: nowrap; font-size: 0.68rem; color: var(--faint); border: 1px solid var(--line); border-radius: 8px; padding: 0.4rem 0.7rem; }
+.ticker b { color: var(--ink); }
+.ticker-stale { color: var(--amber); font-style: normal; }
+.ticker-block { color: var(--red); }
+.ticker-ok { color: var(--teal); }
