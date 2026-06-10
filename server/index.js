@@ -5,10 +5,13 @@ import { fileURLToPath } from 'node:url';
 import { CONFIG } from '../shared/config.js';
 import { createMockSource } from './mock.js';
 import { createJiraSource } from './jira.js';
+import { createAuth } from './auth.js';
 
-// API_PORT, not PORT — dev tooling (preview launchers, PaaS) injects PORT
-// for the *web* process and would collide with Vite.
-const PORT = Number(process.env.API_PORT || process.env.SB_PORT || 4000);
+// In dev, API_PORT only — dev tooling (preview launchers) injects PORT for
+// the *web* process and would collide with Vite. In production the platform's
+// PORT must win (Render/Railway/Fly route traffic to it).
+const PROD = process.env.NODE_ENV === 'production';
+const PORT = Number(process.env.API_PORT || (PROD && process.env.PORT) || 4000);
 const MOCK = process.env.MOCK === '1';
 
 const source = MOCK
@@ -19,6 +22,12 @@ const source = MOCK
   : createJiraSource(process.env);
 
 const app = express();
+app.set('trust proxy', 1);
+
+const auth = createAuth(process.env);
+auth.routes(app);
+app.use(auth.middleware);
+app.get('/healthz', (_req, res) => res.json({ ok: true }));
 
 let cache = null;
 let lastFetch = 0;
@@ -61,12 +70,15 @@ if (MOCK) {
 setInterval(() => refresh({ force: true }), CONFIG.pollMs).unref();
 refresh({ force: true, tick: false });
 
-if (process.env.NODE_ENV === 'production') {
+if (PROD) {
   const dist = path.join(path.dirname(fileURLToPath(import.meta.url)), '..', 'dist');
   app.use(express.static(dist));
   app.get('*', (_req, res) => res.sendFile(path.join(dist, 'index.html')));
 }
 
 app.listen(PORT, () => {
-  console.log(`[sprint-boss] ${MOCK ? `MOCK (${process.env.MOCK_SCENARIO || 'doomed'})` : 'LIVE'} api on http://localhost:${PORT}`);
+  console.log(
+    `[sprint-boss] ${MOCK ? `MOCK (${process.env.MOCK_SCENARIO || 'doomed'})` : 'LIVE'} api on http://localhost:${PORT}` +
+      (auth.enabled ? ` · gated to @${auth.domain}` : ' · no auth gate (GOOGLE_CLIENT_ID unset)')
+  );
 });

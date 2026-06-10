@@ -51,6 +51,25 @@ All thresholds live in [shared/config.js](shared/config.js): aging bands, WIP
 limits (Jira board column "max" constraints win when set), poll interval,
 velocity window, unestimated-ticket weight.
 
+## Deploy a shared instance
+
+One-time setup on Render (free tier, deploys from this repo via `render.yaml`):
+
+1. [dashboard.render.com](https://dashboard.render.com) → New → Blueprint →
+   select this repo. Fill in the prompted env vars: the four `JIRA_*` values.
+2. Share `https://<service-name>.onrender.com`. The service name in
+   `render.yaml` carries a random suffix — **the URL is the only access
+   control**, so share it like a password and rename the service to rotate it.
+   The Jira token itself never leaves the server.
+
+Optional hard gate: the server has built-in Google sign-in. Create an OAuth
+client at [console.cloud.google.com](https://console.cloud.google.com)
+(Credentials → OAuth client ID → Web application, redirect URI
+`https://<service-name>.onrender.com/auth/callback`) and add
+`GOOGLE_CLIENT_ID` + `GOOGLE_CLIENT_SECRET` env vars on the service. Every
+route then requires a verified `@flowx.ai` Google account
+(`ALLOWED_EMAIL_DOMAIN` to change it); outsiders get a 403.
+
 ## Graceful degradation
 
 - No story points → tickets count 1 each, HP bar labeled "tickets",

@@ -15,6 +15,10 @@ export function useSnapshot(onEvents) {
     try {
       const res = await fetch('/api/snapshot');
       const json = await res.json().catch(() => ({}));
+      if (res.status === 401 && json.authUrl) {
+        window.location.assign(json.authUrl); // session expired: back through the gate
+        return false;
+      }
       if (!res.ok) {
         setError(json.error || res.statusText);
         return false;

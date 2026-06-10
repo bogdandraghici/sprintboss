@@ -1,0 +1,26 @@
+services:
+  - type: web
+    # Random suffix = unguessable subdomain; the URL is the only access control,
+    # so treat the link itself as a secret. Rename the service to rotate it.
+    name: sprint-boss-4cd27a1b
+    runtime: node
+    plan: free
+    buildCommand: npm install && npm run build
+    startCommand: npm start
+    healthCheckPath: /healthz
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: SESSION_SECRET
+        generateValue: true
+      # Set these in the Render dashboard (never committed):
+      - key: JIRA_BASE_URL
+        sync: false
+      - key: JIRA_EMAIL
+        sync: false
+      - key: JIRA_API_TOKEN
+        sync: false
+      - key: JIRA_BOARD_ID
+        sync: false
+      # Optional Google sign-in gate: add GOOGLE_CLIENT_ID and
+      # GOOGLE_CLIENT_SECRET here later to require @flowx.ai login.
