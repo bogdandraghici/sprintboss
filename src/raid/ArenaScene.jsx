@@ -8,6 +8,7 @@ import FighterSprite from './FighterSprite';
 import BossSprite from './BossSprite';
 import MinionSprite from './MinionSprite';
 import FloatNum from './FloatNum';
+import Effects from './Effects';
 
 function CameraRig() {
   const { camera } = useThree();
@@ -32,6 +33,35 @@ function Floor() {
         roughness={0.85} depthScale={1.1} color={color} metalness={0.25}
       />
     </mesh>
+  );
+}
+
+const EMBERS = 120;
+function Embers({ enraged }) {
+  const ref = useRef();
+  const seeds = useMemo(() =>
+    Array.from({ length: EMBERS }, () => ({
+      x: (Math.random() - 0.5) * 16, y: Math.random() * 6, z: (Math.random() - 0.5) * 6,
+      v: 0.15 + Math.random() * 0.4, w: Math.random() * 6.28,
+    })), []);
+  const positions = useMemo(() => new Float32Array(EMBERS * 3), []);
+  useFrame((state) => {
+    const t = state.clock.elapsedTime;
+    const speed = enraged ? 2.2 : 1;
+    seeds.forEach((s, i) => {
+      positions[i * 3] = s.x + Math.sin(t * 0.4 + s.w) * 0.4;
+      positions[i * 3 + 1] = (s.y + t * s.v * speed) % 6;
+      positions[i * 3 + 2] = s.z;
+    });
+    ref.current.geometry.attributes.position.needsUpdate = true;
+  });
+  return (
+    <points ref={ref}>
+      <bufferGeometry>
+        <bufferAttribute attach="attributes-position" count={EMBERS} array={positions} itemSize={3} />
+      </bufferGeometry>
+      <pointsMaterial size={0.045} color={enraged ? '#ff5d5d' : '#ff9d5c'} transparent opacity={0.7} toneMapped={false} />
+    </points>
   );
 }
 
@@ -99,6 +129,8 @@ export default function ArenaScene({ view, party = [], minions = [], horde = 0, 
         <MinionSprite key={m.key} issue={m} index={i} horde={i === minions.length - 1 ? horde : 0} />
       ))}
       {floats.map((f) => <FloatNum key={f.id} item={f} onDone={removeFloat} />)}
+      <Embers enraged={enraged} />
+      <Effects />
     </Canvas>
   );
 }
