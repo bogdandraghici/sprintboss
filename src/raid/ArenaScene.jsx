@@ -1,10 +1,13 @@
 // src/raid/ArenaScene.jsx
 import { Canvas, useFrame, useThree } from '@react-three/fiber';
 import { MeshReflectorMaterial } from '@react-three/drei';
-import { useMemo } from 'react';
+import { useMemo, useState, useEffect, useRef } from 'react';
 import { cssVar } from './cssVar';
-import { drainShake } from './shakeBus';
+import { drainShake, addShake } from './shakeBus';
 import FighterSprite from './FighterSprite';
+import BossSprite from './BossSprite';
+import MinionSprite from './MinionSprite';
+import FloatNum from './FloatNum';
 
 function CameraRig() {
   const { camera } = useThree();
@@ -32,8 +35,30 @@ function Floor() {
   );
 }
 
-export default function ArenaScene({ view, party = [], minions = [], horde = 0, actions = [], onStrike }) {
+export default function ArenaScene({ view, party = [], minions = [], horde = 0, actions = [] }) {
   const enraged = view.stats.enraged;
+
+  const [floats, setFloats] = useState([]);
+  const nextFloat = useRef(0);
+  const addFloat = (text, color, x, y) =>
+    setFloats((fs) => [...fs, { id: nextFloat.current++, text, color, x, y }]);
+  const removeFloat = (id) => setFloats((fs) => fs.filter((f) => f.id !== id));
+
+  const hit = actions.find((a) => a.kind === 'attack') || null;
+  const summon = actions.find((a) => a.kind === 'summon') || null;
+  const summonSeen = useRef(null);
+  useEffect(() => {
+    if (summon && summon.id !== summonSeen.current) {
+      summonSeen.current = summon.id;
+      addFloat(`+${summon.points}`, '#a3e635', 4.6, 4.4);
+    }
+  }, [summon]);
+
+  const onStrike = (points, x) => {
+    addShake(0.25 + Math.min(0.5, points * 0.08));
+    addFloat(`−${points}`, '#7fe7ff', 4.2, 3.6);
+  };
+
   return (
     <Canvas
       dpr={[1, 2]}
@@ -58,7 +83,11 @@ export default function ArenaScene({ view, party = [], minions = [], horde = 0, 
           position={[-4.7 + (i % 5) * 1.1, 0, i % 2 ? -0.7 : 0.2]}
         />
       ))}
-      {/* boss, minions, effects arrive in Tasks 8-9 */}
+      <BossSprite enraged={enraged} hit={hit} summon={summon} />
+      {minions.map((m, i) => (
+        <MinionSprite key={m.key} issue={m} index={i} horde={i === minions.length - 1 ? horde : 0} />
+      ))}
+      {floats.map((f) => <FloatNum key={f.id} item={f} onDone={removeFloat} />)}
     </Canvas>
   );
 }
