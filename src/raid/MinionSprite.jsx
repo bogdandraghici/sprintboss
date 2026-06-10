@@ -8,9 +8,10 @@ import { MINION_FRAMES, BOSS_PALETTE } from './sprites/boss';
 const PX = 0.09;
 
 export default function MinionSprite({ issue, index, horde = 0 }) {
+  // Key by slot index mod MINION_CAP (6) so the cache stays bounded at ≤6 entries.
   const entry = useMemo(
-    () => sheetTexture(`minion:${issue.key}`, MINION_FRAMES, BOSS_PALETTE),
-    [issue.key]
+    () => sheetTexture(`minion:${index % 6}`, MINION_FRAMES, BOSS_PALETTE),
+    [index]
   );
   const mesh = useRef();
   const born = useRef(null);

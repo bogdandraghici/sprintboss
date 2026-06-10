@@ -7,7 +7,7 @@ import { framesFor, paletteFor, FRAME } from './sprites/roster';
 const PX = 0.1; // world units per sprite pixel -> 14x20 body ≈ 1.4 x 2.0
 
 // attack: latest {id, points} action for this fighter (or null).
-// onStrike(points, worldX): fired once per attack at the moment of impact.
+// onStrike(points): fired once per attack at the moment of impact.
 export default function FighterSprite({ fighter, attack, onStrike, position, phase = 0 }) {
   const entry = useMemo(
     () => sheetTexture(`fighter:${fighter.name}`, framesFor(fighter.name), paletteFor(fighter.name)),
@@ -29,7 +29,7 @@ export default function FighterSprite({ fighter, attack, onStrike, position, pha
       lunge = a.t < 0.28 ? -0.15 : 0.5;
       if (a.t >= 0.28 && !a.struck) {
         a.struck = true;
-        onStrike?.(attack.points, position[0] + 1.2);
+        onStrike?.(attack.points);
       }
     } else {
       frame =
