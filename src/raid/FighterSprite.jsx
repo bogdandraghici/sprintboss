@@ -44,12 +44,12 @@ export default function FighterSprite({ fighter, attack, onStrike, position, pha
   const head = useRef();
   const headMat = useRef();
   const auraMat = useRef();
-  const anim = useRef({ id: null, t: 0, struck: false });
+  const anim = useRef({ id: null, t: 0, struck: false, points: 1 });
 
   useFrame((state, rawDt) => {
     const dt = frozen() ? 0 : rawDt; // hit-stop freezes the choreography
     const a = anim.current;
-    if (attack && attack.id !== a.id) { a.id = attack.id; a.t = 0; a.struck = false; }
+    if (attack && attack.id !== a.id && fighter.status !== 'down') { a.id = attack.id; a.t = 0; a.struck = false; a.points = attack.points; }
     const attacking = a.id !== null && a.t < ATK_TOTAL && fighter.status !== 'down';
     let frame;
     let lunge = 0;
@@ -62,7 +62,7 @@ export default function FighterSprite({ fighter, attack, onStrike, position, pha
       lunge = seg[2];
       if (a.t >= STRIKE_AT && !a.struck) {
         a.struck = true;
-        onStrike?.(attack.points);
+        onStrike?.(a.points);
       }
     } else if (tableau === 'victory') {
       frame = Math.floor(state.clock.elapsedTime / 0.35 + phase) % 2 ? FRAME.VICTORY_B : FRAME.VICTORY_A;

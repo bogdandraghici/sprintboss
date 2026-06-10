@@ -49,6 +49,9 @@ export default function BossSprite({ enraged, hit, summon, stage = 0, scars = []
     if (dead) {
       if (!f.rumbled) { f.rumbled = true; addShake(0.9); }
       f.death = Math.min(1.6, f.death + rawDt);
+    } else if (f.death > 0) {
+      f.death = 0;
+      f.rumbled = false;
     }
     const sink = f.death / 1.6;
     group.current.position.y = BODY_H / 2 - sink * BODY_H * 0.9;
@@ -67,7 +70,7 @@ export default function BossSprite({ enraged, hit, summon, stage = 0, scars = []
     <group ref={group} position={[BOSS_X, BODY_H / 2, -0.4]}>
       <mesh>
         <planeGeometry args={[BODY_W, BODY_H]} />
-        <meshBasicMaterial ref={mat} map={entry.tex} transparent alphaTest={0.5} toneMapped={false} />
+        <meshBasicMaterial ref={mat} map={entry.tex} transparent alphaTest={0.05} toneMapped={false} />
       </mesh>
       {!dead && scars.map((s) => <Scar key={`${s.key}-${s.ts}`} scar={s} />)}
     </group>
