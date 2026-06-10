@@ -507,3 +507,23 @@ html[data-theme='light'] .standup { background: rgba(231, 228, 220, 0.88); }
 .ticker-stale { color: var(--amber); font-style: normal; }
 .ticker-block { color: var(--red); }
 .ticker-ok { color: var(--teal); }
+
+/* ── raid dock ──────────────────────────────────────────────── */
+.dock { display: flex; gap: 0.6rem; flex: none; align-items: stretch; }
+.dock-group {
+  background: var(--panel-2); border: 1px solid var(--line); border-radius: 10px;
+  padding: 0.5rem 0.6rem; min-width: 0; display: flex; flex-direction: column; gap: 0.4rem;
+}
+.dock-group[data-kind='queue'] { flex: 0 0 11rem; }
+.dock-group[data-kind='work'] { flex: 1 1 0; }
+.dock-blocked { flex: 0 0 15rem; }
+.dock-blocked[data-occupied='true'] { border-color: color-mix(in srgb, var(--red) 50%, var(--line)); }
+.dock-head { flex: none; }
+.dock-cards { display: flex; flex-direction: column; gap: 0.3rem; overflow: hidden; min-height: 0; }
+.dock-group[data-kind='work'] .dock-cards[data-density='full'],
+.dock-group[data-kind='work'] .dock-cards[data-density='compact'] {
+  display: grid; grid-template-columns: repeat(auto-fill, minmax(13rem, 1fr)); align-content: start;
+}
+.dock-more { font-size: 0.66rem; color: var(--faint); padding: 0.1rem 0.2rem; }
+.dock-blocked-card { display: flex; flex-direction: column; gap: 0.15rem; }
+.dock-reason { font-size: 0.66rem; color: var(--red); padding: 0 0.3rem; }
