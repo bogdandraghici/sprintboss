@@ -1,4 +1,4 @@
-export default function Header({ view, mode, setMode, theme, setTheme, refetch }) {
+export default function Header({ view, mode, setMode, layout, setLayout, theme, setTheme, refetch }) {
   const demo = async (action) => {
     await fetch(`/api/demo/${action}`, { method: 'POST' });
     refetch();
@@ -23,6 +23,13 @@ export default function Header({ view, mode, setMode, theme, setTheme, refetch }
             <button className="chip" onClick={() => demo('block')} title="Block a ticket (demo)">block</button>
           </span>
         )}
+        <div className="seg-ctl">
+          {['arena', 'factory'].map((l) => (
+            <button key={l} data-on={layout === l} onClick={() => setLayout(l)}>
+              {l}
+            </button>
+          ))}
+        </div>
         <div className="seg-ctl">
           {['ambient', 'standup', 'retro'].map((m) => (
             <button key={m} data-on={mode === m} onClick={() => setMode(m)}>
