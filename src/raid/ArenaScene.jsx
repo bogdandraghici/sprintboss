@@ -13,7 +13,7 @@ function CameraRig() {
     const shake = drainShake(dt);
     camera.position.x = Math.sin(t * 0.07) * 0.55 + (Math.random() - 0.5) * shake * 0.5;
     camera.position.y = 2.1 + Math.sin(t * 0.11) * 0.12 + (Math.random() - 0.5) * shake * 0.35;
-    camera.position.z = 8.6;
+    camera.position.z = 9.4;
     camera.lookAt(0, 1.5, 0);
   });
   return null;
@@ -37,7 +37,7 @@ export default function ArenaScene({ view, party = [], minions = [], horde = 0, 
   return (
     <Canvas
       dpr={[1, 2]}
-      camera={{ fov: 35, position: [0, 2.1, 8.6] }}
+      camera={{ fov: 35, position: [0, 2.1, 9.4] }}
       gl={{ antialias: false }}
       style={{ position: 'absolute', inset: 0 }}
     >
@@ -55,7 +55,7 @@ export default function ArenaScene({ view, party = [], minions = [], horde = 0, 
           phase={i * 0.7}
           attack={actions.find((a) => a.kind === 'attack' && a.fighter === i) || null}
           onStrike={onStrike}
-          position={[-5.6 + (i % 5) * 1.25, 0, i % 2 ? -0.7 : 0.2]}
+          position={[-4.7 + (i % 5) * 1.1, 0, i % 2 ? -0.7 : 0.2]}
         />
       ))}
       {/* boss, minions, effects arrive in Tasks 8-9 */}
