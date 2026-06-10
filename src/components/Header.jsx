@@ -24,7 +24,7 @@ export default function Header({ view, mode, setMode, layout, setLayout, theme, 
           </span>
         )}
         <div className="seg-ctl">
-          {['arena', 'factory'].map((l) => (
+          {['raid', 'factory'].map((l) => (
             <button key={l} data-on={layout === l} onClick={() => setLayout(l)}>
               {l}
             </button>

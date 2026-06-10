@@ -18,9 +18,13 @@ function useTheme() {
   return [theme, setTheme];
 }
 
-// 'arena' (raid scene) or 'factory' (the original line + boss panel).
+// 'raid' (command deck) or 'factory' (the original line + boss panel).
+// Older clients stored 'arena' — that view evolved into 'raid'; map it forward.
 function useLayout() {
-  const [layout, setLayout] = useState(() => localStorage.getItem('sb-view') || 'arena');
+  const [layout, setLayout] = useState(() => {
+    const v = localStorage.getItem('sb-view');
+    return v === 'arena' || !v ? 'raid' : v;
+  });
   useEffect(() => {
     localStorage.setItem('sb-view', layout);
   }, [layout]);
@@ -59,8 +63,8 @@ export default function App() {
   return (
     <div className="app" data-enraged={view.stats.enraged}>
       <Header view={view} mode={mode} setMode={setMode} layout={layout} setLayout={setLayout} theme={theme} setTheme={setTheme} refetch={refetch} />
-      <main className="flex-1 grid gap-3 min-h-0" style={{ gridTemplateColumns: layout === 'arena' ? '1fr' : '3fr 2fr' }}>
-        {layout === 'arena' ? (
+      <main className="flex-1 grid gap-3 min-h-0" style={{ gridTemplateColumns: layout === 'raid' ? '1fr' : '3fr 2fr' }}>
+        {layout === 'raid' ? (
           <RaidView view={view} pulses={mode === 'retro' ? [] : pulses} onSelect={setSelected} />
         ) : (
           <>
