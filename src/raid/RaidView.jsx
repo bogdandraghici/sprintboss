@@ -11,7 +11,8 @@ export default function RaidView({ view, pulses, onSelect }) {
   return (
     <section className="raidview">
       <div className="arena">
-        <ArenaScene view={view} party={party} minions={minions} horde={horde} actions={actions} />
+        {/* onStrike no-op: Task 8 replaces it with boss reaction + damage numbers + shake */}
+        <ArenaScene view={view} party={party} minions={minions} horde={horde} actions={actions} onStrike={() => {}} />
       </div>
     </section>
   );

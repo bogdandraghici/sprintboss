@@ -4,6 +4,7 @@ import { MeshReflectorMaterial } from '@react-three/drei';
 import { useMemo } from 'react';
 import { cssVar } from './cssVar';
 import { drainShake } from './shakeBus';
+import FighterSprite from './FighterSprite';
 
 function CameraRig() {
   const { camera } = useThree();
@@ -31,7 +32,7 @@ function Floor() {
   );
 }
 
-export default function ArenaScene({ view, party = [], minions = [], horde = 0, actions = [] }) {
+export default function ArenaScene({ view, party = [], minions = [], horde = 0, actions = [], onStrike }) {
   const enraged = view.stats.enraged;
   return (
     <Canvas
@@ -47,7 +48,17 @@ export default function ArenaScene({ view, party = [], minions = [], horde = 0, 
       <pointLight position={[4.5, 4, 2]} intensity={enraged ? 110 : 50} color={enraged ? '#ff5d5d' : '#ff9d5c'} />
       <CameraRig />
       <Floor />
-      {/* fighters, boss, minions, effects arrive in Tasks 7-9 */}
+      {party.map((f, i) => (
+        <FighterSprite
+          key={f.name}
+          fighter={f}
+          phase={i * 0.7}
+          attack={actions.find((a) => a.kind === 'attack' && a.fighter === i) || null}
+          onStrike={onStrike}
+          position={[-5.6 + (i % 5) * 1.25, 0, i % 2 ? -0.7 : 0.2]}
+        />
+      ))}
+      {/* boss, minions, effects arrive in Tasks 8-9 */}
     </Canvas>
   );
 }
