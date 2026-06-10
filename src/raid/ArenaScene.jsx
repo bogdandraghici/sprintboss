@@ -4,12 +4,27 @@ import { MeshReflectorMaterial } from '@react-three/drei';
 import { useMemo, useState, useEffect, useRef } from 'react';
 import { cssVar } from './cssVar';
 import { drainShake, addShake } from './shakeBus';
+import { addFreeze, drainFreeze } from './timeBus';
+import { bossStage, deriveTableau } from './raidState';
+import { fighterAuras, fighterBlockHeat, bossScars, debris } from './heat';
 import FighterSprite from './FighterSprite';
 import BossSprite from './BossSprite';
-import MinionSprite from './MinionSprite';
+import MinionSprite, { minionPos } from './MinionSprite';
 import FloatNum from './FloatNum';
 import SlashFX from './SlashFX';
+import ImpactFX from './ImpactFX';
+import Debris from './Debris';
 import Effects from './Effects';
+
+// ?lite — for TVs that can't hold 60fps: lower dpr, no post chain, fewer particles.
+export const LITE = typeof window !== 'undefined' && new URLSearchParams(window.location.search).has('lite');
+
+// Drains the hit-stop accumulator exactly once per frame; everyone else
+// just asks frozen()/freezeLeft().
+function TimeKeeper() {
+  useFrame((_, dt) => drainFreeze(dt));
+  return null;
+}
 
 function CameraRig() {
   const { camera } = useThree();
@@ -30,14 +45,14 @@ function Floor() {
     <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, 0, 0]}>
       <planeGeometry args={[40, 24]} />
       <MeshReflectorMaterial
-        blur={[300, 80]} resolution={512} mixBlur={0.9} mixStrength={6}
-        roughness={0.85} depthScale={1.1} color={color} metalness={0.25}
+        blur={[300, 80]} resolution={LITE ? 256 : 512} mixBlur={0.85} mixStrength={7}
+        roughness={0.8} depthScale={1.1} color={color} metalness={0.3}
       />
     </mesh>
   );
 }
 
-const EMBERS = 120;
+const EMBERS = LITE ? 40 : 120;
 function Embers({ enraged }) {
   const ref = useRef();
   const seeds = useMemo(() =>
@@ -68,6 +83,14 @@ function Embers({ enraged }) {
 
 export default function ArenaScene({ view, party = [], minions = [], horde = 0, actions = [] }) {
   const enraged = view.stats.enraged;
+  const stage = bossStage(view.stats);
+  const tableau = deriveTableau(view);
+
+  // Afterglow inputs — pure functions of (events, issues, view.now): retro-safe.
+  const auras = useMemo(() => fighterAuras(view.events, view.issues, view.now), [view]);
+  const blockHeat = useMemo(() => fighterBlockHeat(view.events, view.issues, view.now), [view]);
+  const scars = useMemo(() => bossScars(view.events, view.now), [view]);
+  const kills = useMemo(() => debris(view.events, view.now), [view]);
 
   const [floats, setFloats] = useState([]);
   const nextFloat = useRef(0);
@@ -80,6 +103,23 @@ export default function ArenaScene({ view, party = [], minions = [], horde = 0, 
   const addSlash = (x) => setSlashes((ss) => [...ss, { id: nextSlash.current++, x }]);
   const removeSlash = (id) => setSlashes((ss) => ss.filter((s) => s.id !== id));
 
+  const [impacts, setImpacts] = useState([]);
+  const nextImpact = useRef(0);
+  const addImpact = (x, y, color) =>
+    setImpacts((xs) => [...xs, { id: nextImpact.current++, x, y, color }]);
+  const removeImpact = (id) => setImpacts((xs) => xs.filter((i) => i.id !== id));
+
+  // A minion whose ticket closed vanishes from the list — give it a death poof.
+  const prevMinions = useRef([]);
+  useEffect(() => {
+    const gone = prevMinions.current.filter((p) => !minions.some((m) => m.key === p.key));
+    prevMinions.current = minions.map((m, i) => ({ key: m.key, i }));
+    for (const g of gone) {
+      const [x] = minionPos(g.i);
+      addImpact(x, 0.5, '#a3e635');
+    }
+  }, [minions]);
+
   const hit = actions.find((a) => a.kind === 'attack') || null;
   const summon = actions.find((a) => a.kind === 'summon') || null;
   const summonSeen = useRef(null);
@@ -90,27 +130,27 @@ export default function ArenaScene({ view, party = [], minions = [], horde = 0, 
     }
   }, [summon]);
 
+  const strike = (points) => {
+    addFreeze(Math.min(0.14, 0.06 + points * 0.01)); // hit-stop scaled to points
+    addShake(0.25 + Math.min(0.5, points * 0.08));
+    addFloat(`−${points}`, '#7fe7ff', 4.2, 3.6);
+    addSlash(3.4);
+    addImpact(3.5, 2.2, '#ffd479');
+  };
+
   // Unattributed hits (no owning fighter, e.g. unassigned tickets) still land:
-  // no sprite swings, so spawn the damage number + shake directly.
+  // no sprite swings, so trigger the impact suite directly.
   const orphanSeen = useRef(null);
   useEffect(() => {
     if (hit && hit.fighter === -1 && hit.id !== orphanSeen.current) {
       orphanSeen.current = hit.id;
-      addShake(0.25 + Math.min(0.5, hit.points * 0.08));
-      addFloat(`−${hit.points}`, '#7fe7ff', 4.2, 3.6);
-      addSlash(3.4);
+      strike(hit.points);
     }
   }, [hit]);
 
-  const onStrike = (points) => {
-    addShake(0.25 + Math.min(0.5, points * 0.08));
-    addFloat(`−${points}`, '#7fe7ff', 4.2, 3.6);
-    addSlash(3.4);
-  };
-
   return (
     <Canvas
-      dpr={[1, 2]}
+      dpr={LITE ? 1 : [1, 1.75]}
       camera={{ fov: 35, position: [0, 2.1, 9.4] }}
       gl={{ antialias: false }}
       style={{ position: 'absolute', inset: 0 }}
@@ -120,26 +160,35 @@ export default function ArenaScene({ view, party = [], minions = [], horde = 0, 
       <ambientLight intensity={0.35} />
       <pointLight position={[-4, 5, 4]} intensity={60} color="#7fe7ff" />
       <pointLight position={[4.5, 4, 2]} intensity={enraged ? 110 : 50} color={enraged ? '#ff5d5d' : '#ff9d5c'} />
+      <TimeKeeper />
       <CameraRig />
       <Floor />
+      <Debris kills={kills} />
       {party.map((f, i) => (
         <FighterSprite
           key={f.name}
           fighter={f}
           phase={i * 0.7}
           attack={actions.find((a) => a.kind === 'attack' && a.fighter === i) || null}
-          onStrike={onStrike}
+          onStrike={strike}
+          aura={auras.get(f.name) || 0}
+          beaconHeat={blockHeat.get(f.name) || 0}
+          tableau={tableau}
           position={[-4.7 + (i % 5) * 1.1 + Math.floor(i / 5) * 0.4, 0, 0.2 - Math.floor(i / 5) * 0.85]}
         />
       ))}
-      <BossSprite enraged={enraged} hit={hit} summon={summon} />
-      {minions.map((m, i) => (
+      <BossSprite
+        enraged={enraged} hit={hit} summon={summon}
+        stage={stage} scars={scars} dead={tableau === 'victory'}
+      />
+      {tableau !== 'victory' && minions.map((m, i) => (
         <MinionSprite key={m.key} issue={m} index={i} horde={i === minions.length - 1 ? horde : 0} />
       ))}
       {floats.map((f) => <FloatNum key={f.id} item={f} onDone={removeFloat} />)}
       {slashes.map((s) => <SlashFX key={s.id} item={s} onDone={removeSlash} />)}
+      {impacts.map((im) => <ImpactFX key={im.id} item={im} onDone={removeImpact} />)}
       <Embers enraged={enraged} />
-      <Effects />
+      <Effects enraged={enraged} tableau={tableau} lite={LITE} />
     </Canvas>
   );
 }
