@@ -33,8 +33,6 @@ html[data-theme='dark'] {
   --steel-2: #43596f;
   --steel-3: #16222e;
   --eye: #5ff2dd;
-  --belt: #131c26;
-  --belt-stripe: rgba(252, 191, 62, 0.55);
   --glow-red: rgba(255, 82, 99, 0.16);
   --hatch-dark: rgba(0, 0, 0, 0.45);
 }
@@ -55,8 +53,6 @@ html[data-theme='light'] {
   --steel-2: #6b7c8d;
   --steel-3: #c4c9cd;
   --eye: #0c9e8d;
-  --belt: #d8d4c8;
-  --belt-stripe: rgba(146, 104, 10, 0.5);
   --glow-red: rgba(220, 38, 50, 0.12);
   --hatch-dark: rgba(60, 50, 30, 0.25);
   --teal: #0d9488;
@@ -164,95 +160,10 @@ button { font: inherit; color: inherit; background: none; border: 0; padding: 0;
   border: 1px solid rgba(255, 255, 255, 0.2);
 }
 
-/* ── factory line ───────────────────────────────────────────────── */
-
-.factory { display: flex; flex-direction: column; min-width: 0; overflow: hidden; }
-.stations { display: flex; flex: 1; min-height: 0; }
-.station { flex: 1; min-width: 0; display: flex; flex-direction: column; border-right: 1px dashed var(--line); padding: 0.7rem 0.7rem 0; container-type: inline-size; }
-/* boards with many columns get narrow stations: tighten the cards */
-@container (max-width: 13rem) {
-  .ticket { column-gap: 0.4rem; padding: 0.32rem 0.5rem 0.36rem; }
-  .ticket-age { font-size: 0.64rem; }
-}
-.station:last-child { border-right: 0; }
-.station-head { display: flex; align-items: baseline; gap: 0.5rem; margin-bottom: 0.55rem; }
-.station-head .label { flex: 1; min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.station-stale { flex: none; font-family: var(--font-m); font-size: 0.68rem; font-weight: 600; color: var(--red); }
-.station-wip { flex: none; font-family: var(--font-m); font-size: 0.78rem; font-weight: 700; color: var(--dim); }
-.station[data-jammed='true'] .station-wip { color: var(--red); animation: blink 1.1s steps(2) infinite; }
-.station-items {
-  flex: 1; display: flex; flex-direction: column; gap: 0.45rem;
-  min-height: 0; overflow-y: auto; padding-bottom: 0.55rem; padding-right: 0.15rem;
-  scrollbar-width: thin; scrollbar-color: var(--line-2) transparent;
-}
-/* short columns still rest on the belt; tall ones scroll from the top */
-.station-items > :first-child { margin-top: auto; }
-.station[data-jammed='true'] .station-items { gap: 0.18rem; } /* the pile-up */
-
-@keyframes blink { 50% { opacity: 0.25; } }
-
-/* the conveyor itself */
-.belt { display: flex; height: 1.05rem; border-top: 1px solid var(--line-2); border-bottom: 1px solid var(--line-2); background: var(--belt); }
-.belt-seg { flex: 1; position: relative; overflow: hidden; }
-.belt-seg::before {
-  content: ''; position: absolute; inset: 0.22rem 0;
-  background: repeating-linear-gradient(
-    -55deg,
-    var(--belt-stripe) 0 0.55rem,
-    transparent 0.55rem 1.5rem
-  );
-  animation: belt-run 1.6s linear infinite;
-}
-@keyframes belt-run { to { transform: translateX(1.95rem); } }
-.belt-seg[data-jammed='true']::before {
-  animation-play-state: paused;
-  background: repeating-linear-gradient(-55deg, var(--red) 0 0.55rem, var(--hatch-dark) 0.55rem 1.5rem);
-  opacity: 0.75;
-}
-.belt-seg[data-jammed='true']::after {
-  content: ''; position: absolute; inset: 0; background: var(--red);
-  opacity: 0; animation: jam-flash 1.1s ease-in-out infinite;
-}
-@keyframes jam-flash { 50% { opacity: 0.22; } }
-
-/* maintenance bay — where blocked work falls off the belt.
-   Collapses to a whisper when clear; only becomes a framed alarm zone
-   when something is actually blocked. */
-.bay { margin: 0.5rem 0.8rem 0.4rem; display: flex; align-items: center; gap: 0.7rem; min-height: 1.5rem; }
-.bay[data-occupied='true'] {
-  padding: 0.4rem 0.6rem;
-  border: 1px dashed color-mix(in srgb, var(--red) 50%, var(--line));
-  border-radius: 0.5rem; background: var(--inset); min-height: 2.4rem;
-}
-.bay-items { display: flex; gap: 0.5rem; flex: 1; overflow-x: auto; scrollbar-width: none; }
-.bay-ticket {
-  flex: none; display: flex; align-items: center; gap: 0.5rem;
-  padding: 0.28rem 0.6rem; border: 1px solid color-mix(in srgb, var(--red) 40%, var(--line));
-  border-radius: 0.4rem; background: var(--panel-2); max-width: 17rem;
-}
-.bay-reason { font-size: 0.68rem; color: var(--dim); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .beacon { width: 0.5rem; height: 0.5rem; border-radius: 50%; background: var(--red); flex: none; animation: beacon 1.4s ease-in-out infinite; }
 @keyframes beacon { 50% { opacity: 0.2; box-shadow: 0 0 0.6rem var(--red); } }
 
-/* stats: one quiet instrumentation line, no boxes */
-.statline {
-  display: flex; align-items: baseline; gap: 1.2rem; flex-wrap: wrap;
-  padding: 0 0.8rem 0.65rem; font-family: var(--font-m); font-size: 0.72rem; color: var(--faint);
-}
-.statline b { color: var(--dim); font-weight: 600; }
-.statline .warn { color: var(--red); }
-
 /* ── boss ───────────────────────────────────────────────────────── */
-
-.bosspanel { display: flex; flex-direction: column; min-width: 0; overflow: hidden; padding: 0.8rem 0.9rem; gap: 0.6rem; position: relative; }
-.bosspanel[data-enraged='true'] { border-color: color-mix(in srgb, var(--red) 50%, var(--line)); }
-
-.boss-stage { position: relative; flex: 1; min-height: 0; display: grid; place-items: center; }
-.boss-stage::before {
-  content: ''; position: absolute; inset: 8% 12%;
-  background: radial-gradient(50% 45% at 50% 60%, color-mix(in srgb, var(--steel-2) 26%, transparent), transparent 70%);
-  pointer-events: none;
-}
 
 .boss { height: 100%; max-height: 27rem; width: auto; aspect-ratio: 13/12; animation: bob 4.2s ease-in-out infinite; }
 .boss .eye { fill: var(--eye); }
@@ -270,39 +181,6 @@ button { font: inherit; color: inherit; background: none; border: 0; padding: 0;
   0% { opacity: 0; transform: translateY(0) scale(0.6); }
   18% { opacity: 0.55; }
   100% { opacity: 0; transform: translateY(-2.2rem) scale(1.5); }
-}
-
-.boss-wrap { position: relative; height: 92%; display: grid; place-items: center; }
-.boss-wrap[data-state='hit'] .boss { animation: hit-shake 0.55s cubic-bezier(0.36, 0.07, 0.19, 0.97); }
-.boss-wrap[data-state='hit'] .boss .flash { animation: hit-flash 0.5s ease-out; }
-.boss-wrap[data-state='heal'] .boss { filter: drop-shadow(0 0 1.2rem color-mix(in srgb, var(--lime) 70%, transparent)); }
-
-@keyframes hit-shake {
-  10%, 90% { transform: translateX(-0.35rem) rotate(-1deg); }
-  20%, 80% { transform: translateX(0.5rem) rotate(1.2deg); }
-  30%, 50%, 70% { transform: translateX(-0.7rem); }
-  40%, 60% { transform: translateX(0.7rem) rotate(-1.2deg); }
-}
-@keyframes hit-flash { 0% { opacity: 0.85; } 100% { opacity: 0; } }
-
-.boss-wrap[data-enraged='true'] .boss { animation: bob 1.6s ease-in-out infinite; filter: drop-shadow(0 0 1.4rem var(--glow-red)) drop-shadow(0 0 0.4rem rgba(255, 82, 99, 0.4)); }
-.boss-wrap[data-enraged='true'] .eye { fill: var(--red); }
-.boss-wrap[data-enraged='true'] .brow { opacity: 1; }
-.boss-wrap[data-enraged='true'] .steam { fill: var(--red); }
-
-.floatnum {
-  position: absolute; left: 50%; top: 28%;
-  font-family: var(--font-m); font-weight: 700; font-size: 2.1rem;
-  pointer-events: none; animation: float-up 2.4s cubic-bezier(0.2, 0.7, 0.3, 1) forwards;
-  text-shadow: 0 0 1rem currentColor; z-index: 3;
-}
-.floatnum[data-kind='hit'] { color: var(--teal); }
-.floatnum[data-kind='heal'] { color: var(--lime); }
-@keyframes float-up {
-  0% { opacity: 0; transform: translate(-50%, 1rem) scale(0.6); }
-  12% { opacity: 1; transform: translate(-50%, 0) scale(1.15); }
-  24% { transform: translate(-50%, -0.5rem) scale(1); }
-  100% { opacity: 0; transform: translate(-50%, -5.5rem) scale(0.95); }
 }
 
 /* HP bar */
