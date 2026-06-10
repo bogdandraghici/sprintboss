@@ -82,6 +82,7 @@ export function deriveDock(view) {
     .filter((c) => c.idx !== doneIdx && !c.isBlockedZone);
   const groups = lanes.map((c, i) => ({
     name: c.name,
+    idx: c.idx,
     kind: i === 0 ? 'queue' : 'work',
     issues: view.issues
       .filter((it) => it.col === c.idx && !it.blocked && !it.done)

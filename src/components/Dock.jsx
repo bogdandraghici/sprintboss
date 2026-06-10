@@ -9,7 +9,7 @@ export default function Dock({ view, onSelect }) {
   const { groups, blocked } = deriveDock(view);
   return (
     <div className="dock">
-      {groups.map((g) => <DockGroup key={g.name} group={g} view={view} onSelect={onSelect} />)}
+      {groups.map((g) => <DockGroup key={g.idx} group={g} view={view} onSelect={onSelect} />)}
       <div className="dock-group dock-blocked" data-occupied={blocked.length > 0}>
         <div className="dock-head">
           <span className="label" style={{ color: blocked.length ? 'var(--red)' : 'var(--faint)' }}>
