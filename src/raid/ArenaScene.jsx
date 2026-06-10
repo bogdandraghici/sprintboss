@@ -105,8 +105,8 @@ export default function ArenaScene({ view, party = [], minions = [], horde = 0, 
 
   const [impacts, setImpacts] = useState([]);
   const nextImpact = useRef(0);
-  const addImpact = (x, y, color) =>
-    setImpacts((xs) => [...xs, { id: nextImpact.current++, x, y, color }]);
+  const addImpact = (x, y, color, z = 0.6) =>
+    setImpacts((xs) => [...xs, { id: nextImpact.current++, x, y, color, z }]);
   const removeImpact = (id) => setImpacts((xs) => xs.filter((i) => i.id !== id));
 
   // A minion whose ticket closed vanishes from the list — give it a death poof.
@@ -115,8 +115,8 @@ export default function ArenaScene({ view, party = [], minions = [], horde = 0, 
     const gone = prevMinions.current.filter((p) => !minions.some((m) => m.key === p.key));
     prevMinions.current = minions.map((m, i) => ({ key: m.key, i }));
     for (const g of gone) {
-      const [x] = minionPos(g.i);
-      addImpact(x, 0.5, '#a3e635');
+      const [x, , z] = minionPos(g.i);
+      addImpact(x, 0.5, '#a3e635', z);
     }
   }, [minions]);
 
@@ -138,11 +138,14 @@ export default function ArenaScene({ view, party = [], minions = [], horde = 0, 
     addImpact(3.5, 2.2, '#ffd479');
   };
 
-  // Unattributed hits (no owning fighter, e.g. unassigned tickets) still land:
-  // no sprite swings, so trigger the impact suite directly.
+  // Unattributed hits (no owning fighter, e.g. unassigned tickets) still land,
+  // and so do hits owned by a downed fighter (FighterSprite ignores attack latches
+  // while down): trigger the impact suite directly in both cases.
   const orphanSeen = useRef(null);
   useEffect(() => {
-    if (hit && hit.fighter === -1 && hit.id !== orphanSeen.current) {
+    // Also covers owners who can't swing (downed fighters): the hit still lands.
+    const ownerDown = hit && hit.fighter >= 0 && party[hit.fighter]?.status === 'down';
+    if (hit && (hit.fighter === -1 || ownerDown) && hit.id !== orphanSeen.current) {
       orphanSeen.current = hit.id;
       strike(hit.points);
     }

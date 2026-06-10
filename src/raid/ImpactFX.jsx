@@ -35,7 +35,7 @@ export default function ImpactFX({ item, onDone }) {
     });
   });
   return (
-    <group position={[item.x, item.y, 0.6]}>
+    <group position={[item.x, item.y, item.z ?? 0.6]}>
       <mesh ref={ring}>
         <ringGeometry args={[0.3, 0.36, 24]} />
         <meshBasicMaterial color={item.color} transparent opacity={0.55} toneMapped={false} depthWrite={false} />
