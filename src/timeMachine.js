@@ -13,6 +13,12 @@ export function stateAt(snap, t) {
     const cur = hist[hist.length - 1];
     const lastFlag = (i.flagHistory || []).filter((f) => f.ts <= t).pop();
     const done = cur.col === doneIdx;
+    const inBlockedZone = !done && !!snap.columns[cur.col].isBlockedZone;
+    const flagged = lastFlag?.flagged ?? false;
+    const blocked = !done && (inBlockedZone || flagged);
+    const blockedReason = blocked
+      ? (i.blockedReason || (inBlockedZone ? `In "${snap.columns[cur.col].name}" column` : null))
+      : null;
     issues.push({
       ...i,
       col: cur.col,
@@ -21,7 +27,8 @@ export function stateAt(snap, t) {
       daysInColumn: (t - cur.ts) / DAY,
       done,
       doneAt: done ? cur.ts : null,
-      blocked: !done && !!lastFlag?.flagged,
+      blocked,
+      blockedReason,
       addedMidSprint: i.addedMidSprint && i.addedAt <= t,
     });
   }
