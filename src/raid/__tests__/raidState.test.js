@@ -1,6 +1,7 @@
 // src/raid/__tests__/raidState.test.js
 import { describe, it, expect } from 'vitest';
 import { deriveParty, deriveMinions, pulseActions, MINION_CAP } from '../raidState';
+import { bossStage, deriveDock, dockDensity, deriveTableau, QUEUE_MAX, WORK_MAX } from '../raidState';
 
 const aging = { freshDays: 2, warmDays: 5 }; // ageBand: >5d = stale
 const mkIssue = (over) => ({
@@ -86,5 +87,72 @@ describe('pulseActions', () => {
   });
   it('ignores other event types', () => {
     expect(pulseActions([{ id: 'p4', type: 'blocked' }], party)).toEqual([]);
+  });
+});
+
+describe('bossStage', () => {
+  const s = (remaining, total) => bossStage({ remaining, total });
+  it('maps hp fraction to crack stages: 0 pristine .. 3 near-death, 4 dead', () => {
+    expect(s(10, 10)).toBe(0);
+    expect(s(7.4, 10)).toBe(1);   // <= 75%
+    expect(s(5, 10)).toBe(2);     // <= 50%
+    expect(s(2.5, 10)).toBe(3);   // <= 25%
+    expect(s(0, 10)).toBe(4);
+    expect(s(0, 0)).toBe(0);      // empty sprint: pristine, not dead
+  });
+});
+
+describe('deriveDock', () => {
+  const columns = [
+    { name: 'To Do', isBlockedZone: false },
+    { name: 'In Progress', isBlockedZone: false },
+    { name: 'Blocked', isBlockedZone: true },
+    { name: 'Done', isBlockedZone: false },
+  ];
+  const mk = (key, col, over = {}) =>
+    ({ key, col, columnSince: 5, done: false, blocked: false, ...over });
+  it('one group per working column; first is the queue; done never appears', () => {
+    const view = { columns, issues: [
+      mk('A-1', 0), mk('A-2', 1), mk('A-3', 3, { done: true }),
+    ] };
+    const { groups } = deriveDock(view);
+    expect(groups.map((g) => [g.name, g.kind])).toEqual([['To Do', 'queue'], ['In Progress', 'work']]);
+    expect(groups.flatMap((g) => g.issues.map((i) => i.key))).toEqual(['A-1', 'A-2']);
+  });
+  it('blocked issues drain into the blocked list regardless of column, stalest first', () => {
+    const view = { columns, issues: [
+      mk('B-1', 2, { blocked: true, columnSince: 9 }),
+      mk('B-2', 1, { blocked: true, columnSince: 3 }),
+    ] };
+    const { groups, blocked } = deriveDock(view);
+    expect(blocked.map((i) => i.key)).toEqual(['B-2', 'B-1']);
+    expect(groups[1].issues).toEqual([]);
+  });
+});
+
+describe('dockDensity', () => {
+  it('full up to max, compact to 2x, chips capped at 3x with overflow count', () => {
+    expect(dockDensity(4, 6)).toEqual({ density: 'full', show: 4, more: 0 });
+    expect(dockDensity(9, 6)).toEqual({ density: 'compact', show: 9, more: 0 });
+    expect(dockDensity(20, 6)).toEqual({ density: 'chip', show: 18, more: 2 });
+  });
+  it('exports TV capacity constants', () => {
+    expect(QUEUE_MAX).toBeGreaterThan(0);
+    expect(WORK_MAX).toBeGreaterThan(0);
+  });
+});
+
+describe('deriveTableau', () => {
+  const mkV = (remaining, total, now, end) =>
+    ({ stats: { remaining, total }, now, sprint: { end } });
+  it('victory when all hp is gone', () => {
+    expect(deriveTableau(mkV(0, 10, 5, 10))).toBe('victory');
+  });
+  it('defeat when the sprint ended with hp left', () => {
+    expect(deriveTableau(mkV(3, 10, 11, 10))).toBe('defeat');
+  });
+  it('null mid-sprint, and null for an empty sprint', () => {
+    expect(deriveTableau(mkV(3, 10, 5, 10))).toBe(null);
+    expect(deriveTableau(mkV(0, 0, 5, 10))).toBe(null);
   });
 });

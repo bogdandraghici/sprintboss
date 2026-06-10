@@ -64,3 +64,50 @@ export function pulseActions(pulses, party) {
   }
   return actions;
 }
+
+// HP fraction -> boss damage stage. 0 pristine, 1..3 crack levels, 4 dead.
+export function bossStage(stats) {
+  if (!stats.total) return 0;
+  const f = stats.remaining / stats.total;
+  return f <= 0 ? 4 : f <= 0.25 ? 3 : f <= 0.5 ? 2 : f <= 0.75 ? 1 : 0;
+}
+
+// Dock groups mirror the board: working columns only (Done and blocked-zone
+// columns never appear); blocked issues drain into one Blocked list, exactly
+// like Factory's maintenance bay. Stalest-first within each group.
+export function deriveDock(view) {
+  const doneIdx = view.columns.length - 1;
+  const lanes = view.columns
+    .map((c, idx) => ({ name: c.name, idx, isBlockedZone: c.isBlockedZone }))
+    .filter((c) => c.idx !== doneIdx && !c.isBlockedZone);
+  const groups = lanes.map((c, i) => ({
+    name: c.name,
+    kind: i === 0 ? 'queue' : 'work',
+    issues: view.issues
+      .filter((it) => it.col === c.idx && !it.blocked && !it.done)
+      .sort((a, b) => a.columnSince - b.columnSince),
+  }));
+  const blocked = view.issues
+    .filter((i) => i.blocked && !i.done)
+    .sort((a, b) => a.columnSince - b.columnSince);
+  return { groups, blocked };
+}
+
+// No scrolling on a TV: degrade card density instead. Full cards up to `max`,
+// summary-less to 2x, key-only chips to 3x, then a "+N more" counter.
+export const QUEUE_MAX = 8;  // chip rows in the queue (first column) group
+export const WORK_MAX = 6;   // full cards per working group
+
+export function dockDensity(count, max = WORK_MAX) {
+  if (count <= max) return { density: 'full', show: count, more: 0 };
+  if (count <= max * 2) return { density: 'compact', show: count, more: 0 };
+  const cap = max * 3;
+  return { density: 'chip', show: Math.min(count, cap), more: Math.max(0, count - cap) };
+}
+
+// End-of-fight tableau: 'victory' (boss dead), 'defeat' (sprint over, hp left).
+export function deriveTableau(view) {
+  if (view.stats.total > 0 && view.stats.remaining <= 0) return 'victory';
+  if (view.now > view.sprint.end && view.stats.remaining > 0) return 'defeat';
+  return null;
+}
