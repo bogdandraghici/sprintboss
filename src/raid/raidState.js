@@ -50,13 +50,16 @@ export function pulseActions(pulses, party) {
   const actions = [];
   for (const p of pulses) {
     if (p.type === 'done') {
+      // Route by issue key, NOT p.actor: the transition author may be a reviewer or
+      // automation — not necessarily the assignee. Fighters are keyed by the issues
+      // they own, so the owning fighter (not the closer) should swing.
       actions.push({
         id: p.id, kind: 'attack',
-        fighter: party.findIndex((f) => f.name === p.actor),
-        points: p.points || 1,
+        fighter: party.findIndex((f) => f.issues.some((i) => i.key === p.key)),
+        points: p.points ?? 1,
       });
     } else if (p.type === 'scope-added') {
-      actions.push({ id: p.id, kind: 'summon', points: p.points || 1 });
+      actions.push({ id: p.id, kind: 'summon', points: p.points ?? 1 });
     }
   }
   return actions;

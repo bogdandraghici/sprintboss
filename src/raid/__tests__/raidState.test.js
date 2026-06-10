@@ -38,6 +38,14 @@ describe('deriveParty', () => {
     const [f] = deriveParty(mkView([mkIssue({ daysInColumn: 9 })], { noChangelog: true }));
     expect(f.status).toBe('fighting');
   });
+  it('blocked issues never count as stale (blocked-as-column boards)', () => {
+    const [f] = deriveParty(mkView([
+      mkIssue({ blocked: true, daysInColumn: 30 }),
+      mkIssue({ key: 'A-2', daysInColumn: 1 }),
+    ]));
+    expect(f.status).toBe('down');
+    expect(f.stale).toBe(0);
+  });
   it('orders by open count desc then name', () => {
     const party = deriveParty(mkView([
       mkIssue({ assignee: 'Zoe' }),
@@ -58,13 +66,18 @@ describe('deriveMinions', () => {
 });
 
 describe('pulseActions', () => {
-  const party = [{ name: 'Ana' }, { name: 'Bo' }];
-  it('routes done pulses to the actor fighter', () => {
-    const [a] = pulseActions([{ id: 'p1', type: 'done', actor: 'Bo', points: 3 }], party);
+  const party = [
+    { name: 'Ana', issues: [{ key: 'A-1' }] },
+    { name: 'Bo', issues: [{ key: 'B-1' }] },
+  ];
+  it('routes done pulses to the owning fighter by issue key', () => {
+    // actor is deliberately NOT a party member — that's the regression this test pins.
+    // The transition author may be a reviewer or automation; the owning fighter should swing.
+    const [a] = pulseActions([{ id: 'p1', type: 'done', key: 'B-1', actor: 'Some Reviewer', points: 3 }], party);
     expect(a).toMatchObject({ kind: 'attack', fighter: 1, points: 3 });
   });
-  it('unknown actor still lands a hit (fighter -1)', () => {
-    const [a] = pulseActions([{ id: 'p2', type: 'done', actor: 'Ghost' }], party);
+  it('unknown issue still lands a hit (fighter -1)', () => {
+    const [a] = pulseActions([{ id: 'p2', type: 'done', key: 'Z-9', actor: 'Ghost' }], party);
     expect(a).toMatchObject({ kind: 'attack', fighter: -1, points: 1 });
   });
   it('scope-added becomes a summon', () => {
