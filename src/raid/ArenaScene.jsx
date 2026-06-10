@@ -54,6 +54,17 @@ export default function ArenaScene({ view, party = [], minions = [], horde = 0, 
     }
   }, [summon]);
 
+  // Unattributed hits (no owning fighter, e.g. unassigned tickets) still land:
+  // no sprite swings, so spawn the damage number + shake directly.
+  const orphanSeen = useRef(null);
+  useEffect(() => {
+    if (hit && hit.fighter === -1 && hit.id !== orphanSeen.current) {
+      orphanSeen.current = hit.id;
+      addShake(0.25 + Math.min(0.5, hit.points * 0.08));
+      addFloat(`−${hit.points}`, '#7fe7ff', 4.2, 3.6);
+    }
+  }, [hit]);
+
   const onStrike = (points, x) => {
     addShake(0.25 + Math.min(0.5, points * 0.08));
     addFloat(`−${points}`, '#7fe7ff', 4.2, 3.6);
