@@ -2,6 +2,7 @@
 // Raid-frame widgets shared by the arena HUD (and formerly BossPanel).
 import { useEffect, useMemo, useReducer, useState } from 'react';
 import { fmtCountdown, fmtDate, fmtDays, timeAgo, cls, DAY } from '../lib';
+import { segmentHeat } from '../raid/heat';
 
 /* ── enrage timer ─────────────────────────────────────────────── */
 
@@ -75,6 +76,9 @@ export function HpBar({ view, onSelect }) {
     [view.issues]
   );
   const s = view.stats;
+  // Afterglow: freshly-killed segments glow gold and cool over ~2h.
+  const now = view.timeTravel ? view.now : Date.now();
+  const glow = segmentHeat(view.issues, now);
   const unit = s.anyEstimated ? 'pts' : 'tickets';
 
   return (
@@ -94,7 +98,7 @@ export function HpBar({ view, onSelect }) {
           <button
             key={issue.key}
             className="hpseg"
-            style={{ flexGrow: issue.points }}
+            style={{ flexGrow: issue.points, '--heat': glow.get(issue.key) || 0 }}
             data-done={issue.done}
             data-scope={issue.addedMidSprint}
             data-blocked={issue.blocked}
