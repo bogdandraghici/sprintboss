@@ -12,6 +12,7 @@ export function rasterize(frame, palette) {
       if (ch === '.') return;
       const hex = palette[ch];
       if (!hex) throw new Error(`no palette entry for '${ch}'`);
+      if (!/^#[0-9a-fA-F]{6}$/.test(hex)) throw new Error(`palette '${ch}' must be #rrggbb, got '${hex}'`);
       const i = (y * w + x) * 4;
       data[i] = parseInt(hex.slice(1, 3), 16);
       data[i + 1] = parseInt(hex.slice(3, 5), 16);
@@ -28,7 +29,7 @@ export function buildSheet(frames, palette) {
   const fh = rasters[0].height;
   const data = new Uint8ClampedArray(fw * frames.length * fh * 4);
   rasters.forEach((r, fi) => {
-    if (r.width !== fw || r.height !== fh) throw new Error(`frame ${fi} size mismatch`);
+    if (r.width !== fw || r.height !== fh) throw new Error(`frame ${fi} size mismatch: expected ${fw}x${fh}, got ${r.width}x${r.height}`);
     for (let y = 0; y < fh; y++) {
       const src = y * fw * 4;
       data.set(r.data.subarray(src, src + fw * 4), (y * fw * frames.length + fi * fw) * 4);
