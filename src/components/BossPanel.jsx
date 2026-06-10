@@ -95,10 +95,13 @@ function EnrageTimer({ view }) {
 /* ── segmented HP bar ─────────────────────────────────────────── */
 
 function HpBar({ view, onSelect }) {
+  // Like a real HP bar: living segments packed left, depleted (done) packed
+  // right, so remaining HP reads as one contiguous block draining rightward.
   const segs = useMemo(
     () =>
       [...view.issues].sort(
         (a, b) =>
+          (a.done ? 1 : 0) - (b.done ? 1 : 0) ||
           (a.addedMidSprint ? 1 : 0) - (b.addedMidSprint ? 1 : 0) ||
           (a.addedMidSprint ? a.addedAt - b.addedAt : a.created - b.created) ||
           a.key.localeCompare(b.key)

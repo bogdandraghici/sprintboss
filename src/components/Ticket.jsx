@@ -16,7 +16,7 @@ export default function Ticket({ issue, view, onSelect }) {
       <span className="age-dot" />
       <span className="ticket-key">{issue.key}</span>
       {band !== 'off' && <span className="ticket-age">{fmtDays(issue.daysInColumn)}</span>}
-      <span className="ticket-pts">{issue.estimated ? issue.points : '?'}</span>
+      {issue.estimated && <span className="ticket-pts">{issue.points}</span>}
       <span className="ticket-face">
         <Avatar name={issue.assignee} src={issue.assigneeAvatar} />
       </span>

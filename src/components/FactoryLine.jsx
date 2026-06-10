@@ -41,11 +41,6 @@ function Station({ col, idx, view, onSelect }) {
       <div className="station-head">
         <span className="label">{col.name}</span>
         {stale > 0 && <span className="station-stale">{stale} stale</span>}
-        <span className="station-wip">
-          {col.count}
-          {col.wipLimit != null && `/${col.wipLimit}`}
-          {col.jammed && ' JAM'}
-        </span>
       </div>
       <div className="station-items">
         {items.map((issue) => (
