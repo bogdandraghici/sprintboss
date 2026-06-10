@@ -9,8 +9,11 @@ export default function FloatNum({ item, onDone }) {
   useFrame((_, dt) => {
     t.current += dt;
     if (t.current > 1.3) return onDone(item.id);
-    ref.current.position.y = item.y + t.current * 1.1;
-    ref.current.fillOpacity = Math.max(0, 1 - t.current / 1.3);
+    const k = t.current / 1.3;
+    ref.current.position.y = item.y + (1 - (1 - k) * (1 - k)) * 1.4; // ease-out rise
+    ref.current.position.x = item.x + k * 0.6;                       // drift off the impact
+    ref.current.fontSize = 0.42 * (1 + Math.max(0, 0.25 - k) * 2);   // impact pop
+    ref.current.fillOpacity = Math.max(0, 1 - k * k * 1.4);
   });
   return (
     <Text ref={ref} position={[item.x, item.y, 1.2]} fontSize={0.42} color={item.color}
