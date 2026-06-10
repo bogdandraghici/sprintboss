@@ -121,7 +121,7 @@ export default function ArenaScene({ view, party = [], minions = [], horde = 0, 
           phase={i * 0.7}
           attack={actions.find((a) => a.kind === 'attack' && a.fighter === i) || null}
           onStrike={onStrike}
-          position={[-4.7 + (i % 5) * 1.1, 0, i % 2 ? -0.7 : 0.2]}
+          position={[-4.7 + (i % 5) * 1.1 + Math.floor(i / 5) * 0.4, 0, 0.2 - Math.floor(i / 5) * 0.85]}
         />
       ))}
       <BossSprite enraged={enraged} hit={hit} summon={summon} />
