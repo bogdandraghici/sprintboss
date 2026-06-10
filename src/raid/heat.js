@@ -4,6 +4,10 @@
 // afterglow of any past moment reconstructable in retro mode for free.
 import { HOUR } from '../lib';
 
+// Convention: collections of things-to-draw (recentKills/bossScars/debris,
+// fighterAuras) drop cold entries entirely; attribute maps for objects that
+// render anyway (segmentHeat, fighterBlockHeat) keep explicit zeros.
+
 export const SEGMENT_LIFE = 2 * HOUR;   // HP segment gold cool-down
 export const AURA_LIFE = 2 * HOUR;      // attacker ember aura
 export const SCAR_LIFE = 24 * HOUR;     // glowing impact scars on the boss
@@ -24,12 +28,21 @@ export function segmentHeat(issues, now) {
   return m;
 }
 
-// Done events still warm under `life`: [{key, ts, heat}] in event order.
-export const recentKills = (events, now, life) =>
-  events
-    .filter((e) => e.type === 'done')
+// Latest done event per issue, still warm under `life`: [{key, ts, heat}] in
+// ts order. One entry per issue — a reopened-then-redone ticket counts once.
+// Residue deliberately persists even if the ticket reopens and stays open:
+// the hit happened; segmentHeat (current state) is what tracks undo.
+export function recentKills(events, now, life) {
+  const last = new Map();
+  for (const e of events) {
+    if (e.type !== 'done') continue;
+    last.delete(e.key);
+    last.set(e.key, e);
+  }
+  return [...last.values()]
     .map((e) => ({ key: e.key, ts: e.ts, heat: heat(e.ts, now, life) }))
     .filter((k) => k.heat > 0);
+}
 
 export const bossScars = (events, now) =>
   recentKills(events, now, SCAR_LIFE).slice(-SCAR_MAX);

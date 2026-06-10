@@ -1,7 +1,7 @@
 import { describe, it, expect } from 'vitest';
 import {
   heat, segmentHeat, recentKills, bossScars, fighterAuras, fighterBlockHeat,
-  SEGMENT_LIFE, SCAR_LIFE, AURA_LIFE, DEBRIS_LIFE, SCAR_MAX,
+  SEGMENT_LIFE, SCAR_LIFE, AURA_LIFE, DEBRIS_LIFE, BEACON_LIFE, SCAR_MAX,
 } from '../heat';
 
 const HOUR = 3_600_000;
@@ -42,10 +42,23 @@ describe('recentKills / bossScars', () => {
     expect(kills.map((k) => k.key)).toEqual(['A-2']);
     expect(kills[0].heat).toBeGreaterThan(0.9);
   });
+  it('dedupes to the latest done event per issue (reopened-then-redone)', () => {
+    const evs = [
+      { type: 'done', key: 'A-1', ts: NOW - 3 * HOUR },
+      { type: 'reopened', key: 'A-1', ts: NOW - 2 * HOUR },
+      { type: 'done', key: 'A-1', ts: NOW - HOUR },
+    ];
+    const kills = recentKills(evs, NOW, DEBRIS_LIFE);
+    expect(kills).toHaveLength(1);
+    expect(kills[0].ts).toBe(NOW - HOUR);
+  });
   it('bossScars caps at SCAR_MAX newest', () => {
     const many = Array.from({ length: SCAR_MAX + 4 }, (_, i) =>
-      ({ type: 'done', key: `K-${i}`, ts: NOW - i }));
-    expect(bossScars(many, NOW)).toHaveLength(SCAR_MAX);
+      ({ type: 'done', key: `K-${i}`, ts: NOW - (SCAR_MAX + 4 - i) * 1000 }));
+    const scars = bossScars(many, NOW);
+    expect(scars).toHaveLength(SCAR_MAX);
+    expect(scars.map((s) => s.key)).toEqual(
+      Array.from({ length: SCAR_MAX }, (_, i) => `K-${i + 4}`));
   });
 });
 
@@ -74,7 +87,7 @@ describe('fighterBlockHeat', () => {
       { type: 'blocked', key: 'B-2', ts: NOW },
     ];
     const m = fighterBlockHeat(events, issues, NOW);
-    expect(m.get('Bo')).toBeGreaterThan(0.9);
+    expect(m.get('Bo')).toBeCloseTo(1 - HOUR / BEACON_LIFE);
   });
   it('a blocked issue with no blocked event still appears at heat 0', () => {
     const issues = [{ key: 'B-3', assignee: 'Cy', blocked: true, done: false }];
