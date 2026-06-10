@@ -53,6 +53,33 @@ app.get('/api/snapshot', async (_req, res) => {
   res.json({ ...snap, stale: !!lastError, staleError: lastError?.message || null });
 });
 
+// Avatar proxy: the Atlassian avatar CDN sends no CORS headers, which taints
+// canvases — WebGL avatar textures need same-origin bytes. Host-allowlisted.
+const AVATAR_HOSTS = new Set([
+  'avatar-management--avatars.us-west-2.prod.public.atl-paas.net',
+  'secure.gravatar.com',
+]);
+app.get('/api/avatar', async (req, res) => {
+  let url;
+  try {
+    url = new URL(req.query.url);
+  } catch {
+    return res.status(400).json({ error: 'Bad url' });
+  }
+  if (url.protocol !== 'https:' || !AVATAR_HOSTS.has(url.hostname)) {
+    return res.status(403).json({ error: 'Host not allowed' });
+  }
+  try {
+    const upstream = await fetch(url, { redirect: 'follow' });
+    if (!upstream.ok) return res.status(upstream.status).end();
+    res.set('Content-Type', upstream.headers.get('content-type') || 'image/png');
+    res.set('Cache-Control', 'public, max-age=86400');
+    res.send(Buffer.from(await upstream.arrayBuffer()));
+  } catch (e) {
+    res.status(502).json({ error: e.message });
+  }
+});
+
 // Mock-only levers for demoing hit / heal / block without waiting on chance.
 if (MOCK) {
   app.post('/api/demo/:action', async (req, res) => {

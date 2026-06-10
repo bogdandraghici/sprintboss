@@ -2,19 +2,32 @@
 import { useMemo, useRef } from 'react';
 import { useFrame } from '@react-three/fiber';
 import { sheetTexture, setFrame } from './sprites/textures';
-import { framesFor, paletteFor, FRAME } from './sprites/roster';
+import { headlessFramesFor, paletteFor, FRAME } from './sprites/roster';
+import { HEAD_ANCHORS } from './sprites/bodies';
+import { avatarTexture } from './avatarTexture';
 
 const PX = 0.1; // world units per sprite pixel -> 14x20 body ≈ 1.4 x 2.0
+const HEAD_SIZE = 0.8; // avatar disc diameter — bobblehead proportions on purpose
+
+// Head-centre anchor (pixel coords) -> local offset within the fighter group.
+// The body plane is centred at [0, PX*10], pixel (7, 10).
+const headPos = (frame) => {
+  const [cx, cy] = HEAD_ANCHORS[frame];
+  return [(cx - 7) * PX, (20 - cy) * PX];
+};
 
 // attack: latest {id, points} action for this fighter (or null).
 // onStrike(points): fired once per attack at the moment of impact.
 export default function FighterSprite({ fighter, attack, onStrike, position, phase = 0 }) {
   const entry = useMemo(
-    () => sheetTexture(`fighter:${fighter.name}`, framesFor(fighter.name), paletteFor(fighter.name)),
+    () => sheetTexture(`fighter:${fighter.name}:headless`, headlessFramesFor(fighter.name), paletteFor(fighter.name)),
     [fighter.name]
   );
+  const headTex = useMemo(() => avatarTexture(fighter.name, fighter.avatar), [fighter.name, fighter.avatar]);
   const group = useRef();
   const mat = useRef();
+  const head = useRef();
+  const headMat = useRef();
   const anim = useRef({ id: null, t: 0, struck: false });
 
   useFrame((state, dt) => {
@@ -39,9 +52,13 @@ export default function FighterSprite({ fighter, attack, onStrike, position, pha
     }
     setFrame(entry, frame);
     group.current.position.x = position[0] + lunge;
+    // The avatar head follows the pose's head anchor (z forward of the body).
+    const [hx, hy] = headPos(frame);
+    head.current.position.set(hx, hy, 0.02);
     // Dim the weary; beacon handled below.
     const dim = fighter.status === 'exhausted' ? 0.55 : fighter.status === 'resting' ? 0.8 : 1;
     mat.current.color.setScalar(dim);
+    headMat.current.color.setScalar(dim);
   });
 
   return (
@@ -49,6 +66,10 @@ export default function FighterSprite({ fighter, attack, onStrike, position, pha
       <mesh position={[0, PX * 10, 0]}>
         <planeGeometry args={[14 * PX, 20 * PX]} />
         <meshBasicMaterial ref={mat} map={entry.tex} transparent alphaTest={0.5} toneMapped={false} />
+      </mesh>
+      <mesh ref={head} position={[0, PX * 16.8, 0.02]}>
+        <planeGeometry args={[HEAD_SIZE, HEAD_SIZE]} />
+        <meshBasicMaterial ref={headMat} map={headTex} transparent alphaTest={0.5} toneMapped={false} />
       </mesh>
       {fighter.status === 'down' && <Beacon />}
     </group>

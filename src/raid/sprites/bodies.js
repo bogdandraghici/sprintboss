@@ -141,3 +141,35 @@ const DOWN = [
 ];
 
 export const BODY_FRAMES = [IDLE_A, IDLE_B, ATTACK_A, ATTACK_B, KNEEL, DOWN];
+
+/* Avatar-headed fighters: the pixel head is erased and the profile picture
+   rides where it was. One erase-box + head-centre anchor per frame, in
+   pixel coords (same order as BODY_FRAMES). */
+
+const HEAD_BOXES = [
+  { x0: 2, y0: 0, x1: 9, y1: 6 },   // IDLE_A
+  { x0: 2, y0: 0, x1: 9, y1: 6 },   // IDLE_B
+  { x0: 2, y0: 0, x1: 9, y1: 6 },   // ATTACK_A (raised arm at cols 10+ survives)
+  { x0: 0, y0: 0, x1: 7, y1: 6 },   // ATTACK_B (head leads the lunge)
+  { x0: 2, y0: 3, x1: 9, y1: 8 },   // KNEEL (head bowed lower)
+  { x0: 1, y0: 14, x1: 6, y1: 18 }, // DOWN (lying, head at the left)
+];
+
+// [cx, cy] pixel-space centre of where the head was, per frame.
+export const HEAD_ANCHORS = [
+  [5.8, 3.2],
+  [5.8, 3.2],
+  [5.8, 3.2],
+  [3.8, 3.2],
+  [5.8, 5.8],
+  [4, 16.2],
+];
+
+export const BODY_HEADLESS = BODY_FRAMES.map((frame, fi) => {
+  const b = HEAD_BOXES[fi];
+  return frame.map((row, y) =>
+    y < b.y0 || y > b.y1
+      ? row
+      : [...row].map((ch, x) => (x >= b.x0 && x <= b.x1 ? '.' : ch)).join('')
+  );
+});

@@ -1,7 +1,7 @@
 // src/raid/sprites/roster.js
 // Hand-made look per teammate: palette + hair overlay + weapon.
 // Names must match Jira display names. '__recruit__' is the unknown-assignee fallback.
-import { BODY_FRAMES, compose } from './bodies';
+import { BODY_FRAMES, BODY_HEADLESS, compose } from './bodies';
 import { WEAPONS } from './weapons';
 
 export const FRAME = { IDLE_A: 0, IDLE_B: 1, ATTACK_A: 2, ATTACK_B: 3, KNEEL: 4, DOWN: 5 };
@@ -44,5 +44,15 @@ export function framesFor(name) {
     const w = WEAPONS[p.weapon][fi];
     if (w) frame = compose(frame, w.grid, w.at[0], w.at[1]);
     return frame;
+  });
+}
+
+// Avatar-headed variant: no pixel head, no hair — the profile picture is the
+// head (positioned via HEAD_ANCHORS). Weapons still ride along.
+export function headlessFramesFor(name) {
+  const p = personOf(name);
+  return BODY_HEADLESS.map((body, fi) => {
+    const w = WEAPONS[p.weapon][fi];
+    return w ? compose(body, w.grid, w.at[0], w.at[1]) : body;
   });
 }
