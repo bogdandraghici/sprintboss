@@ -472,3 +472,7 @@ html[data-theme='light'] .standup { background: rgba(231, 228, 220, 0.88); }
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation-duration: 0.001s !important; animation-iteration-count: 1 !important; transition-duration: 0.001s !important; }
 }
+
+/* ── raid arena ─────────────────────────────────────────────── */
+.raidview { display: flex; flex-direction: column; min-height: 0; gap: 0.6rem; }
+.arena { position: relative; flex: 1; min-height: 0; border: 1px solid var(--line); border-radius: 10px; overflow: hidden; background: var(--bg); }
