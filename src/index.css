@@ -157,6 +157,13 @@ button { font: inherit; color: inherit; background: none; border: 0; padding: 0;
   content: '+'; color: var(--lime); margin-left: 0.25em; font-weight: 700;
 }
 
+/* dock density degradation — drop summary first, then face/points */
+.ticket[data-density='compact'] .ticket-summary { display: none; }
+.ticket[data-density='chip'] .ticket-summary,
+.ticket[data-density='chip'] .ticket-face,
+.ticket[data-density='chip'] .ticket-pts { display: none; }
+.ticket[data-density='chip'] { padding: 0.18rem 0.45rem; }
+
 .avatar {
   width: 1.5rem; height: 1.5rem; border-radius: 50%; flex: none;
   display: grid; place-items: center; object-fit: cover;
