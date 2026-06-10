@@ -172,7 +172,7 @@ export function DamageLog({ view }) {
   const rows = [...view.events].filter((e) => LOG_TYPES[e.type]).reverse().slice(0, 6);
   const now = view.timeTravel ? view.now : Date.now();
   return (
-    <div className="dlog" style={{ flex: 'none' }}>
+    <div className="dlog">
       <span className="label label-faint">Damage log</span>
       {rows.length === 0 && (
         <span className="text-[0.72rem]" style={{ color: 'var(--faint)' }}>No action yet this sprint.</span>
