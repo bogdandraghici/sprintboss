@@ -1,7 +1,7 @@
 // src/raid/Environment.jsx
 // The diorama around the fight: parallax ruin silhouettes, light shafts,
 // dust motes. Purely decorative.
-import { useMemo, useRef } from 'react';
+import { useMemo, useRef, useState, useEffect } from 'react';
 import { useFrame } from '@react-three/fiber';
 import * as THREE from 'three';
 
@@ -101,12 +101,52 @@ function Dust() {
   );
 }
 
+// War banners planted around the battlefield — pixel-art prop, loaded once and
+// instanced at a few background spots (behind the action line). Decorative.
+const BANNER_SPOTS = [
+  { x: -7.6, z: -2.6, h: 3.5 },
+  { x: 2.4, z: -3.4, h: 3.9 },
+  { x: -3.0, z: -5.2, h: 3.0 },
+];
+function Banners() {
+  const [tex, setTex] = useState(null);
+  useEffect(() => {
+    const l = new THREE.TextureLoader();
+    l.load(
+      '/props/banner.png',
+      (t) => {
+        t.magFilter = THREE.NearestFilter; // pixel art: crisp
+        t.minFilter = THREE.NearestMipmapNearestFilter;
+        t.generateMipmaps = true;
+        t.colorSpace = THREE.SRGBColorSpace;
+        setTex(t);
+      },
+      undefined,
+      () => {}
+    );
+  }, []);
+  if (!tex) return null;
+  const img = tex.image;
+  const aspect = (img.naturalWidth || img.width) / (img.naturalHeight || img.height);
+  return (
+    <>
+      {BANNER_SPOTS.map((s, i) => (
+        <mesh key={i} position={[s.x, s.h / 2, s.z]}>
+          <planeGeometry args={[s.h * aspect, s.h]} />
+          <meshBasicMaterial map={tex} transparent alphaTest={0.4} toneMapped={false} />
+        </mesh>
+      ))}
+    </>
+  );
+}
+
 // Braziers and fog bands cut per the approved mockup — the scene reads as a
-// clean dark hall: pillars, a light shaft, drifting motes.
+// clean dark hall: pillars, banners, a light shaft, drifting motes.
 export default function Environment({ enraged = false, lite = false }) {
   return (
     <>
       <Backdrop />
+      <Banners />
       {!lite && <Shafts />}
       {!lite && <Dust />}
     </>
