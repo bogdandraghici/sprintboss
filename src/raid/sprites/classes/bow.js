@@ -36,7 +36,7 @@ const IDLE_A = [
   '....KKBBK.KBBKK.....',
 ];
 
-// Breathing: chest gem glints a row higher as the strap settles.
+// Breathing: chest gem glints a row higher.
 const IDLE_B_EDITS = {
   10: '....KAKAABGAKAKLWK..',
   11: '....KAKABAAAKAKLWK..',
