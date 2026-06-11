@@ -1,7 +1,6 @@
 // src/raid/__tests__/sprites.test.js
 import { describe, it, expect } from 'vitest';
-import { compose, BODY_FRAMES, BODY_HEADLESS, HEAD_ANCHORS } from '../sprites/bodies';
-import { CLASSES, HEADLESS } from '../sprites/bodies';
+import { compose, BODY_FRAMES, BODY_HEADLESS, HEAD_ANCHORS, CLASSES, HEADLESS } from '../sprites/bodies';
 import {
   framesFor, headlessFramesFor, paletteFor, ROSTER, FRAME,
   HEAD_ANCHORS15, SPRITE_W, SPRITE_H,
@@ -119,17 +118,31 @@ describe('class bodies (20×28)', () => {
       expect(c.headAnchors).toHaveLength(6);
       expect(c.hairAt).toHaveLength(6);
       c.headBoxes.forEach((b, i) => {
+        // Assert box orientation (fix 3)
+        expect(b.x0).toBeLessThanOrEqual(b.x1);
+        expect(b.y0).toBeLessThanOrEqual(b.y1);
         const hf = HEADLESS[cls][i];
         for (let y = b.y0; y <= b.y1; y++) {
           expect(hf[y].slice(b.x0, b.x1 + 1)).toBe('.'.repeat(b.x1 - b.x0 + 1));
         }
       });
+      // Tightened anchor bounds: valid pixel space is 0–19 / 0–27 (fix 2)
       for (const [cx, cy] of c.headAnchors) {
         expect(cx).toBeGreaterThanOrEqual(0);
-        expect(cx).toBeLessThanOrEqual(20);
+        expect(cx).toBeLessThanOrEqual(19);
         expect(cy).toBeGreaterThanOrEqual(0);
-        expect(cy).toBeLessThanOrEqual(28);
+        expect(cy).toBeLessThanOrEqual(27);
       }
+      // Validate hairAt overlay bounds (fix 1)
+      c.hairAt.forEach((h) => {
+        if (h !== null) {
+          const [x, y] = h;
+          expect(x).toBeGreaterThanOrEqual(0);
+          expect(x + 8).toBeLessThanOrEqual(19); // hair overlays are 9 wide
+          expect(y).toBeGreaterThanOrEqual(0);
+          expect(y + 3).toBeLessThanOrEqual(27); // tallest hair is 4 rows
+        }
+      });
     });
   }
 });
