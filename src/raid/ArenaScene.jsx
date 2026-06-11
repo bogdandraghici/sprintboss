@@ -36,7 +36,7 @@ function CameraRig() {
     // baseline at the fighters' feet, not a ground plane rising behind them.
     camera.position.x = Math.sin(t * 0.07) * 0.55 + (Math.random() - 0.5) * shake * 0.5;
     camera.position.y = 1.5 + Math.sin(t * 0.11) * 0.08 + (Math.random() - 0.5) * shake * 0.35;
-    camera.position.z = 9.4;
+    camera.position.z = 10.7;
     camera.lookAt(0, 1.65, 0);
   });
   return null;
@@ -178,7 +178,7 @@ export default function ArenaScene({ view, party = [], minions = [], horde = 0, 
   return (
     <Canvas
       dpr={LITE ? 1 : [1, 1.75]}
-      camera={{ fov: 35, position: [0, 2.1, 9.4] }}
+      camera={{ fov: 35, position: [0, 2.1, 10.7] }}
       gl={{ antialias: false }}
       style={{ position: 'absolute', inset: 0 }}
     >
@@ -209,7 +209,7 @@ export default function ArenaScene({ view, party = [], minions = [], horde = 0, 
             tableau={tableau}
             focus={focus}
             onFocus={onFocus}
-            position={[-10.6 + (i % 5) * 2.85 + Math.floor(i / 5) * 0.8, 0, 0.2 - Math.floor(i / 5) * 1.05]}
+            position={[-11.8 + (i % 5) * 3.35 + Math.floor(i / 5) * 0.9, 0, 0.2 - Math.floor(i / 5) * 1.15]}
           />
         );
       })}
