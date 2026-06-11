@@ -314,8 +314,10 @@ button { font: inherit; color: inherit; background: none; border: 0; padding: 0;
   transition: background 0.4s, opacity 0.4s;
 }
 .hpseg:hover { filter: brightness(1.25); }
-.hpseg[data-dim='true'] { opacity: 0.22; }
 .hpseg[data-done='true'] { background: transparent; box-shadow: inset 0 0 0 1px var(--line-2); opacity: 0.55; }
+/* focus lens: every segment not owned by the focused fighter recedes — declared
+   after data-done so it wins on source order and dims depleted segments too */
+.hpseg[data-dim='true'] { opacity: 0.22; }
 /* afterglow: a fresh kill burns gold and cools to depleted gray over ~2h */
 .hpseg[data-done='true']::after {
   content: ''; position: absolute; inset: 2px; border-radius: 1px;
