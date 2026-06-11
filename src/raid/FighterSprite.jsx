@@ -6,7 +6,7 @@ import { headlessFramesFor, paletteFor, FRAME, headAnchors40For, SPRITE_W, SPRIT
 import { avatarTexture } from './avatarTexture';
 import { frozen } from './timeBus';
 
-const PX = 0.0303; // world units per sprite pixel -> 40x56 body ≈ 1.21 x 1.70
+const PX = 0.0328; // world units per sprite pixel -> 40x56 body ≈ 1.31 x 1.84
 const HEAD_SIZE = 0.48; // avatar disc diameter — still readable from the couch, but the sprite leads (mockup proportions)
 
 // Attack timeline: [duration, frame, lunge]. Strike fires entering ATTACK_C.
