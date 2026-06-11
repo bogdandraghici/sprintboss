@@ -61,7 +61,10 @@ const HAIR = {
 export const ROSTER = {
   'Serban Chiricescu': { hair: 'short', weapon: 'sword',   palette: { H: '#2b2118', A: '#5d8fd6' } },
   'Calin Nicoara':     { hair: 'buzz',  weapon: 'hammer',  palette: { H: '#1d1813', A: '#d87a5a' } },
-  'Gabi Muscalu':      { hair: 'buzz',  weapon: 'hammer',  palette: { H: '#1d1813', A: '#c9a23f' }, art: 'paladin' },
+  // Gabi's Jira display name is the raw account id WITH a zero-width space
+  // (U+200B) after the dot — written as an escape so the invisible char
+  // can't be lost by an editor; exact-match key.
+  'gabriel.\u200bmuscalu': { hair: 'buzz', weapon: 'hammer', palette: { H: '#1d1813', A: '#c9a23f' }, art: 'paladin' },
   'Cristina Stanica':  { hair: 'long',  weapon: 'staff',   palette: { H: '#4a3220', A: '#8d7fd6' } },
   'Andrei Scheau':     { hair: 'spiky', weapon: 'bow',     palette: { H: '#332620', A: '#3fbf9a' } },
   'Alex Preda':        { hair: 'short', weapon: 'daggers', palette: { H: '#16120e', A: '#7a8aa8' } },
