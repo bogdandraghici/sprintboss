@@ -1,6 +1,8 @@
 // src/raid/sprites/classes/hammer.js
 // Broad, squat heavy, 20×28, two-handed war hammer drawn in. Pure data — no imports (node-loadable).
 // Chars: K outline, S skin, H hair, A armor, B dark, P pants, W grip, L hammer head, G gem.
+// The skull sits 1 col right of the torso centre — the hammer side pulls the stance rightward.
+// headAnchors target the visual face centre, not the headBox geometric centre (sword.js does the same).
 
 const IDLE_A = [
   '....................',
@@ -33,7 +35,7 @@ const IDLE_A = [
   '.KBBBBK.KBBBBKKKKKKK',
 ];
 
-// Breathing: ribcage swells a pixel, chest gem glints a row lower.
+// Breathing: left torso edge widens 1px, chest gem glints a row lower.
 const IDLE_B_EDITS = {
   12: 'KKAAKAAAAAAAAKAAKWK.',
   13: 'KKAAKAAAGAAAAKAKSSK.',
