@@ -91,6 +91,7 @@ export default function FighterSprite({ fighter, attack, onStrike, position, pha
         <planeGeometry args={[SPRITE_W * PX, SPRITE_H * PX]} />
         <meshBasicMaterial ref={mat} map={entry.tex} transparent alphaTest={0.5} toneMapped={false} />
       </mesh>
+      {/* initial head height is approximate — useFrame re-anchors it every frame */}
       <mesh ref={head} position={[0, PX * 47, 0.02]}>
         <planeGeometry args={[HEAD_SIZE, HEAD_SIZE]} />
         <meshBasicMaterial ref={headMat} map={headTex} transparent alphaTest={0.5} toneMapped={false} />
