@@ -118,7 +118,6 @@ describe('class bodies (20×28)', () => {
       expect(c.headAnchors).toHaveLength(6);
       expect(c.hairAt).toHaveLength(6);
       c.headBoxes.forEach((b, i) => {
-        // Assert box orientation (fix 3)
         expect(b.x0).toBeLessThanOrEqual(b.x1);
         expect(b.y0).toBeLessThanOrEqual(b.y1);
         const hf = HEADLESS[cls][i];
@@ -126,14 +125,13 @@ describe('class bodies (20×28)', () => {
           expect(hf[y].slice(b.x0, b.x1 + 1)).toBe('.'.repeat(b.x1 - b.x0 + 1));
         }
       });
-      // Tightened anchor bounds: valid pixel space is 0–19 / 0–27 (fix 2)
       for (const [cx, cy] of c.headAnchors) {
         expect(cx).toBeGreaterThanOrEqual(0);
         expect(cx).toBeLessThanOrEqual(19);
         expect(cy).toBeGreaterThanOrEqual(0);
         expect(cy).toBeLessThanOrEqual(27);
       }
-      // Validate hairAt overlay bounds (fix 1)
+      // compose() silently clips out-of-bounds overlays — catch bad anchors here.
       c.hairAt.forEach((h) => {
         if (h !== null) {
           const [x, y] = h;
