@@ -15,6 +15,8 @@ Ambient wall-display app that visualizes our live Jira sprint as a boss fight. E
   sparks, HP drains); scope creep = boss summons minions (cap 6 + horde);
   blocked = fighter downed with beacon; boss cracks at 75/50/25% HP
   (`bossStage`) and crumbles on a cleared sprint; sprint overrun = defeat grade.
+  Clicking a fighter focuses them — dock, HP bar, scene, and ticker all filter
+  to their tickets (presentation lens only; Esc or empty-space click clears).
   **Afterglow** (`src/raid/heat.js`): events leave residue that cools over
   hours — gold HP segments (~2h), boss scars (~24h), ember
   auras, fresher-burns-brighter beacons — all pure functions of
