@@ -104,10 +104,13 @@ function Dust() {
 // War banners planted around the battlefield — pixel-art prop, loaded once and
 // instanced at a few background spots (behind the action line). Decorative.
 const BANNER_SPOTS = [
-  { x: -7.6, z: -2.6, h: 3.5 },
-  { x: 2.4, z: -3.4, h: 3.9 },
-  { x: -3.0, z: -5.2, h: 3.0 },
+  { x: -8.0, z: -1.2, h: 3.2 },
+  { x: -5.6, z: -2.0, h: 3.4 },
+  { x: -3.2, z: -2.8, h: 3.0 },
 ];
+// Objects this far back sit on the y=0 plane but project above the visible
+// baseline; drop them so the pole base meets the floor (grows with distance).
+const footDrop = (z) => 0.24 * (0.5 - z);
 function Banners() {
   const [tex, setTex] = useState(null);
   useEffect(() => {
@@ -131,7 +134,7 @@ function Banners() {
   return (
     <>
       {BANNER_SPOTS.map((s, i) => (
-        <mesh key={i} position={[s.x, s.h / 2, s.z]}>
+        <mesh key={i} position={[s.x, s.h / 2 - footDrop(s.z), s.z]}>
           <planeGeometry args={[s.h * aspect, s.h]} />
           <meshBasicMaterial map={tex} transparent alphaTest={0.4} toneMapped={false} />
         </mesh>
