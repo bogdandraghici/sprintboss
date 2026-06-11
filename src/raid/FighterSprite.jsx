@@ -3,11 +3,18 @@ import { useMemo, useRef } from 'react';
 import { useFrame } from '@react-three/fiber';
 import { sheetTexture, setFrame } from './sprites/textures';
 import { headlessFramesFor, paletteFor, FRAME, HEAD_ANCHORS15 } from './sprites/roster';
+import { useFighterArt, fitPlane, pickVariant } from './fighterArt';
 import { avatarTexture } from './avatarTexture';
 import { frozen } from './timeBus';
 
-const PX = 0.034; // world units per sprite pixel -> 28x40 body ≈ 0.95 x 1.36, matched to the smaller head
-const HEAD_SIZE = 0.48; // avatar disc diameter — still readable from the couch, but the sprite leads (mockup proportions)
+const PX = 0.034; // matrix fallback: world units per sprite pixel -> 28x40 body ≈ 0.95 x 1.36
+const HEAD_SIZE = 0.48; // avatar disc diameter
+
+// Generated-body tuning (one set, shared by all variants — they're drawn to a
+// common scale/footing per the spec). All in world units / fractions of body H.
+const ART_H = 1.7; // body world height
+const ART_HEAD = 0.5; // avatar disc diameter on the art body
+const ART_SOCKET_Y = 0.84; // head-centre height as a fraction of body H (neck stub sits top-centre)
 
 // Head-centre anchor (28×40 pixel coords) -> local offset within the group.
 // The body plane is centred at [0, PX*20], pixel (14, 20).
@@ -17,6 +24,7 @@ const headPos = (frame) => {
 };
 
 // Attack timeline: [duration, frame, lunge]. Strike fires entering ATTACK_C.
+// The lunge column drives both paths (matrix frame swap, or art body lunge).
 const ATK = [
   [0.12, FRAME.ATTACK_A, -0.1],
   [0.1, FRAME.ATTACK_B, -0.18],
@@ -34,11 +42,25 @@ const IDLE_CYCLE = [FRAME.IDLE_A, FRAME.IDLE_B, FRAME.IDLE_C, FRAME.IDLE_D];
 // aura: 0..1 afterglow of a recent kill; beaconHeat: 0..1 freshness of a block.
 // tableau: 'victory' | 'defeat' | null (end-of-sprint poses).
 export default function FighterSprite({ fighter, attack, onStrike, position, phase = 0, aura = 0, beaconHeat = 0, tableau = null }) {
+  const bodies = useFighterArt();
+  const body = bodies.length ? bodies[pickVariant(fighter.name, bodies.length)] : null;
+  const usingArt = !!body;
+
+  // Matrix fallback sheet — cached per name; only rendered when no art is present.
   const entry = useMemo(
     () => sheetTexture(`fighter:${fighter.name}:headless:v3`, headlessFramesFor(fighter.name), paletteFor(fighter.name)),
     [fighter.name]
   );
   const headTex = useMemo(() => avatarTexture(fighter.name, fighter.avatar), [fighter.name, fighter.avatar]);
+
+  // Art body plane dimensions (aspect-fit to ART_H), and the head socket on it.
+  const [bw, bh] = useMemo(() => {
+    const img = body?.image;
+    if (img) return fitPlane(img.naturalWidth || img.width, img.naturalHeight || img.height, ART_H);
+    return [28 * PX, 40 * PX];
+  }, [body]);
+  const bodyArgs = useMemo(() => [bw, bh], [bw, bh]);
+
   const group = useRef();
   const mat = useRef();
   const head = useRef();
@@ -49,9 +71,12 @@ export default function FighterSprite({ fighter, attack, onStrike, position, pha
   useFrame((state, rawDt) => {
     const dt = frozen() ? 0 : rawDt; // hit-stop freezes the choreography
     const a = anim.current;
+    const t = state.clock.elapsedTime;
     if (attack && attack.id !== a.id && fighter.status !== 'down') { a.id = attack.id; a.t = 0; a.struck = false; a.points = attack.points; }
     const attacking = a.id !== null && a.t < ATK_TOTAL && fighter.status !== 'down';
-    let frame;
+
+    // Shared choreography state: the active matrix frame + the lunge offset.
+    let frame = FRAME.IDLE_A;
     let lunge = 0;
     if (attacking) {
       a.t += dt;
@@ -65,38 +90,77 @@ export default function FighterSprite({ fighter, attack, onStrike, position, pha
         onStrike?.(a.points);
       }
     } else if (tableau === 'victory') {
-      frame = Math.floor(state.clock.elapsedTime / 0.35 + phase) % 2 ? FRAME.VICTORY_B : FRAME.VICTORY_A;
+      frame = Math.floor(t / 0.35 + phase) % 2 ? FRAME.VICTORY_B : FRAME.VICTORY_A;
     } else if (fighter.status === 'down') {
       frame = FRAME.DOWN;
     } else if (tableau === 'defeat' || fighter.status === 'exhausted') {
-      frame = Math.floor(state.clock.elapsedTime / 0.9 + phase) % 2 ? FRAME.KNEEL_B : FRAME.KNEEL_A;
+      frame = Math.floor(t / 0.9 + phase) % 2 ? FRAME.KNEEL_B : FRAME.KNEEL_A;
     } else {
-      frame = IDLE_CYCLE[Math.floor(state.clock.elapsedTime / 0.5 + phase) % 4];
+      frame = IDLE_CYCLE[Math.floor(t / 0.5 + phase) % 4];
     }
-    setFrame(entry, frame);
-    group.current.position.x = position[0] + lunge;
-    // The avatar head follows the pose's head anchor (z forward of the body).
-    const [hx, hy] = headPos(frame);
-    head.current.position.set(hx, hy, 0.02);
-    // Dim the weary.
+
     const dim = fighter.status === 'exhausted' ? 0.55 : fighter.status === 'resting' ? 0.8 : 1;
     mat.current.color.setScalar(dim);
     headMat.current.color.setScalar(dim);
+
+    if (usingArt) {
+      // Engine-driven motion on the static body (the head rides the group).
+      const down = fighter.status === 'down';
+      let yoff = 0;
+      let rot = 0;
+      if (down) {
+        rot = -0.55; // collapse backward
+        yoff = -bh * 0.16;
+      } else if (attacking) {
+        yoff = 0;
+      } else if (tableau === 'victory') {
+        yoff = Math.abs(Math.sin(t * 4 + phase)) * 0.12; // celebratory hops
+      } else if (tableau === 'defeat' || fighter.status === 'exhausted') {
+        rot = -0.12; // weary lean
+        yoff = -0.05;
+      } else {
+        yoff = 0.025 * Math.sin(t * 2 + phase); // gentle idle bob
+      }
+      group.current.position.x = position[0] + lunge;
+      group.current.position.y = position[1] + yoff;
+      group.current.rotation.z = rot;
+    } else {
+      setFrame(entry, frame);
+      group.current.position.x = position[0] + lunge;
+      const [hx, hy] = headPos(frame);
+      head.current.position.set(hx, hy, 0.02);
+    }
+
     if (auraMat.current) {
-      auraMat.current.opacity = aura * (0.32 + 0.1 * Math.sin(state.clock.elapsedTime * 2 + phase));
+      auraMat.current.opacity = aura * (0.32 + 0.1 * Math.sin(t * 2 + phase));
     }
   });
 
   return (
     <group ref={group} position={position}>
-      <mesh position={[0, PX * 20, 0]}>
-        <planeGeometry args={[28 * PX, 40 * PX]} />
-        <meshBasicMaterial ref={mat} map={entry.tex} transparent alphaTest={0.5} toneMapped={false} />
-      </mesh>
-      <mesh ref={head} position={[0, PX * 33.6, 0.02]}>
-        <planeGeometry args={[HEAD_SIZE, HEAD_SIZE]} />
-        <meshBasicMaterial ref={headMat} map={headTex} transparent alphaTest={0.5} toneMapped={false} />
-      </mesh>
+      {usingArt ? (
+        <>
+          <mesh position={[0, bh / 2, 0]}>
+            <planeGeometry args={bodyArgs} />
+            <meshBasicMaterial ref={mat} map={body} transparent alphaTest={0.04} toneMapped={false} />
+          </mesh>
+          <mesh ref={head} position={[0, bh * ART_SOCKET_Y, 0.05]}>
+            <planeGeometry args={[ART_HEAD, ART_HEAD]} />
+            <meshBasicMaterial ref={headMat} map={headTex} transparent alphaTest={0.5} toneMapped={false} />
+          </mesh>
+        </>
+      ) : (
+        <>
+          <mesh position={[0, PX * 20, 0]}>
+            <planeGeometry args={[28 * PX, 40 * PX]} />
+            <meshBasicMaterial ref={mat} map={entry.tex} transparent alphaTest={0.5} toneMapped={false} />
+          </mesh>
+          <mesh ref={head} position={[0, PX * 33.6, 0.02]}>
+            <planeGeometry args={[HEAD_SIZE, HEAD_SIZE]} />
+            <meshBasicMaterial ref={headMat} map={headTex} transparent alphaTest={0.5} toneMapped={false} />
+          </mesh>
+        </>
+      )}
       {aura > 0 && (
         <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, 0.02, 0]}>
           <circleGeometry args={[0.55, 24]} />
