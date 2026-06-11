@@ -1,13 +1,13 @@
 // src/raid/sprites/roster.js
-// Hand-made look per teammate: palette + hair overlay + weapon.
+// Hand-made look per teammate: palette + hair overlay + weapon class.
 // Names must match Jira display names. '__recruit__' is the unknown-assignee fallback.
 //
-// Frames are assembled from the 14×20 base bodies via RECIPES, then upscaled
-// 2× (28×40). Flat chunky pixels on purpose — the approved mockup look; the
-// hand-drawn K outlines in the matrices are the only outlines. Editing art
-// still means editing the 14×20 matrices in bodies.js / weapons.js.
-import { BODY_FRAMES, BODY_HEADLESS, HEAD_ANCHORS, compose } from './bodies';
-import { WEAPONS } from './weapons';
+// Frames are assembled from the 20×28 class bodies (sprites/classes/) via
+// RECIPES, then upscaled 2× (40×56). Flat chunky pixels on purpose — the
+// approved mockup look; the hand-drawn K outlines in the matrices are the only
+// outlines. Weapons are drawn into the class bodies; per-person identity is
+// palette + hair + avatar head.
+import { CLASSES, HEADLESS, compose } from './bodies';
 import { up2, shift } from './ops';
 
 export const FRAME = {
@@ -15,28 +15,28 @@ export const FRAME = {
   ATTACK_A: 4, ATTACK_B: 5, ATTACK_C: 6, ATTACK_D: 7, ATTACK_E: 8,
   HIT: 9, KNEEL_A: 10, KNEEL_B: 11, DOWN: 12, VICTORY_A: 13, VICTORY_B: 14,
 };
-export const SPRITE_W = 28;
-export const SPRITE_H = 40;
+export const SPRITE_W = 40;
+export const SPRITE_H = 56;
 
-// [baseBodyIdx (bodies.js order: idleA, idleB, attackA, attackB, kneel, down),
-//  weaponSlot (weapons.js, same order), dx, dy]. dx/dy are 14×20 pixels applied
-// to the assembled frame (weapon rides along), doubled by the upscale.
+// [basePoseIdx (classes/ pose order: idleA, idleB, attackA, attackB, kneel,
+//  down), dx, dy]. dx/dy are 20×28 pixels applied to the assembled frame,
+//  doubled by the upscale.
 const RECIPES = [
-  [0, 0, 0, 0],   // IDLE_A
-  [1, 1, 0, 0],   // IDLE_B
-  [0, 0, 0, 1],   // IDLE_C settle
-  [1, 1, 0, 1],   // IDLE_D
-  [2, 2, -1, 0],  // ATTACK_A anticipation (pull back)
-  [2, 2, 0, 0],   // ATTACK_B wind-up
-  [3, 3, 0, 0],   // ATTACK_C strike
-  [3, 3, 1, 0],   // ATTACK_D follow-through
-  [0, 0, 0, 0],   // ATTACK_E recover
-  [0, 0, -1, 1],  // HIT react (lean back, drop)
-  [4, 4, 0, 0],   // KNEEL_A
-  [4, 4, 0, 1],   // KNEEL_B breathe
-  [5, 5, 0, 0],   // DOWN
-  [2, 2, 0, 0],   // VICTORY_A weapon pumped overhead
-  [2, 2, 0, -1],  // VICTORY_B hop
+  [0, 0, 0],   // IDLE_A
+  [1, 0, 0],   // IDLE_B
+  [0, 0, 1],   // IDLE_C settle
+  [1, 0, 1],   // IDLE_D
+  [2, -1, 0],  // ATTACK_A anticipation (pull back)
+  [2, 0, 0],   // ATTACK_B wind-up
+  [3, 0, 0],   // ATTACK_C strike
+  [3, 1, 0],   // ATTACK_D follow-through
+  [0, 0, 0],   // ATTACK_E recover
+  [0, -1, 1],  // HIT react (lean back, drop)
+  [4, 0, 0],   // KNEEL_A
+  [4, 0, 1],   // KNEEL_B breathe
+  [5, 0, 0],   // DOWN
+  [2, 0, 0],   // VICTORY_A weapon pumped overhead
+  [2, 0, -1],  // VICTORY_B hop
 ];
 
 const BASE_PALETTE = {
@@ -44,13 +44,14 @@ const BASE_PALETTE = {
   B: '#2a3340', P: '#232a35', W: '#6b5b4a', L: '#dce8ff', G: '#7fe7ff',
 };
 
-// Hair overlays sit at [4, 0] over the head rows (drafts — art-directed later).
+// Hair overlays (9-wide) composed at the class's per-pose hairAt anchor
+// (drafts — art-directed later).
 const HAIR = {
-  short:  ['.KHHK.', 'KHHHHK'],
-  buzz:   ['......', 'KHHHHK'],
-  long:   ['.KHHK.', 'KHHHHK', 'KH..HK', 'KH..HK'],
-  bun:    ['KK.KHK', '.KHHHK'],
-  spiky:  ['KH.HK.', 'KHHHHK'],
+  short:  ['.KHHHHHK.', 'KHHHHHHHK'],
+  buzz:   ['.........', '.KHHHHHK.'],
+  long:   ['.KHHHHHK.', 'KHHHHHHHK', 'KHH...HHK', 'KHH...HHK'],
+  bun:    ['.KHKHHHK.', 'KHHHHHHHK'],
+  spiky:  ['KH.HH.HK.', 'KHHHHHHHK'],
 };
 
 // Armor colors follow the approved mockup: vivid, one hue per fighter, so the
@@ -74,10 +75,16 @@ export function paletteFor(name) {
 
 function build(name, headless) {
   const p = personOf(name);
-  return RECIPES.map(([bi, ws, dx, dy]) => {
-    let f = headless ? BODY_HEADLESS[bi] : compose(BODY_FRAMES[bi], HAIR[p.hair], 4, 0);
-    const w = WEAPONS[p.weapon][ws];
-    if (w) f = compose(f, w.grid, w.at[0], w.at[1]);
+  const cls = CLASSES[p.weapon];
+  const headlessPoses = HEADLESS[p.weapon];
+  return RECIPES.map(([bi, dx, dy]) => {
+    let f;
+    if (headless) {
+      f = headlessPoses[bi];
+    } else {
+      const at = cls.hairAt[bi];
+      f = at ? compose(cls.poses[bi], HAIR[p.hair], at[0], at[1]) : cls.poses[bi];
+    }
     f = up2(f);
     return dx || dy ? shift(f, dx * 2, dy * 2) : f;
   });
@@ -86,8 +93,12 @@ function build(name, headless) {
 export const framesFor = (name) => build(name, false);
 export const headlessFramesFor = (name) => build(name, true);
 
-// Head-centre anchors per FRAME, in 28×40 pixel space.
-export const HEAD_ANCHORS15 = RECIPES.map(([bi, , dx, dy]) => {
-  const [cx, cy] = HEAD_ANCHORS[bi];
-  return [cx * 2 + dx * 2, cy * 2 + dy * 2];
-});
+// Head-centre anchors per FRAME, in 40×56 pixel space, for a given person
+// (anchors are per-class now).
+export function headAnchors40For(name) {
+  const cls = CLASSES[personOf(name).weapon];
+  return RECIPES.map(([bi, dx, dy]) => {
+    const [cx, cy] = cls.headAnchors[bi];
+    return [cx * 2 + dx * 2, cy * 2 + dy * 2];
+  });
+}

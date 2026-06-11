@@ -1,10 +1,7 @@
 // src/raid/__tests__/sprites.test.js
 import { describe, it, expect } from 'vitest';
-import { compose, BODY_FRAMES, BODY_HEADLESS, HEAD_ANCHORS, CLASSES, HEADLESS } from '../sprites/bodies';
-import {
-  framesFor, headlessFramesFor, paletteFor, ROSTER, FRAME,
-  HEAD_ANCHORS15, SPRITE_W, SPRITE_H,
-} from '../sprites/roster';
+import { compose, CLASSES, HEADLESS } from '../sprites/bodies';
+import { framesFor, headlessFramesFor, paletteFor, ROSTER, FRAME, headAnchors40For, SPRITE_W, SPRITE_H } from '../sprites/roster';
 import { BOSS_FRAMES, BOSS_PALETTE, MINION_FRAMES, SLASH, bossFrames } from '../sprites/boss';
 import { rasterize } from '../sprites/rasterize';
 
@@ -17,7 +14,7 @@ describe('compose', () => {
   });
 });
 
-describe('body + roster frames (28×40 pipeline)', () => {
+describe('body + roster frames (40×56 pipeline)', () => {
   it('every roster member yields 15 equal-sized renderable frames', () => {
     for (const name of [...Object.keys(ROSTER), 'Unknown Person']) {
       const frames = framesFor(name);
@@ -46,19 +43,26 @@ describe('headless (avatar-headed) frames', () => {
       for (const f of frames) expect(() => rasterize(f, paletteFor(name))).not.toThrow();
     }
   });
-  it('erases the head box on the base body (idle head region transparent)', () => {
-    const idle = BODY_HEADLESS[0];
-    for (let y = 0; y <= 6; y++) expect(idle[y].slice(2, 10)).toBe('........');
-    expect(idle[9]).toBe(BODY_FRAMES[0][9]); // torso untouched
+  it('erases the head box on every class pose', () => {
+    for (const [cls, c] of Object.entries(CLASSES)) {
+      c.headBoxes.forEach((b, i) => {
+        const hf = HEADLESS[cls][i];
+        for (let y = b.y0; y <= b.y1; y++) {
+          expect(hf[y].slice(b.x0, b.x1 + 1)).toBe('.'.repeat(b.x1 - b.x0 + 1));
+        }
+      });
+    }
   });
-  it('has one head anchor per FRAME, inside the 28×40 grid', () => {
-    expect(HEAD_ANCHORS).toHaveLength(6); // base anchors stay in 14×20 space
-    expect(HEAD_ANCHORS15).toHaveLength(FRAME_COUNT);
-    for (const [cx, cy] of HEAD_ANCHORS15) {
-      expect(cx).toBeGreaterThanOrEqual(0);
-      expect(cx).toBeLessThanOrEqual(SPRITE_W);
-      expect(cy).toBeGreaterThanOrEqual(0);
-      expect(cy).toBeLessThanOrEqual(SPRITE_H);
+  it('every roster member has 15 head anchors inside the 40×56 grid', () => {
+    for (const name of [...Object.keys(ROSTER), 'Unknown Person']) {
+      const anchors = headAnchors40For(name);
+      expect(anchors).toHaveLength(FRAME_COUNT);
+      for (const [cx, cy] of anchors) {
+        expect(cx).toBeGreaterThanOrEqual(0);
+        expect(cx).toBeLessThanOrEqual(SPRITE_W);
+        expect(cy).toBeGreaterThanOrEqual(0);
+        expect(cy).toBeLessThanOrEqual(SPRITE_H);
+      }
     }
   });
 });
