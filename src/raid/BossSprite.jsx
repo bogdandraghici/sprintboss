@@ -12,7 +12,7 @@ const PX = 0.064; // matrix fallback: 56x52 -> ≈ 3.6 x 3.3 world units
 const BOSS_X = 4.6;
 const BODY_W = 56 * PX;
 const BODY_H = 52 * PX;
-const ART_H = 4.0; // world height for the loaded sprite (width derives from aspect)
+const ART_H = 4.5; // world height for the loaded sprite (width derives from aspect)
 const FOOT_DROP = 0.2; // nudge the feet onto the floor baseline (the boss sits back at z, perspective lifts it)
 
 // Deterministic scar spot on the torso, hashed from the issue key, in the
