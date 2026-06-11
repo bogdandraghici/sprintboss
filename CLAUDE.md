@@ -16,7 +16,7 @@ Ambient wall-display app that visualizes our live Jira sprint as a boss fight. E
   blocked = fighter downed with beacon; boss cracks at 75/50/25% HP
   (`bossStage`) and crumbles on a cleared sprint; sprint overrun = defeat grade.
   **Afterglow** (`src/raid/heat.js`): events leave residue that cools over
-  hours — gold HP segments (~2h), boss scars + debris swords (~24h), ember
+  hours — gold HP segments (~2h), boss scars (~24h), ember
   auras, fresher-burns-brighter beacons — all pure functions of
   `view.now − event.ts`, so retro reconstructs them. `?lite` query flag drops
   post-processing/dpr for weak TV hardware.
