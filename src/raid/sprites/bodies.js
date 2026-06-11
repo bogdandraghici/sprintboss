@@ -5,6 +5,7 @@ import sword from './classes/sword';
 import hammer from './classes/hammer';
 import bow from './classes/bow';
 import staff from './classes/staff';
+import daggers from './classes/daggers';
 
 export function compose(base, overlay, ox, oy) {
   const rows = base.map((r) => [...r]);
@@ -180,7 +181,7 @@ export const BODY_HEADLESS = BODY_FRAMES.map((frame, fi) => {
 
 /* --- 20×28 per-class bodies (hi-res redraw) ------------------------------- */
 
-export const CLASSES = { sword, hammer, bow, staff };
+export const CLASSES = { sword, hammer, bow, staff, daggers };
 
 const eraseHead = (frame, b) =>
   frame.map((row, y) =>
