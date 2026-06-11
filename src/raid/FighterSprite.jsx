@@ -7,7 +7,7 @@ import { avatarTexture } from './avatarTexture';
 import { frozen } from './timeBus';
 
 const PX = 0.05; // world units per sprite pixel -> 28x40 body ≈ 1.4 x 2.0
-const HEAD_SIZE = 0.8; // avatar disc diameter — bobblehead proportions on purpose
+const HEAD_SIZE = 0.48; // avatar disc diameter — still readable from the couch, but the sprite leads (mockup proportions)
 
 // Head-centre anchor (28×40 pixel coords) -> local offset within the group.
 // The body plane is centred at [0, PX*20], pixel (14, 20).

@@ -35,21 +35,21 @@ const B_IDLE_A = [
   '..mTMMMMMMMMMMMMMMMMMMMMTm..',  // 8  lit shoulder tops
   '...DDDDMMMMMMKKMMMMMMDDDD...',  // 9  crevice opens
   '.m.DDDDMMTMMMKKMMMTMMDDDD.m.',  // 10
-  '...DDDDMMMMMMKKMMMMMMDDDD...',  // 11
-  '...DDDDMMMMMMKKMMMMMMDDDD...',  // 12
-  '...DDDDMMMTMMKKMMMMMMDDDD...',  // 13
-  'm..DDDDMMMMMMKKMMTMMMDDDD..m',  // 14
-  '...DDDDMMMMMMKKMMMMMMDDDD...',  // 15
+  '...DDDD.MMMMMKKMMMMM.DDDD...',  // 11 arms drift off the torso
+  '...DDDD.MMMMMKKMMMMM.DDDD...',  // 12
+  '...DDDD.MMTMMKKMMMMM.DDDD...',  // 13
+  'm..DDDD.MMMMMKKMMTMM.DDDD..m',  // 14
+  '...DDDD.MMMMMKKMMMMM.DDDD...',  // 15
   '......DDMMMMMKKMMMMMDD.m....',  // 16 taper
   '....m.DDMMMMMKKMMMMMDD......',  // 17
   '.......DMMMMMKKMMMMMD.......',  // 18 hips
-  '........MMMMM..MMMMM........',  // 19 legs
-  '........MMMMD..DMMMM........',  // 20
-  '........MMMMM..MMMMM........',  // 21
-  '........MMMMD..DMMMM........',  // 22
-  '........MMMMM..MMMMM........',  // 23
-  '.......MMMMMM..MMMMMM.......',  // 24 feet flare
-  '.......DDDDDD..DDDDDD.......',  // 25
+  '.......MMMMMMKKMMMMMM.......',  // 19 one massive column to the ground
+  '.......MMMTMMKKMMMMMM.......',  // 20
+  '.......MMMMMMKKMMTMMM.......',  // 21
+  '........MMMMMKKMMMMM........',  // 22
+  '........MMMMMKKMMMMM........',  // 23
+  '........DMMMMKKMMMMD........',  // 24
+  '.........DDDDDDDDDD.........',  // 25 base shadow
 ];
 
 // Breathing: the head bobs down a pixel.

@@ -1,6 +1,5 @@
 // src/raid/ArenaScene.jsx
 import { Canvas, useFrame, useThree } from '@react-three/fiber';
-import { MeshReflectorMaterial } from '@react-three/drei';
 import { useMemo, useState, useEffect, useRef } from 'react';
 import { cssVar } from './cssVar';
 import { drainShake, addShake } from './shakeBus';
@@ -32,24 +31,32 @@ function CameraRig() {
   useFrame((state, dt) => {
     const t = state.clock.elapsedTime;
     const shake = drainShake(dt);
+    // Eye-height, near side-on (mockup staging): the floor reads as a thin
+    // baseline at the fighters' feet, not a ground plane rising behind them.
     camera.position.x = Math.sin(t * 0.07) * 0.55 + (Math.random() - 0.5) * shake * 0.5;
-    camera.position.y = 2.1 + Math.sin(t * 0.11) * 0.12 + (Math.random() - 0.5) * shake * 0.35;
+    camera.position.y = 1.5 + Math.sin(t * 0.11) * 0.08 + (Math.random() - 0.5) * shake * 0.35;
     camera.position.z = 9.4;
-    camera.lookAt(0, 1.5, 0);
+    camera.lookAt(0, 1.65, 0);
   });
   return null;
 }
 
+// Mockup floor: a matte near-bg plane plus a thin light baseline strip at the
+// fighters' feet. No reflector — the old mirror painted a warm band that rose
+// up behind the party.
 function Floor() {
-  const color = useMemo(() => cssVar('--panel', '#101822'), []);
+  const color = useMemo(() => cssVar('--panel-2', '#0c1219'), []);
   return (
-    <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, 0, 0]}>
-      <planeGeometry args={[40, 24]} />
-      <MeshReflectorMaterial
-        blur={[300, 80]} resolution={LITE ? 256 : 512} mixBlur={0.85} mixStrength={7}
-        roughness={0.8} depthScale={1.1} color={color} metalness={0.3}
-      />
-    </mesh>
+    <>
+      <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, 0, 0]}>
+        <planeGeometry args={[40, 24]} />
+        <meshBasicMaterial color={color} />
+      </mesh>
+      <mesh position={[0, 0.02, 0.5]}>
+        <planeGeometry args={[40, 0.05]} />
+        <meshBasicMaterial color="#9aa3b5" transparent opacity={0.55} toneMapped={false} />
+      </mesh>
+    </>
   );
 }
 

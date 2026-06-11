@@ -1,6 +1,6 @@
 // src/raid/Environment.jsx
 // The diorama around the fight: parallax ruin silhouettes, light shafts,
-// drifting ground fog, flickering braziers, dust motes. Purely decorative.
+// dust motes. Purely decorative.
 import { useMemo, useRef } from 'react';
 import { useFrame } from '@react-three/fiber';
 import * as THREE from 'three';
@@ -58,66 +58,15 @@ function Shafts() {
   });
   return (
     <group ref={g}>
-      {[-2.5, 0.5, 3.5].map((x, i) => (
-        <mesh key={i} position={[x, 4.5, -3]} rotation={[0, 0, 0.28 - i * 0.06]}>
-          <planeGeometry args={[0.9 + i * 0.3, 11]} />
+      {[-1.5, 2.5].map((x, i) => (
+        <mesh key={i} position={[x, 4.5, -3]} rotation={[0, 0, 0.26 - i * 0.05]}>
+          <planeGeometry args={[1 + i * 0.4, 11]} />
           <meshBasicMaterial
-            color="#9fc2ff" transparent opacity={0.045} toneMapped={false}
+            color="#9fc2ff" transparent opacity={0.018} toneMapped={false}
             blending={THREE.AdditiveBlending} depthWrite={false}
           />
         </mesh>
       ))}
-    </group>
-  );
-}
-
-function FogBands() {
-  const a = useRef();
-  const b = useRef();
-  useFrame((state) => {
-    const t = state.clock.elapsedTime;
-    a.current.position.x = Math.sin(t * 0.05) * 1.2;
-    b.current.position.x = Math.sin(t * 0.04 + 2) * 1.6;
-  });
-  return (
-    <>
-      <mesh ref={a} position={[0, 0.45, 1.6]}>
-        <planeGeometry args={[24, 0.9]} />
-        <meshBasicMaterial color="#8fa8d8" transparent opacity={0.05} toneMapped={false} depthWrite={false} />
-      </mesh>
-      <mesh ref={b} position={[0, 0.8, -1.5]}>
-        <planeGeometry args={[26, 1.3]} />
-        <meshBasicMaterial color="#8fa8d8" transparent opacity={0.04} toneMapped={false} depthWrite={false} />
-      </mesh>
-    </>
-  );
-}
-
-function Brazier({ x, enraged }) {
-  const light = useRef();
-  const flame = useRef();
-  useFrame((state) => {
-    const t = state.clock.elapsedTime;
-    const flicker = 0.75 + Math.sin(t * 7 + x) * 0.15 + Math.sin(t * 13.7 + x * 2) * 0.1;
-    light.current.intensity = (enraged ? 26 : 16) * flicker;
-    flame.current.scale.y = 0.8 + flicker * 0.35;
-    flame.current.material.opacity = 0.75 + flicker * 0.2;
-  });
-  return (
-    <group position={[x, 0, 1.9]}>
-      <mesh position={[0, 0.45, 0]}>
-        <boxGeometry args={[0.08, 0.9, 0.08]} />
-        <meshBasicMaterial color="#141a26" />
-      </mesh>
-      <mesh position={[0, 0.95, 0]}>
-        <boxGeometry args={[0.3, 0.1, 0.2]} />
-        <meshBasicMaterial color="#1c2433" />
-      </mesh>
-      <mesh ref={flame} position={[0, 1.18, 0]}>
-        <coneGeometry args={[0.12, 0.42, 6]} />
-        <meshBasicMaterial color={enraged ? '#ff5d5d' : '#ffb15c'} transparent opacity={0.9} toneMapped={false} />
-      </mesh>
-      <pointLight ref={light} position={[0, 1.3, 0.3]} color={enraged ? '#ff5d5d' : '#ff9d5c'} intensity={16} distance={7} />
     </group>
   );
 }
@@ -152,14 +101,13 @@ function Dust() {
   );
 }
 
+// Braziers and fog bands cut per the approved mockup — the scene reads as a
+// clean dark hall: pillars, a light shaft, drifting motes.
 export default function Environment({ enraged = false, lite = false }) {
   return (
     <>
       <Backdrop />
       {!lite && <Shafts />}
-      <FogBands />
-      <Brazier x={-6.4} enraged={enraged} />
-      <Brazier x={-1.2} enraged={enraged} />
       {!lite && <Dust />}
     </>
   );
