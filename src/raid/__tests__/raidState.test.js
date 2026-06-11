@@ -128,6 +128,22 @@ describe('deriveDock', () => {
     expect(blocked.map((i) => i.key)).toEqual(['B-2', 'B-1']);
     expect(groups[1].issues).toEqual([]);
   });
+  it('focus filters groups and blocked to one assignee; unassigned dropped', () => {
+    const view = { columns, issues: [
+      mk('A-1', 0, { assignee: 'Ana' }),
+      mk('A-2', 1, { assignee: 'Bo' }),
+      mk('A-3', 0, { assignee: 'Ana' }),
+      mk('A-4', 0, {}), // unassigned
+      mk('A-5', 1, { assignee: 'Ana', blocked: true }),
+    ] };
+    const { groups, blocked } = deriveDock(view, 'Ana');
+    expect(groups.flatMap((g) => g.issues.map((i) => i.key))).toEqual(['A-1', 'A-3']);
+    expect(blocked.map((i) => i.key)).toEqual(['A-5']);
+  });
+  it('null focus behaves exactly like no focus', () => {
+    const view = { columns, issues: [mk('A-1', 0, { assignee: 'Ana' }), mk('A-2', 1, {})] };
+    expect(deriveDock(view, null)).toEqual(deriveDock(view));
+  });
 });
 
 describe('deriveTableau', () => {

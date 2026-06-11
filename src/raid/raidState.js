@@ -75,8 +75,9 @@ export function bossStage(stats) {
 // Dock groups mirror the board: working columns only (Done and blocked-zone
 // columns never appear); blocked issues drain into one Blocked list, exactly
 // like Factory's maintenance bay. Stalest-first within each group.
-export function deriveDock(view) {
+export function deriveDock(view, focus = null) {
   const doneIdx = view.columns.length - 1;
+  const mine = (it) => !focus || it.assignee === focus;
   const lanes = view.columns
     .map((c, idx) => ({ name: c.name, idx, isBlockedZone: c.isBlockedZone }))
     .filter((c) => c.idx !== doneIdx && !c.isBlockedZone);
@@ -85,11 +86,11 @@ export function deriveDock(view) {
     idx: c.idx,
     kind: i === 0 ? 'queue' : 'work',
     issues: view.issues
-      .filter((it) => it.col === c.idx && !it.blocked && !it.done)
+      .filter((it) => it.col === c.idx && !it.blocked && !it.done && mine(it))
       .sort((a, b) => a.columnSince - b.columnSince),
   }));
   const blocked = view.issues
-    .filter((i) => i.blocked && !i.done)
+    .filter((i) => i.blocked && !i.done && mine(i))
     .sort((a, b) => a.columnSince - b.columnSince);
   return { groups, blocked };
 }
