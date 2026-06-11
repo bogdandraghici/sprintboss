@@ -2,19 +2,12 @@
 import { useMemo, useRef } from 'react';
 import { useFrame } from '@react-three/fiber';
 import { sheetTexture, setFrame } from './sprites/textures';
-import { headlessFramesFor, paletteFor, FRAME, HEAD_ANCHORS15 } from './sprites/roster';
+import { headlessFramesFor, paletteFor, FRAME, headAnchors40For, SPRITE_W, SPRITE_H } from './sprites/roster';
 import { avatarTexture } from './avatarTexture';
 import { frozen } from './timeBus';
 
-const PX = 0.034; // world units per sprite pixel -> 28x40 body ≈ 0.95 x 1.36, matched to the smaller head
+const PX = 0.024; // world units per sprite pixel -> 40x56 body ≈ 0.96 x 1.34 (same footprint as the old 28×40)
 const HEAD_SIZE = 0.48; // avatar disc diameter — still readable from the couch, but the sprite leads (mockup proportions)
-
-// Head-centre anchor (28×40 pixel coords) -> local offset within the group.
-// The body plane is centred at [0, PX*20], pixel (14, 20).
-const headPos = (frame) => {
-  const [cx, cy] = HEAD_ANCHORS15[frame];
-  return [(cx - 14) * PX, (40 - cy) * PX];
-};
 
 // Attack timeline: [duration, frame, lunge]. Strike fires entering ATTACK_C.
 const ATK = [
@@ -35,9 +28,14 @@ const IDLE_CYCLE = [FRAME.IDLE_A, FRAME.IDLE_B, FRAME.IDLE_C, FRAME.IDLE_D];
 // tableau: 'victory' | 'defeat' | null (end-of-sprint poses).
 export default function FighterSprite({ fighter, attack, onStrike, position, phase = 0, aura = 0, beaconHeat = 0, tableau = null }) {
   const entry = useMemo(
-    () => sheetTexture(`fighter:${fighter.name}:headless:v3`, headlessFramesFor(fighter.name), paletteFor(fighter.name)),
+    () => sheetTexture(`fighter:${fighter.name}:headless:v4`, headlessFramesFor(fighter.name), paletteFor(fighter.name)),
     [fighter.name]
   );
+  const anchors = useMemo(() => headAnchors40For(fighter.name), [fighter.name]);
+  const headPos = (frame) => {
+    const [cx, cy] = anchors[frame];
+    return [(cx - SPRITE_W / 2) * PX, (SPRITE_H - cy) * PX];
+  };
   const headTex = useMemo(() => avatarTexture(fighter.name, fighter.avatar), [fighter.name, fighter.avatar]);
   const group = useRef();
   const mat = useRef();
@@ -89,11 +87,11 @@ export default function FighterSprite({ fighter, attack, onStrike, position, pha
 
   return (
     <group ref={group} position={position}>
-      <mesh position={[0, PX * 20, 0]}>
-        <planeGeometry args={[28 * PX, 40 * PX]} />
+      <mesh position={[0, PX * (SPRITE_H / 2), 0]}>
+        <planeGeometry args={[SPRITE_W * PX, SPRITE_H * PX]} />
         <meshBasicMaterial ref={mat} map={entry.tex} transparent alphaTest={0.5} toneMapped={false} />
       </mesh>
-      <mesh ref={head} position={[0, PX * 33.6, 0.02]}>
+      <mesh ref={head} position={[0, PX * 47, 0.02]}>
         <planeGeometry args={[HEAD_SIZE, HEAD_SIZE]} />
         <meshBasicMaterial ref={headMat} map={headTex} transparent alphaTest={0.5} toneMapped={false} />
       </mesh>
