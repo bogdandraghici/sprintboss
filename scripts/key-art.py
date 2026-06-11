@@ -43,12 +43,15 @@ def main():
     inp, outp = sys.argv[1], sys.argv[2]
     th = 224
     feather = 12
+    crop = 0  # alpha >= crop defines the content bbox to trim padding to (0 = off)
     args = sys.argv[3:]
     for i, a in enumerate(args):
         if a == "--threshold" and i + 1 < len(args):
             th = int(args[i + 1])
         if a == "--feather" and i + 1 < len(args):
             feather = int(args[i + 1])
+        if a == "--crop" and i + 1 < len(args):
+            crop = int(args[i + 1])
 
     im = Image.open(inp).convert("RGBA")
     a = np.array(im)
@@ -71,9 +74,21 @@ def main():
         keep = ~bg
         a[:, :, 3] = np.where(keep, (a[:, :, 3] * ramp).astype(np.uint8), a[:, :, 3])
 
+    # Trim transparent padding to the content bbox so the sprite's bottom edge
+    # is the subject's feet — lets the scene plant it on the floor exactly.
+    crop_note = ""
+    if crop > 0:
+        ys, xs = np.where(a[:, :, 3] >= crop)
+        if len(ys):
+            pad = 6
+            y0, y1 = max(0, ys.min() - pad), min(a.shape[0], ys.max() + 1 + pad)
+            x0, x1 = max(0, xs.min() - pad), min(a.shape[1], xs.max() + 1 + pad)
+            a = a[y0:y1, x0:x1]
+            crop_note = f", cropped to {x1 - x0}x{y1 - y0}"
+
     Image.fromarray(a, "RGBA").save(outp)
     cleared = int(bg.sum())
-    print(f"keyed {inp} -> {outp}  ({cleared} px cleared, {100*cleared/bg.size:.1f}% of frame)")
+    print(f"keyed {inp} -> {outp}  ({cleared} px cleared, {100*cleared/bg.size:.1f}% of frame{crop_note})")
 
 
 if __name__ == "__main__":

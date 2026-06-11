@@ -12,7 +12,8 @@ const PX = 0.064; // matrix fallback: 56x52 -> ≈ 3.6 x 3.3 world units
 const BOSS_X = 4.6;
 const BODY_W = 56 * PX;
 const BODY_H = 52 * PX;
-const ART_H = 4.4; // world height for the loaded sprite (width derives from aspect)
+const ART_H = 4.0; // world height for the loaded sprite (width derives from aspect)
+const FOOT_DROP = 0.2; // nudge the feet onto the floor baseline (the boss sits back at z, perspective lifts it)
 
 // Deterministic scar spot on the torso, hashed from the issue key, in the
 // plane's own w×h so it lands right whether art or matrix is in use.
@@ -69,7 +70,6 @@ export default function BossSprite({ enraged, hit, summon, stage = 0, scars = []
       f.rumbled = false;
     }
     const sink = f.death / 1.6;
-    group.current.position.y = H / 2 - sink * H * 0.9;
     mat.current.opacity = 1 - sink;
 
     const castActive = f.cast > 0;
@@ -91,20 +91,19 @@ export default function BossSprite({ enraged, hit, summon, stage = 0, scars = []
     const w = f.flash * 3;
     mat.current.color.setRGB(r0 + w, g0 + w + (castActive ? 1.0 : 0), b0 + w);
 
-    // Knockback eases out; flash keeps the old jitter on top.
-    group.current.position.x = BOSS_X + f.kick * f.kick * 0.45 + (f.flash > 0 ? (Math.random() - 0.5) * 0.12 : 0);
-
-    // Defeat: a slow, smug breathing swell. Sink shrinks on death.
+    // Breathing: a subtle UNIFORM scale (no morph) for the painted golem — a
+    // heavy creature barely moves. The matrix path breathes via frame swaps, so
+    // it stays at 1. A summon with no dedicated pose punches the whole figure up.
+    const breath = usingArt ? 1 + 0.008 * Math.sin(t * 1.1) : 1;
     const swagger = tableau === 'defeat' ? 1 + 0.04 * Math.sin(t * 1.4) : 1;
-    const base = swagger * (1 - sink * 0.15);
-    if (usingArt) {
-      // Breathing as squash/stretch; a cast with no dedicated pose rears it taller.
-      const breath = 0.02 * Math.sin(t * 1.8);
-      const castPush = castActive && !art.cast ? 0.06 : 0;
-      group.current.scale.set(base * (1 - breath), base * (1 + breath + castPush), base);
-    } else {
-      group.current.scale.setScalar(base);
-    }
+    const castPush = usingArt && castActive && !art.cast ? 0.06 * f.cast : 0;
+    const s = swagger * breath * (1 - sink * 0.15) * (1 + castPush);
+    group.current.scale.setScalar(s);
+
+    // Anchor at the feet: the plane's bottom stays on the floor as it scales,
+    // then sinks under on death. Knockback + flash jitter ride on x.
+    group.current.position.y = (s * H) / 2 - FOOT_DROP - sink * H * 0.9;
+    group.current.position.x = BOSS_X + f.kick * f.kick * 0.45 + (f.flash > 0 ? (Math.random() - 0.5) * 0.12 : 0);
   });
 
   return (
@@ -122,7 +121,8 @@ export default function BossSprite({ enraged, hit, summon, stage = 0, scars = []
       {/* Art path: cracks are scene overlays (the matrix bakes them into the sheet). */}
       {!dead && usingArt && crackSpecs(stage, W, H).map((c, i) => <Crack key={i} c={c} />)}
       {!dead && scars.map((s) => <Scar key={`${s.key}-${s.ts}`} scar={s} w={W} h={H} />)}
-      {!dead && <Shards enraged={enraged} h={H} />}
+      {/* Orbiting debris shards read as junk floating around the painted boss — matrix only. */}
+      {!dead && !usingArt && <Shards enraged={enraged} h={H} />}
     </group>
   );
 }
