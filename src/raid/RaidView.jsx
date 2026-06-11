@@ -4,7 +4,7 @@ import { useMemo } from 'react';
 import ArenaScene from './ArenaScene';
 import Dock from '../components/Dock';
 import TruthTicker from '../components/TruthTicker';
-import { EnrageTimer, HpBar, ScarTimeline, DamageLog } from '../components/hud';
+import { EnrageTimer, HpBar, DamageLog } from '../components/hud';
 import { deriveParty, deriveMinions, pulseActions } from './raidState';
 
 export default function RaidView({ view, pulses, onSelect }) {
@@ -16,7 +16,6 @@ export default function RaidView({ view, pulses, onSelect }) {
       <div className="raid-top">
         <div className="hud-hp">
           <HpBar view={view} onSelect={onSelect} />
-          <ScarTimeline view={view} />
         </div>
         <EnrageTimer view={view} />
       </div>
