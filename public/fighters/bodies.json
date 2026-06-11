@@ -1,0 +1,52 @@
+{
+  "bodies": [
+    {
+      "file": "body-1.png",
+      "neck": [
+        0.5019,
+        0.0
+      ],
+      "aspect": 0.5327
+    },
+    {
+      "file": "body-2.png",
+      "neck": [
+        0.4214,
+        0.016
+      ],
+      "aspect": 0.7142
+    },
+    {
+      "file": "body-3.png",
+      "neck": [
+        0.4066,
+        0.0569
+      ],
+      "aspect": 0.7687
+    },
+    {
+      "file": "body-4.png",
+      "neck": [
+        0.4278,
+        0.1597
+      ],
+      "aspect": 0.6258
+    },
+    {
+      "file": "body-5.png",
+      "neck": [
+        0.4703,
+        0.0
+      ],
+      "aspect": 0.7151
+    },
+    {
+      "file": "body-6.png",
+      "neck": [
+        0.4812,
+        0.0
+      ],
+      "aspect": 0.7357
+    }
+  ]
+}

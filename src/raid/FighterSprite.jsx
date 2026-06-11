@@ -3,18 +3,18 @@ import { useMemo, useRef } from 'react';
 import { useFrame } from '@react-three/fiber';
 import { sheetTexture, setFrame } from './sprites/textures';
 import { headlessFramesFor, paletteFor, FRAME, HEAD_ANCHORS15 } from './sprites/roster';
-import { useFighterArt, fitPlane, pickVariant } from './fighterArt';
+import { useFighterArt, pickVariant } from './fighterArt';
 import { avatarTexture } from './avatarTexture';
 import { frozen } from './timeBus';
 
 const PX = 0.034; // matrix fallback: world units per sprite pixel -> 28x40 body ≈ 0.95 x 1.36
-const HEAD_SIZE = 0.48; // avatar disc diameter
+const HEAD_SIZE = 0.48; // avatar disc diameter (matrix fallback)
 
-// Generated-body tuning (one set, shared by all variants — they're drawn to a
-// common scale/footing per the spec). All in world units / fractions of body H.
-const ART_H = 1.7; // body world height
-const ART_HEAD = 0.5; // avatar disc diameter on the art body
-const ART_SOCKET_Y = 0.84; // head-centre height as a fraction of body H (neck stub sits top-centre)
+// Generated-body tuning. Each body is scaled so its neck->feet span equals
+// TORSO_WORLD — so every fighter's head lands on the same line and the feet sit
+// on the floor, regardless of the body's build or any weapon raised overhead.
+const TORSO_WORLD = 1.5; // neck-to-feet world height
+const ART_HEAD = 0.52; // avatar disc diameter on the art body
 
 // Head-centre anchor (28×40 pixel coords) -> local offset within the group.
 // The body plane is centred at [0, PX*20], pixel (14, 20).
@@ -53,13 +53,16 @@ export default function FighterSprite({ fighter, attack, onStrike, position, pha
   );
   const headTex = useMemo(() => avatarTexture(fighter.name, fighter.avatar), [fighter.name, fighter.avatar]);
 
-  // Art body plane dimensions (aspect-fit to ART_H), and the head socket on it.
-  const [bw, bh] = useMemo(() => {
-    const img = body?.image;
-    if (img) return fitPlane(img.naturalWidth || img.width, img.naturalHeight || img.height, ART_H);
-    return [28 * PX, 40 * PX];
+  // Art layout: scale so neck->feet == TORSO_WORLD; the head pins at the neck.
+  const layout = useMemo(() => {
+    if (!body) return null;
+    const img = body.tex.image;
+    const aspect = body.aspect || (img ? (img.naturalWidth || img.width) / (img.naturalHeight || img.height) : 0.7);
+    const [nx, ny] = body.neck || [0.5, 0];
+    const planeH = TORSO_WORLD / Math.max(0.3, 1 - ny); // ny = neck height from top (frac)
+    const planeW = planeH * aspect;
+    return { planeW, planeH, neckX: (nx - 0.5) * planeW, neckY: TORSO_WORLD };
   }, [body]);
-  const bodyArgs = useMemo(() => [bw, bh], [bw, bh]);
 
   const group = useRef();
   const mat = useRef();
@@ -110,7 +113,7 @@ export default function FighterSprite({ fighter, attack, onStrike, position, pha
       let rot = 0;
       if (down) {
         rot = -0.55; // collapse backward
-        yoff = -bh * 0.16;
+        yoff = -layout.planeH * 0.16;
       } else if (attacking) {
         yoff = 0;
       } else if (tableau === 'victory') {
@@ -140,11 +143,11 @@ export default function FighterSprite({ fighter, attack, onStrike, position, pha
     <group ref={group} position={position}>
       {usingArt ? (
         <>
-          <mesh position={[0, bh / 2, 0]}>
-            <planeGeometry args={bodyArgs} />
-            <meshBasicMaterial ref={mat} map={body} transparent alphaTest={0.04} toneMapped={false} />
+          <mesh position={[0, layout.planeH / 2, 0]}>
+            <planeGeometry args={[layout.planeW, layout.planeH]} />
+            <meshBasicMaterial ref={mat} map={body.tex} transparent alphaTest={0.04} toneMapped={false} />
           </mesh>
-          <mesh ref={head} position={[0, bh * ART_SOCKET_Y, 0.05]}>
+          <mesh ref={head} position={[layout.neckX, layout.neckY + ART_HEAD * 0.28, 0.05]}>
             <planeGeometry args={[ART_HEAD, ART_HEAD]} />
             <meshBasicMaterial ref={headMat} map={headTex} transparent alphaTest={0.5} toneMapped={false} />
           </mesh>
