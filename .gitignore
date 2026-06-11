@@ -5,3 +5,6 @@ dist
 
 # Raw/source art masters — local only; the keyed/cropped assets are committed
 *-raw.png
+
+# Brainstorm companion sessions (local mockups)
+.superpowers/
