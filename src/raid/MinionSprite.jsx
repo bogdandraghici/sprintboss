@@ -5,7 +5,7 @@ import { Text } from '@react-three/drei';
 import { sheetTexture, setFrame } from './sprites/textures';
 import { MINION_FRAMES, MINION_PALETTE } from './sprites/boss';
 
-const PX = 0.09;
+const PX = 0.062;
 
 // Slot -> world position. ArenaScene reuses this to place death poofs after
 // a minion's ticket closes and it leaves the list.
@@ -34,7 +34,7 @@ export default function MinionSprite({ issue, index, horde = 0 }) {
   return (
     <group position={[x, y, z]}>
       <mesh ref={glyph} rotation={[-Math.PI / 2, 0, 0]} position={[0, -y + 0.02, 0]}>
-        <ringGeometry args={[0.32, 0.4, 24]} />
+        <ringGeometry args={[0.22, 0.28, 24]} />
         <meshBasicMaterial color="#a3e635" transparent opacity={0.7} toneMapped={false} depthWrite={false} />
       </mesh>
       <mesh ref={mesh}>

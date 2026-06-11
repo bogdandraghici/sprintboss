@@ -187,7 +187,7 @@ export default function ArenaScene({ view, party = [], minions = [], horde = 0, 
           aura={auras.get(f.name) || 0}
           beaconHeat={blockHeat.get(f.name) || 0}
           tableau={tableau}
-          position={[-7.8 + (i % 5) * 1.95 + Math.floor(i / 5) * 0.6, 0, 0.2 - Math.floor(i / 5) * 0.85]}
+          position={[-8.2 + (i % 5) * 2.2 + Math.floor(i / 5) * 0.6, 0, 0.2 - Math.floor(i / 5) * 0.85]}
         />
       ))}
       <BossSprite
