@@ -6,7 +6,7 @@ import { headlessFramesFor, paletteFor, FRAME, HEAD_ANCHORS15 } from './sprites/
 import { avatarTexture } from './avatarTexture';
 import { frozen } from './timeBus';
 
-const PX = 0.05; // world units per sprite pixel -> 28x40 body ≈ 1.4 x 2.0
+const PX = 0.034; // world units per sprite pixel -> 28x40 body ≈ 0.95 x 1.36, matched to the smaller head
 const HEAD_SIZE = 0.48; // avatar disc diameter — still readable from the couch, but the sprite leads (mockup proportions)
 
 // Head-centre anchor (28×40 pixel coords) -> local offset within the group.
@@ -117,8 +117,8 @@ function Beacon({ heat = 0 }) {
     m.current.scale.setScalar(1 + heat * 0.6);
   });
   return (
-    <mesh ref={m} position={[0, 2.5, 0]}>
-      <sphereGeometry args={[0.09, 8, 8]} />
+    <mesh ref={m} position={[0, 1.7, 0]}>
+      <sphereGeometry args={[0.07, 8, 8]} />
       <meshBasicMaterial color="#ff5d5d" transparent toneMapped={false} />
     </mesh>
   );
