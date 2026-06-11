@@ -68,13 +68,14 @@ export const ROSTER = {
   'Cristina Stanica':  { hair: 'long',  weapon: 'staff',   palette: { H: '#4a3220', A: '#8d7fd6' }, art: 'cristinas' },
   'Andrei Scheau':     { hair: 'spiky', weapon: 'bow',     palette: { H: '#332620', A: '#3fbf9a' }, art: 'andreis' },
   'Andrei Dumitrescu': { hair: 'short', weapon: 'sword',   palette: { H: '#2e2018', A: '#b5413a' }, art: 'andreid' },
-  'Alex Preda':        { hair: 'short', weapon: 'daggers', palette: { H: '#16120e', A: '#7a8aa8' } },
+  'Alex Preda':        { hair: 'short', weapon: 'daggers', palette: { H: '#16120e', A: '#7a8aa8' }, art: 'alexpreda' },
   'Corina Ivanov':     { hair: 'bun',   weapon: 'sword',   palette: { H: '#52341d', A: '#e0a93f' }, art: 'corina' },
   'Mihai Saru':        { hair: 'short', weapon: 'staff',   palette: { H: '#26201a', A: '#36c8a0' }, art: 'mihai', artScale: 0.85 },
   'Andra Popazu':      { hair: 'long',  weapon: 'staff',   palette: { H: '#3a2a1a', A: '#6fae3a' }, art: 'andra' },
   'Tiberiu Birloiu':   { hair: 'short', weapon: 'hammer',  palette: { H: '#2e2118', A: '#e0852a' }, art: 'tibi' },
   'Ana Spataru':       { hair: 'long',  weapon: 'staff',   palette: { H: '#2f5a8c', A: '#f0d878' }, art: 'ana' },
   'Gregor Buza':       { hair: 'short', weapon: 'sword',   palette: { H: '#3a2a1a', A: '#9c7a4a' }, art: 'gregor' },
+  'Sebastian Raduta':  { hair: 'long',  weapon: 'staff',   palette: { H: '#2e2018', A: '#5fa84a' }, art: 'sebi' },
   '__recruit__':       { hair: 'buzz',  weapon: 'sword',   palette: { H: '#3a3a3a', A: '#6b7280' } },
 };
 
