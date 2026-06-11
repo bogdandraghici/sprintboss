@@ -69,7 +69,7 @@ export const ROSTER = {
   'Andrei Scheau':     { hair: 'spiky', weapon: 'bow',     palette: { H: '#332620', A: '#3fbf9a' } },
   'Alex Preda':        { hair: 'short', weapon: 'daggers', palette: { H: '#16120e', A: '#7a8aa8' } },
   'Corina Ivanov':     { hair: 'bun',   weapon: 'sword',   palette: { H: '#52341d', A: '#e0a93f' } },
-  'Mihai Saru':        { hair: 'short', weapon: 'staff',   palette: { H: '#26201a', A: '#36c8a0' }, art: 'mihai' },
+  'Mihai Saru':        { hair: 'short', weapon: 'staff',   palette: { H: '#26201a', A: '#36c8a0' }, art: 'mihai', artScale: 0.85 },
   '__recruit__':       { hair: 'buzz',  weapon: 'sword',   palette: { H: '#3a3a3a', A: '#6b7280' } },
 };
 
@@ -82,6 +82,10 @@ export function paletteFor(name) {
 // Painted-art slug for a person, or null → the pixel-matrix path renders.
 // Unknown assignees resolve through __recruit__, which has no art.
 export const artSlugFor = (name) => personOf(name).art || null;
+
+// Per-fighter painted-art height multiplier (1 = default ART_FIGHTER_H).
+// Lets a wide/seated pose read at the right size next to standing fighters.
+export const artScaleFor = (name) => personOf(name).artScale || 1;
 
 function build(name, headless) {
   const p = personOf(name);

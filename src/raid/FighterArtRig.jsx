@@ -8,6 +8,7 @@ import { useMemo, useRef, useState } from 'react';
 import { useFrame } from '@react-three/fiber';
 import FighterSprite, { Beacon } from './FighterSprite';
 import { useFighterArt } from './fighterArt';
+import { artScaleFor } from './sprites/roster';
 import { fitPlane } from './bossArtMath';
 import { attackPose, idlePose, victoryPose, DOWN_ROT, SLUMP } from './artPose';
 import { frozen } from './timeBus';
@@ -23,7 +24,7 @@ export default function FighterArtRig(props) {
 }
 
 function Rig({ fighter, attack, onStrike, position, phase = 0, aura = 0, beaconHeat = 0, tableau = null, focus = null, onFocus, lite = false, tex }) {
-  const [W, H] = useMemo(() => fitPlane(tex.image.width, tex.image.height, ART_FIGHTER_H), [tex]);
+  const [W, H] = useMemo(() => fitPlane(tex.image.width, tex.image.height, ART_FIGHTER_H * artScaleFor(fighter.name)), [tex, fighter.name]);
   const group = useRef();
   const body = useRef();
   const mat = useRef();
