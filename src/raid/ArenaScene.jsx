@@ -7,6 +7,8 @@ import { addFreeze, drainFreeze } from './timeBus';
 import { bossStage, deriveTableau } from './raidState';
 import { fighterAuras, fighterBlockHeat, bossScars } from './heat';
 import FighterSprite from './FighterSprite';
+import FighterArtRig from './FighterArtRig';
+import { artSlugFor } from './sprites/roster';
 import BossSprite from './BossSprite';
 import MinionSprite, { minionPos } from './MinionSprite';
 import FloatNum from './FloatNum';
@@ -190,21 +192,27 @@ export default function ArenaScene({ view, party = [], minions = [], horde = 0, 
       <Environment enraged={enraged} lite={LITE} />
       <Floor />
       <ClearBackdrop onClear={() => onFocus(null)} />
-      {party.map((f, i) => (
-        <FighterSprite
-          key={f.name}
-          fighter={f}
-          phase={i * 0.7}
-          attack={actions.find((a) => a.kind === 'attack' && a.fighter === i) || null}
-          onStrike={strike}
-          aura={auras.get(f.name) || 0}
-          beaconHeat={blockHeat.get(f.name) || 0}
-          tableau={tableau}
-          focus={focus}
-          onFocus={onFocus}
-          position={[-8.2 + (i % 5) * 2.2 + Math.floor(i / 5) * 0.6, 0, 0.2 - Math.floor(i / 5) * 0.85]}
-        />
-      ))}
+      {party.map((f, i) => {
+        const art = artSlugFor(f.name);
+        const Comp = art ? FighterArtRig : FighterSprite;
+        return (
+          <Comp
+            key={f.name}
+            fighter={f}
+            art={art}
+            lite={LITE}
+            phase={i * 0.7}
+            attack={actions.find((a) => a.kind === 'attack' && a.fighter === i) || null}
+            onStrike={strike}
+            aura={auras.get(f.name) || 0}
+            beaconHeat={blockHeat.get(f.name) || 0}
+            tableau={tableau}
+            focus={focus}
+            onFocus={onFocus}
+            position={[-8.2 + (i % 5) * 2.2 + Math.floor(i / 5) * 0.6, 0, 0.2 - Math.floor(i / 5) * 0.85]}
+          />
+        );
+      })}
       <BossSprite
         enraged={enraged} hit={hit} summon={summon}
         stage={stage} scars={scars} tableau={tableau}
