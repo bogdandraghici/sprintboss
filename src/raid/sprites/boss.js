@@ -8,7 +8,7 @@ import { up2 } from './ops';
 // Dark slate per the approved mockup — the boss reads as a looming mass with
 // burning eyes, not a light-gray robot.
 export const BOSS_PALETTE = {
-  K: '#0d1016', M: '#4a5168', D: '#2b3044', E: '#ff6a3d',
+  K: '#0d1016', M: '#4a5168', T: '#6e7896', D: '#2b3044', E: '#ff6a3d',
   G: '#7fe7ff', C: '#e8eef4', W: '#6b5b4a', L: '#bfefff',
   O: '#ff9d3d',
 };
@@ -18,52 +18,55 @@ export const MINION_PALETTE = {
   K: '#0d1016', M: '#69b35e', D: '#2e6b2a', E: '#ffd75e',
 };
 
-// Correction: plan had all rows at 27 chars; padded each with trailing '.' to reach 28.
+// The golem, redrawn to the approved mockup silhouette: small head with 2×2
+// ember eyes, massive shoulders, heavy dark arms ending in fists, narrow
+// waist, sturdy legs. No machinery — it's a creature, not a robot.
 const B_IDLE_A = [
-  '....KKK..............KKK....',  // 0
-  '...KDDDK............KDDDK...',  // 1
-  '...KDDDK............KDDDK...',  // 2
-  '....KMK..............KMK....',  // 3
-  '..KKKMMKKKKKKKKKKKKKKMMKKK..',  // 4
-  '.KMMMMMMMMMMMMMMMMMMMMMMMK..',  // 5
-  '.KMEEMMMMMMMMMMMMMMMMEEMMK..',  // 6
-  '.KMEEMMMMMMMMMMMMMMMMEEMMK..',  // 7
-  '.KMMMMMMMDDDDDDDDMMMMMMMMK..',  // 8
-  '.KMMMMMMDKKKKKKKKDMMMMMMMK..',  // 9
-  '..KKMMMMMMMMMMMMMMMMMMKK....',  // 10
-  '...KMMMMMMMMMMMMMMMMMMK.....',  // 11
-  '..KMMMMMMDDDDDDDDMMMMMMK....',  // 12
-  '..KMMMMMDGGGGGGGGDMMMMMK....',  // 13
-  '.KMMMMMMDGGCCGGGGDMMMMMMK...',  // 14
-  '.KDMMMMMDGGGCCGGGDMMMMMDK...',  // 15
-  '.KDMMMMMDGGGGGGGGDMMMMMDK...',  // 16
-  '.KMMMMMMMDDDDDDDDMMMMMMMK...',  // 17
-  '..KMMMMMMMMMMMMMMMMMMMMK....',  // 18
-  '..KMMMMKKMMMMMMMMKKMMMMK....',  // 19
-  '...KKKK..KMMMMMMK..KKKK.....',  // 20
-  '.........KMMMMMMK...........',  // 21
-  '........KDDDKKDDDK..........',  // 22
-  '........KDDDKKDDDK..........',  // 23
-  '.......KKDDDKKDDDKK.........',  // 24
-  '.......KKKKKKKKKKKK.........',  // 25
+  '.........KKKKKKKKKK.........',  // 0  head top
+  '.........KTTTTTTTTK.........',  // 1  lit crown
+  '.........KMMMMMMMMK.........',  // 2
+  '.........KMEEMMEEMK.........',  // 3  eyes
+  '.........KMEEMMEEMK.........',  // 4
+  '.........KMMMMMMMMK.........',  // 5  jaw
+  '..........KMMMMMMK..........',  // 6  neck
+  '...KKKKKKKKMMMMMMKKKKKKKK...',  // 7  shoulder line
+  '..KTTTTTTTMMMMMMMMTTTTTTTK..',  // 8  lit shoulder tops
+  '.KTMMMMMMMMMMMMMMMMMMMMMMTK.',  // 9
+  '.KMMMMMMMMMMMMMMMMMMMMMMMMK.',  // 10
+  '.KDDDDKKMMMMMMMMMMMMKKDDDDK.',  // 11 arms split from torso
+  '.KDDDDK.KMMMMMMMMMMK.KDDDDK.',  // 12
+  '.KDDDDK.KMMMMMMMMMMK.KDDDDK.',  // 13
+  '.KDDDDK.KMMMMMMMMMMK.KDDDDK.',  // 14
+  '.KDDDDK.KMMMMMMMMMMK.KDDDDK.',  // 15
+  'KKDDDDKK.KMMMMMMMMK.KKDDDDKK',  // 16 fists
+  'KDDDDDDK.KMMMMMMMMK.KDDDDDDK',  // 17
+  'KKKKKKKK.KMMMMMMMMK.KKKKKKKK',  // 18
+  '.........KMMMMMMMMK.........',  // 19 hips
+  '........KMMMK..KMMMK........',  // 20 legs
+  '........KMMMK..KMMMK........',  // 21
+  '........KMMMK..KMMMK........',  // 22
+  '.......KDMMMK..KMMMDK.......',  // 23 feet flare
+  '......KDDMMMK..KMMMDDK......',  // 24
+  '......KKKKKKK..KKKKKKK......',  // 25
 ];
 
-// Breathing: eyes drop one row (rows 6/7 swap); the plan says rows 6 and 7.
-// Plan rows were also 27-wide; pad to 28.
-const B_IDLE_B = B_IDLE_A.map((row, y) => {
-  if (y === 6) return '.KMMMMMMMMMMMMMMMMMMMMMMMK..';  // eyes gone (27+1=28)
-  if (y === 7) return '.KMEEMMMMMMMMMMMMMMMMEEMMK..';  // eyes shifted (27+1=28)
-  return row;
-});
+// Breathing: the head bobs down a pixel.
+const B_IDLE_B = B_IDLE_A.map((row, y) =>
+  y === 0 ? '.'.repeat(28) : y <= 6 ? B_IDLE_A[y - 1] : row
+);
 
-// Summon cast: arms raised high, gauge flares.
-// r4, r5 are 28; r13, r19, r20 were 27 in the plan — padded with '.' to reach 28.
+// Summon cast: arms wrenched up beside the head, fists to the sky.
 const B_CAST = B_IDLE_A.map((row, y) => {
-  if (y === 4) return 'KMKKKMMKKKKKKKKKKKKKKMMKKKMK';          // 28 (plan correct)
-  if (y === 5) return 'KMKMMMMMMMMMMMMMMMMMMMMMKMK.'.slice(0, 28); // 28 (plan correct)
-  if (y === 13) return '..KMMMMMDGLLLLLLGDMMMMMK....';        // 27+1=28
-  if (y === 19) return '..KMMMMMMMMMMMMMMMMMMMMK....';        // 27+1=28
-  if (y === 20) return '...KKKKKKMMMMMMKKKKKKK......';        // 27+1=28
+  if (y === 1) return '.KDDK....KTTTTTTTTK....KDDK.';
+  if (y === 2) return '.KDDK....KMMMMMMMMK....KDDK.';
+  if (y === 3) return '.KDDK....KMEEMMEEMK....KDDK.';
+  if (y === 4) return '.KDDK....KMEEMMEEMK....KDDK.';
+  if (y === 5) return '.KDDK....KMMMMMMMMK....KDDK.';
+  if (y === 6) return '.KDDDK....KMMMMMMK....KDDDK.';
+  if (y === 7) return '..KKDDDKKKKMMMMMMKKKKDDDKK..';
+  if (y === 11) return '........KMMMMMMMMMMMMK......';
+  if (y >= 12 && y <= 15) return '.........KMMMMMMMMMMK.......';
+  if (y >= 16 && y <= 18) return '.........KMMMMMMMMK.........';
   return row;
 });
 
@@ -112,33 +115,33 @@ export const SLASH = [
    'O' is the molten core glowing through; 'K' the crack shadow. */
 
 const CRACK_1 = [
-  '', '', '', '', '',
-  '......KO',
-  '.......KO',
-  '', '', '', '',
-  '..................OK',
+  '', '', '', '', '', '', '', '', '',
+  '....KO',
+  '.....KO',
+  '', '',
   '.................OK',
+  '................OK',
 ];
 const CRACK_2 = [
-  '', '', '', '', '', '', '', '',
-  '..........KOO',
+  '', '', '', '', '', '', '', '', '', '', '',
   '...........KOO',
-  '............KO',
-  '', '', '', '', '',
-  '.......OK',
-  '........OK',
+  '............KOO',
+  '.............KO',
+  '', '',
+  '...........OK',
+  '..........OK',
 ];
 const CRACK_3 = [
   '', '',
-  '.....KO',
-  '......O',
-  '', '', '', '', '', '', '', '',
-  '...............OOK',
+  '............KO',
+  '.............O',
+  '', '', '', '', '', '', '', '', '', '',
   '..............OOK',
-  '.............OK',
-  '', '', '',
-  '....................OK',
-  '.....................OK',
+  '.............OOK',
+  '............OK',
+  '', '', '', '',
+  '.........OK',
+  '..........OK',
 ];
 const CRACKS = [null, CRACK_1, CRACK_2, CRACK_3];
 

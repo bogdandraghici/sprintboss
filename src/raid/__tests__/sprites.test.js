@@ -78,6 +78,22 @@ describe('boss / minion / slash', () => {
     expect(core(bossFrames(1))).toBeGreaterThan(core(bossFrames(0)));
     expect(core(bossFrames(3))).toBeGreaterThan(core(bossFrames(1)));
   });
+  it('cracks land on the body — never floating on transparent pixels', () => {
+    const base = bossFrames(0);
+    const cracked = bossFrames(3);
+    base.forEach((f, fi) => {
+      f.forEach((row, y) => {
+        [...row].forEach((ch, x) => {
+          if (ch === '.') expect(cracked[fi][y][x]).toBe('.');
+        });
+      });
+    });
+  });
+  it('each frame keeps both 2×2 ember eyes', () => {
+    for (const f of bossFrames(0)) {
+      expect(f.join('').split('E').length - 1).toBe(32); // 8 eye pixels, ×4 after up2
+    }
+  });
   it('minion and slash render', () => {
     for (const f of MINION_FRAMES) expect(() => rasterize(f, BOSS_PALETTE)).not.toThrow();
     expect(() => rasterize(SLASH, BOSS_PALETTE)).not.toThrow();
