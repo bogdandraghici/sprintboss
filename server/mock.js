@@ -5,7 +5,8 @@
 import { CONFIG, applyWipDefaults } from '../shared/config.js';
 import { deriveSnapshot, DAY, HOUR } from '../shared/derive.js';
 
-const NAMES = ['Ana Petrescu', 'Mihai Ionescu', 'Ioana Radu', 'Tudor Vasile', 'Elena Dobre', 'Radu Stancu'];
+// Real roster names so mock mode exercises every fighter class (sprites/roster.js).
+const NAMES = ['Serban Chiricescu', 'Calin Nicoara', 'Cristina Stanica', 'Andrei Scheau', 'Alex Preda', 'Corina Ivanov', 'Mihai Saru'];
 
 const SCOPE_POOL = [
   'Customer-reported: export hangs on large workspaces',
