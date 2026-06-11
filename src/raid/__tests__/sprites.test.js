@@ -115,6 +115,7 @@ describe('artSlugFor', () => {
     expect(artSlugFor('Andrei Scheau')).toBe('andreis');
     expect(artSlugFor('Andrei Dumitrescu')).toBe('andreid');
     expect(artSlugFor('Cristina Stanica')).toBe('cristinas');
+    expect(artSlugFor('Calin Nicoara')).toBe('calin');
   });
   it('returns a per-fighter art scale, defaulting to 1', () => {
     expect(artScaleFor('Mihai Saru')).toBe(0.85);
@@ -122,7 +123,7 @@ describe('artSlugFor', () => {
     expect(artScaleFor('Total Stranger')).toBe(1);
   });
   it('returns null for matrix fighters and unknown assignees', () => {
-    expect(artSlugFor('Calin Nicoara')).toBe(null);
+    expect(artSlugFor('Alex Preda')).toBe(null);
     expect(artSlugFor('Total Stranger')).toBe(null);
   });
 });
