@@ -65,7 +65,7 @@ export const ROSTER = {
   // (U+200B) after the dot — written as an escape so the invisible char
   // can't be lost by an editor; exact-match key.
   'gabriel.\u200bmuscalu': { hair: 'buzz', weapon: 'hammer', palette: { H: '#1d1813', A: '#c9a23f' }, art: 'paladin' },
-  'Cristina Stanica':  { hair: 'long',  weapon: 'staff',   palette: { H: '#4a3220', A: '#8d7fd6' } },
+  'Cristina Stanica':  { hair: 'long',  weapon: 'staff',   palette: { H: '#4a3220', A: '#8d7fd6' }, art: 'cristinas' },
   'Andrei Scheau':     { hair: 'spiky', weapon: 'bow',     palette: { H: '#332620', A: '#3fbf9a' }, art: 'andreis' },
   'Andrei Dumitrescu': { hair: 'short', weapon: 'sword',   palette: { H: '#2e2018', A: '#b5413a' }, art: 'andreid' },
   'Alex Preda':        { hair: 'short', weapon: 'daggers', palette: { H: '#16120e', A: '#7a8aa8' } },

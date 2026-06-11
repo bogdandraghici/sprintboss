@@ -114,6 +114,7 @@ describe('artSlugFor', () => {
     expect(artSlugFor('Tiberiu Birloiu')).toBe('tibi');
     expect(artSlugFor('Andrei Scheau')).toBe('andreis');
     expect(artSlugFor('Andrei Dumitrescu')).toBe('andreid');
+    expect(artSlugFor('Cristina Stanica')).toBe('cristinas');
   });
   it('returns a per-fighter art scale, defaulting to 1', () => {
     expect(artScaleFor('Mihai Saru')).toBe(0.85);
