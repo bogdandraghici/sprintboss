@@ -5,8 +5,8 @@
 import Ticket from './Ticket';
 import { deriveDock } from '../raid/raidState';
 
-export default function Dock({ view, onSelect }) {
-  const { groups, blocked } = deriveDock(view);
+export default function Dock({ view, onSelect, focus = null }) {
+  const { groups, blocked } = deriveDock(view, focus);
   return (
     <div className="dock">
       {groups.map((g) => <DockGroup key={g.idx} group={g} view={view} onSelect={onSelect} />)}
