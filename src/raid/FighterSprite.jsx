@@ -26,7 +26,7 @@ const IDLE_CYCLE = [FRAME.IDLE_A, FRAME.IDLE_B, FRAME.IDLE_C, FRAME.IDLE_D];
 // onStrike(points): fired once per attack at the moment of impact.
 // aura: 0..1 afterglow of a recent kill; beaconHeat: 0..1 freshness of a block.
 // tableau: 'victory' | 'defeat' | null (end-of-sprint poses).
-export default function FighterSprite({ fighter, attack, onStrike, position, phase = 0, aura = 0, beaconHeat = 0, tableau = null }) {
+export default function FighterSprite({ fighter, attack, onStrike, position, phase = 0, aura = 0, beaconHeat = 0, tableau = null, focus = null, onFocus }) {
   const entry = useMemo(
     () => sheetTexture(`fighter:${fighter.name}:headless:v4`, headlessFramesFor(fighter.name), paletteFor(fighter.name)),
     [fighter.name]
@@ -76,8 +76,10 @@ export default function FighterSprite({ fighter, attack, onStrike, position, pha
     // The avatar head follows the pose's head anchor (z forward of the body).
     const [hx, hy] = headPos(frame);
     head.current.position.set(hx, hy, 0.02);
-    // Dim the weary.
-    const dim = fighter.status === 'exhausted' ? 0.55 : fighter.status === 'resting' ? 0.8 : 1;
+    // Dim the weary, and dim everyone except the focused fighter further.
+    const weary = fighter.status === 'exhausted' ? 0.55 : fighter.status === 'resting' ? 0.8 : 1;
+    const focusDim = focus && fighter.name !== focus ? 0.32 : 1;
+    const dim = weary * focusDim;
     mat.current.color.setScalar(dim);
     headMat.current.color.setScalar(dim);
     if (auraMat.current) {
@@ -87,10 +89,30 @@ export default function FighterSprite({ fighter, attack, onStrike, position, pha
 
   return (
     <group ref={group} position={position}>
+      {/* Oversized invisible click target — the swaying sprite is small; this
+          makes it easy to hit. stopPropagation so the backdrop doesn't clear. */}
+      {onFocus && (
+        <mesh
+          position={[0, PX * (SPRITE_H / 2), 0.06]}
+          onClick={(e) => { e.stopPropagation(); onFocus(fighter.name); }}
+          onPointerOver={() => { document.body.style.cursor = 'pointer'; }}
+          onPointerOut={() => { document.body.style.cursor = 'auto'; }}
+        >
+          <planeGeometry args={[SPRITE_W * PX * 1.6, SPRITE_H * PX * 1.15]} />
+          <meshBasicMaterial transparent opacity={0} depthWrite={false} />
+        </mesh>
+      )}
       <mesh position={[0, PX * (SPRITE_H / 2), 0]}>
         <planeGeometry args={[SPRITE_W * PX, SPRITE_H * PX]} />
         <meshBasicMaterial ref={mat} map={entry.tex} transparent alphaTest={0.5} toneMapped={false} />
       </mesh>
+      {/* Selection cue: a teal ring on the floor under the focused fighter. */}
+      {focus === fighter.name && (
+        <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, 0.03, 0]}>
+          <ringGeometry args={[0.42, 0.55, 40]} />
+          <meshBasicMaterial color="#7fe7ff" transparent opacity={0.75} toneMapped={false} depthWrite={false} />
+        </mesh>
+      )}
       {/* initial head height is approximate — useFrame re-anchors it every frame */}
       <mesh ref={head} position={[0, PX * 47, 0.02]}>
         <planeGeometry args={[HEAD_SIZE, HEAD_SIZE]} />
