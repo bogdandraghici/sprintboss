@@ -127,12 +127,12 @@ const KNEEL = [
   '......KBBBBBBK......',
   '.....KAAAAAAAK......',
   '....KPPKAAAAPPK.....',
-  '...KPPK.KPPPPPK.....',
-  '...KPPK.KPPKPPK.....',
-  '..KPPK..KPPKKPPK....',
-  '..KPPK..KPPK.KPPK...',
-  '.KKBBBKKKPPK..KBBK..',
-  '.KBBBBKKBBBK..KBBK..',
+  '...KPPK...KPPPK.....',
+  '...KPPK...KPPK......',
+  '..KPPK....KPPK......',
+  '..KPPK....KPPK......',
+  '.KKPPK....KPPK......',
+  'KBBBBBK...KBBBK.....',
   '....................',
 ];
 
