@@ -4,13 +4,33 @@ Ambient wall-display app that visualizes our live Jira sprint as a boss fight. E
 
 ## The two views (header toggle, persisted in `sb-view`)
 
-- **Arena** (default): HD-2D Three.js scene (`src/raid/`). Teammates are pixel-sprite fighters with their real Jira profile pictures as bobblehead-style heads; they fight the golem boss. Completing a ticket = the owning fighter attacks (HP drains); scope creep = boss summons a minion per mid-sprint ticket (cap 6 + horde counter); blocked = fighter knocked down with beacon; all-stale = kneeling exhausted. HUD overlays (HP bar, enrage timer, scar timeline, damage log, party frames) + "truth ticker" with raw per-column/blocked data.
-- **Factory** (legacy): conveyor-belt line (`FactoryLine.jsx`) + boss panel (`BossPanel.jsx`).
+- **Raid** (default; stored key `raid`, legacy `arena` migrates): the "command
+  deck". Top band = per-ticket boss HP bar + scar timeline + enrage timer.
+  Middle = HD-2D Three.js battle scene (`src/raid/`) — pure spectacle, no text;
+  the damage log floats over it as a translucent combat log. Below = ticket
+  dock (`Dock.jsx`): real tickets grouped by board column — first column is a
+  key-only queue, working columns are full cards that degrade density instead
+  of scrolling (`dockDensity`), blocked is always full cards + reason. Bottom =
+  truth ticker. Completing a ticket = the owning fighter attacks (hit-stop,
+  sparks, HP drains); scope creep = boss summons minions (cap 6 + horde);
+  blocked = fighter downed with beacon; boss cracks at 75/50/25% HP
+  (`bossStage`) and crumbles on a cleared sprint; sprint overrun = defeat grade.
+  **Afterglow** (`src/raid/heat.js`): events leave residue that cools over
+  hours — gold HP segments (~2h), boss scars + debris swords (~24h), ember
+  auras, fresher-burns-brighter beacons — all pure functions of
+  `view.now − event.ts`, so retro reconstructs them. `?lite` query flag drops
+  post-processing/dpr for weak TV hardware.
+- **Factory** (legacy): conveyor-belt line (`FactoryLine.jsx`) + boss panel
+  (`BossPanel.jsx`).
 
 ## Architecture rules
 
 - Data layer is sacred: `useSnapshot` (poll + pulse detection), `shared/derive.js` (stats), `timeMachine.js` (retro mode reconstructs any past moment). The arena is a pure function of `view` + short-lived pulses — never put `Date.now()` in scene code; use `view.now`/`view.timeTravel`.
-- Pure logic lives in `src/raid/raidState.js` (party/minions/actions selectors) and `src/raid/sprites/` (pixel matrices + rasterizer) — all vitest-tested (`npm test`). R3F components are verified in the browser preview.
+- Pure logic lives in `src/raid/raidState.js` (party/minions/actions/dock/stage
+  selectors), `src/raid/heat.js` (afterglow decay), and `src/raid/sprites/`
+  (14×20 pixel matrices + `ops.js` upscale/outline/rim pipeline + rasterizer) —
+  all vitest-tested (`npm test`). R3F components are verified in the browser
+  preview.
 - Sprites are in-code pixel matrices (strings + palette), rasterized to CanvasTextures at runtime — no image assets. Roster in `sprites/roster.js`; unknown assignees get the `__recruit__` fallback. Attack pulses route by **issue key**, not event actor (the actor is whoever dragged the ticket).
 - Avatars load via `/api/avatar` proxy (host-allowlisted) — the Atlassian CDN has no CORS headers and would taint WebGL textures.
 - Both views share HUD widgets from `src/components/hud.jsx`. `BossFigure.jsx` (SVG golem) is also used by boot/no-sprint screens — don't delete it.
