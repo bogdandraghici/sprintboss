@@ -8,10 +8,10 @@ Ambient wall-display app that visualizes our live Jira sprint as a boss fight. E
   deck". Top band = per-ticket boss HP bar + scar timeline + enrage timer.
   Middle = HD-2D Three.js battle scene (`src/raid/`) — pure spectacle, no text;
   the damage log floats over it as a translucent combat log. Below = ticket
-  dock (`Dock.jsx`): real tickets grouped by board column — first column is a
-  key-only queue, working columns are full cards that degrade density instead
-  of scrolling (`dockDensity`), blocked is always full cards + reason. Bottom =
-  truth ticker. Completing a ticket = the owning fighter attacks (hit-stop,
+  dock (`Dock.jsx`): real tickets grouped by board column — every column
+  (queue, working, and blocked) shows the full card for all of its issues and
+  scrolls internally rather than truncating; blocked also carries its reason.
+  Bottom = truth ticker. Completing a ticket = the owning fighter attacks (hit-stop,
   sparks, HP drains); scope creep = boss summons minions (cap 6 + horde);
   blocked = fighter downed with beacon; boss cracks at 75/50/25% HP
   (`bossStage`) and crumbles on a cleared sprint; sprint overrun = defeat grade.

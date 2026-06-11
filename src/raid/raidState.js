@@ -94,18 +94,6 @@ export function deriveDock(view) {
   return { groups, blocked };
 }
 
-// No scrolling on a TV: degrade card density instead. Full cards up to `max`,
-// summary-less to 2x, key-only chips to 3x, then a "+N more" counter.
-export const QUEUE_MAX = 8;  // chip rows in the queue (first column) group
-export const WORK_MAX = 6;   // full cards per working group
-
-export function dockDensity(count, max = WORK_MAX) {
-  if (count <= max) return { density: 'full', show: count, more: 0 };
-  if (count <= max * 2) return { density: 'compact', show: count, more: 0 };
-  const cap = max * 3;
-  return { density: 'chip', show: Math.min(count, cap), more: Math.max(0, count - cap) };
-}
-
 // End-of-fight tableau: 'victory' (boss dead), 'defeat' (sprint over, hp left).
 export function deriveTableau(view) {
   if (view.stats.total > 0 && view.stats.remaining <= 0) return 'victory';

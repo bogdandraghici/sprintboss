@@ -2,15 +2,13 @@ import Avatar from './Avatar';
 import { ageBand, fmtDays } from '../lib';
 
 // The one ticket card, identical everywhere it appears (factory line, standup,
-// raid dock). density: 'full' (default) | 'compact' (no summary) | 'chip'
-// (key + age only) — the dock degrades density instead of scrolling on a TV.
-export default function Ticket({ issue, view, onSelect, density = 'full' }) {
+// raid dock): key + age + face + full summary.
+export default function Ticket({ issue, view, onSelect }) {
   const band = view.flags?.noChangelog ? 'off' : ageBand(issue.daysInColumn, view.aging);
   return (
     <button
       className="ticket pop-in"
       data-age={band}
-      data-density={density}
       data-unestimated={!issue.estimated}
       data-scope={issue.addedMidSprint}
       onClick={() => onSelect(issue)}

@@ -1,7 +1,7 @@
 // src/raid/__tests__/raidState.test.js
 import { describe, it, expect } from 'vitest';
 import { deriveParty, deriveMinions, pulseActions, MINION_CAP } from '../raidState';
-import { bossStage, deriveDock, dockDensity, deriveTableau, QUEUE_MAX, WORK_MAX } from '../raidState';
+import { bossStage, deriveDock, deriveTableau } from '../raidState';
 
 const aging = { freshDays: 2, warmDays: 5 }; // ageBand: >5d = stale
 const mkIssue = (over) => ({
@@ -127,18 +127,6 @@ describe('deriveDock', () => {
     const { groups, blocked } = deriveDock(view);
     expect(blocked.map((i) => i.key)).toEqual(['B-2', 'B-1']);
     expect(groups[1].issues).toEqual([]);
-  });
-});
-
-describe('dockDensity', () => {
-  it('full up to max, compact to 2x, chips capped at 3x with overflow count', () => {
-    expect(dockDensity(4, 6)).toEqual({ density: 'full', show: 4, more: 0 });
-    expect(dockDensity(9, 6)).toEqual({ density: 'compact', show: 9, more: 0 });
-    expect(dockDensity(20, 6)).toEqual({ density: 'chip', show: 18, more: 2 });
-  });
-  it('exports TV capacity constants', () => {
-    expect(QUEUE_MAX).toBeGreaterThan(0);
-    expect(WORK_MAX).toBeGreaterThan(0);
   });
 });
 

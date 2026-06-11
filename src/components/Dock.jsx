@@ -1,9 +1,9 @@
 // src/components/Dock.jsx
 // The data half of the command deck: real tickets, grouped by board column.
-// Queue (first column) is always key-only chips; working columns carry full
-// cards and degrade density instead of scrolling; blocked is always loud.
+// Every column shows the full card (summary + face + age) for all of its
+// issues and scrolls internally instead of truncating; blocked is always loud.
 import Ticket from './Ticket';
-import { deriveDock, dockDensity, QUEUE_MAX, WORK_MAX } from '../raid/raidState';
+import { deriveDock } from '../raid/raidState';
 
 export default function Dock({ view, onSelect }) {
   const { groups, blocked } = deriveDock(view);
@@ -16,7 +16,7 @@ export default function Dock({ view, onSelect }) {
             {blocked.length ? `⚑ Blocked · ${blocked.length}` : 'No blockers'}
           </span>
         </div>
-        <div className="dock-cards" data-density="full">
+        <div className="dock-cards">
           {blocked.map((i) => (
             <div key={i.key} className="dock-blocked-card">
               <Ticket issue={i} view={view} onSelect={onSelect} />
@@ -30,20 +30,15 @@ export default function Dock({ view, onSelect }) {
 }
 
 function DockGroup({ group, view, onSelect }) {
-  const isQueue = group.kind === 'queue';
-  const { density, show, more } = isQueue
-    ? { density: 'chip', show: Math.min(group.issues.length, QUEUE_MAX), more: Math.max(0, group.issues.length - QUEUE_MAX) }
-    : dockDensity(group.issues.length, WORK_MAX);
   return (
     <div className="dock-group" data-kind={group.kind}>
       <div className="dock-head">
         <span className="label">{group.name} · {group.issues.length}</span>
       </div>
-      <div className="dock-cards" data-density={density}>
-        {group.issues.slice(0, show).map((i) => (
-          <Ticket key={i.key} issue={i} view={view} onSelect={onSelect} density={density} />
+      <div className="dock-cards">
+        {group.issues.map((i) => (
+          <Ticket key={i.key} issue={i} view={view} onSelect={onSelect} />
         ))}
-        {more > 0 && <span className="dock-more mono">+{more} more</span>}
       </div>
     </div>
   );
