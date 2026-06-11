@@ -61,7 +61,7 @@ export function EnrageTimer({ view }) {
 
 /* ── segmented HP bar ─────────────────────────────────────────── */
 
-export function HpBar({ view, onSelect }) {
+export function HpBar({ view, onSelect, focus = null }) {
   // Like a real HP bar: living segments packed left, depleted (done) packed
   // right, so remaining HP reads as one contiguous block draining rightward.
   const segs = useMemo(
@@ -102,6 +102,7 @@ export function HpBar({ view, onSelect }) {
             data-done={issue.done}
             data-scope={issue.addedMidSprint}
             data-blocked={issue.blocked}
+            data-dim={focus ? issue.assignee !== focus : undefined}
             title={`${issue.key} · ${issue.points} ${unit}${issue.done ? ' · done' : ''}${issue.addedMidSprint ? ' · added mid-sprint' : ''}`}
             onClick={() => onSelect(issue)}
           />
