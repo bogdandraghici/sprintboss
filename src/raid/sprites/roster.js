@@ -66,7 +66,8 @@ export const ROSTER = {
   // can't be lost by an editor; exact-match key.
   'gabriel.\u200bmuscalu': { hair: 'buzz', weapon: 'hammer', palette: { H: '#1d1813', A: '#c9a23f' }, art: 'paladin' },
   'Cristina Stanica':  { hair: 'long',  weapon: 'staff',   palette: { H: '#4a3220', A: '#8d7fd6' } },
-  'Andrei Scheau':     { hair: 'spiky', weapon: 'bow',     palette: { H: '#332620', A: '#3fbf9a' } },
+  'Andrei Scheau':     { hair: 'spiky', weapon: 'bow',     palette: { H: '#332620', A: '#3fbf9a' }, art: 'andreis' },
+  'Andrei Dumitrescu': { hair: 'short', weapon: 'sword',   palette: { H: '#2e2018', A: '#b5413a' }, art: 'andreid' },
   'Alex Preda':        { hair: 'short', weapon: 'daggers', palette: { H: '#16120e', A: '#7a8aa8' } },
   'Corina Ivanov':     { hair: 'bun',   weapon: 'sword',   palette: { H: '#52341d', A: '#e0a93f' }, art: 'corina' },
   'Mihai Saru':        { hair: 'short', weapon: 'staff',   palette: { H: '#26201a', A: '#36c8a0' }, art: 'mihai', artScale: 0.85 },
