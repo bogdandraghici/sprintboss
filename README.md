@@ -29,6 +29,44 @@ npm run dev
 Production: `npm run build && npm start` (Express serves `dist/` and the API
 on one port, default 4000).
 
+## Deploying to Vercel
+
+The same `server/index.js` runs as a Vercel serverless function when imported
+via [api/index.js](api/index.js). Vercel's edge serves `dist/` directly, and a
+cron job hits `/api/refresh` once a minute to keep the snapshot warm in
+Vercel KV — replacing the long-lived `setInterval` poll.
+
+1. **Connect the repo to Vercel.** Framework preset: Vite. Build/output
+   detected from [vercel.json](vercel.json).
+2. **Create a KV store** in the Vercel dashboard (Storage → KV) and link it
+   to the project. Vercel will inject `KV_REST_API_URL` and
+   `KV_REST_API_TOKEN` automatically; the snapshot store detects these and
+   switches off in-memory caching ([server/snapshotStore.js](server/snapshotStore.js)).
+3. **Set env vars** in Project Settings:
+   - `JIRA_BASE_URL`, `JIRA_EMAIL`, `JIRA_API_TOKEN`, `JIRA_BOARD_ID` — same
+     as Render.
+   - `SESSION_SECRET` — **required** on Vercel. Without it, every cold start
+     mints a fresh secret and invalidates every session.
+   - `CRON_SECRET` — required so only Vercel Cron (and you) can trigger
+     `/api/refresh`. Vercel injects the matching `Authorization: Bearer`
+     header automatically.
+   - `GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET`, `ALLOWED_EMAIL_DOMAIN`
+     (defaults to `flowx.ai`) — only if you want the Google sign-in gate.
+4. **Register the OAuth redirect URI** with Google Cloud Console:
+   `https://<your-vercel-domain>/auth/callback` (and any custom domain you
+   point at the project). The dev/Render redirect URI keeps working in
+   parallel.
+5. **Cron cadence.** [vercel.json](vercel.json) schedules `/api/refresh`
+   every minute (`* * * * *`). Per-minute crons need the **Pro plan**; on
+   Hobby the minimum is daily and the snapshot would stale out fast. If
+   you're stuck on Hobby, drop the cron and rely on the lazy refresh in
+   `getSnapshot()` (every cold start refetches Jira), or proxy an external
+   uptime ping at `/api/refresh` instead.
+
+After the first deploy: visit `https://<your-vercel-domain>/api/refresh`
+once (with `Authorization: Bearer $CRON_SECRET`) to seed KV before opening
+the dashboard, or just wait one minute for the cron's first tick.
+
 ## Modes (top-right)
 
 - **Ambient** — default. Auto-refreshing, readable from across the room.

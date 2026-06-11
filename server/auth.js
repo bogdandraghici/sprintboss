@@ -56,7 +56,9 @@ export function createAuth(env) {
 
   function middleware(req, res, next) {
     if (!enabled) return next();
-    if (req.path.startsWith('/auth/') || req.path === '/healthz') return next();
+    // /api/refresh is cron-only: it carries its own CRON_SECRET check, no
+    // Google session involved (Vercel Cron doesn't have one).
+    if (req.path.startsWith('/auth/') || req.path === '/healthz' || req.path === '/api/refresh') return next();
     const email = readSession(cookies(req)[COOKIE]);
     if (email) {
       req.userEmail = email;
