@@ -114,7 +114,7 @@ export default function BossSprite({ enraged, hit, summon, stage = 0, scars = []
           ref={mat}
           map={usingArt ? art.idle : entry.tex}
           transparent
-          alphaTest={usingArt ? 0.02 : 0.05}
+          alphaTest={usingArt ? 0.4 : 0.05}
           toneMapped={false}
         />
       </mesh>

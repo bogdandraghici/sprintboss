@@ -52,13 +52,17 @@ def main():
             feather = int(args[i + 1])
         if a == "--crop" and i + 1 < len(args):
             crop = int(args[i + 1])
+    black = "--black" in args  # key a near-BLACK background instead of white
 
     im = Image.open(inp).convert("RGBA")
     a = np.array(im)
     rgb = a[:, :, :3].astype(np.int16)
-    near_white = rgb.min(axis=2) >= th
+    if black:
+        near_bg = rgb.max(axis=2) <= (th if th < 128 else 40)
+    else:
+        near_bg = rgb.min(axis=2) >= th
 
-    bg = flood_from_border(near_white)
+    bg = flood_from_border(near_bg)
     a[:, :, 3] = np.where(bg, 0, a[:, :, 3])
 
     # Feather the cut: kept pixels near the boundary get an alpha ramp based on
