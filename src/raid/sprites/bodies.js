@@ -3,6 +3,7 @@
 // Drafts: art-directed in preview later. Keep dimensions stable.
 import sword from './classes/sword';
 import hammer from './classes/hammer';
+import bow from './classes/bow';
 
 export function compose(base, overlay, ox, oy) {
   const rows = base.map((r) => [...r]);
@@ -178,7 +179,7 @@ export const BODY_HEADLESS = BODY_FRAMES.map((frame, fi) => {
 
 /* --- 20×28 per-class bodies (hi-res redraw) ------------------------------- */
 
-export const CLASSES = { sword, hammer };
+export const CLASSES = { sword, hammer, bow };
 
 const eraseHead = (frame, b) =>
   frame.map((row, y) =>
