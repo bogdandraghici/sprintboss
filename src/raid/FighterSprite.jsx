@@ -130,7 +130,7 @@ export default function FighterSprite({ fighter, attack, onStrike, position, pha
 }
 
 // Blinking red distress light over a downed fighter — fresher blocks burn brighter.
-function Beacon({ heat = 0 }) {
+export function Beacon({ heat = 0 }) {
   const m = useRef();
   useFrame((state) => {
     const amp = 0.45 + 0.55 * heat;
