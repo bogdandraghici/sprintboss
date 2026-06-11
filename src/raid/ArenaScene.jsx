@@ -184,7 +184,7 @@ export default function ArenaScene({ view, party = [], minions = [], horde = 0, 
       ))}
       <BossSprite
         enraged={enraged} hit={hit} summon={summon}
-        stage={stage} scars={scars} dead={tableau === 'victory'}
+        stage={stage} scars={scars} tableau={tableau}
       />
       {tableau !== 'victory' && minions.map((m, i) => (
         <MinionSprite key={m.key} issue={m} index={i} horde={i === minions.length - 1 ? horde : 0} />

@@ -8,7 +8,7 @@ import { frozen } from './timeBus';
 import { hueOf } from '../lib';
 
 const PX = 0.095; // 56x52 -> ≈ 5.3 x 4.9 world units
-export const BOSS_X = 4.6;
+const BOSS_X = 4.6;
 const BODY_W = 56 * PX;
 const BODY_H = 52 * PX;
 
@@ -22,8 +22,9 @@ const scarPos = (key) => {
 };
 
 // hit/summon: latest pulse actions. stage: 0..3 crack level (raidState.bossStage).
-// scars: [{key, ts, heat}] afterglow of recent hits. dead: tableau === 'victory'.
-export default function BossSprite({ enraged, hit, summon, stage = 0, scars = [], dead = false }) {
+// scars: [{key, ts, heat}] afterglow of recent hits. tableau: arena narrative state.
+export default function BossSprite({ enraged, hit, summon, stage = 0, scars = [], tableau = null }) {
+  const dead = tableau === 'victory';
   const palette = useMemo(
     () => (enraged ? { ...BOSS_PALETTE, E: '#ff2222', G: '#ff5d5d', C: '#ffd479' } : BOSS_PALETTE),
     [enraged]
@@ -64,6 +65,9 @@ export default function BossSprite({ enraged, hit, summon, stage = 0, scars = []
     mat.current.color.setRGB(w, w + (f.cast > 0 ? 1.2 : 0), w);
     // Knockback eases out; flash keeps the old jitter on top.
     group.current.position.x = BOSS_X + f.kick * f.kick * 0.45 + (f.flash > 0 ? (Math.random() - 0.5) * 0.12 : 0);
+    // Defeat: the boss won — a slow, smug breathing swell.
+    const swagger = tableau === 'defeat' ? 1 + 0.04 * Math.sin(state.clock.elapsedTime * 1.4) : 1;
+    group.current.scale.setScalar(swagger * (1 - sink * 0.15));
   });
 
   return (
@@ -73,6 +77,7 @@ export default function BossSprite({ enraged, hit, summon, stage = 0, scars = []
         <meshBasicMaterial ref={mat} map={entry.tex} transparent alphaTest={0.05} toneMapped={false} />
       </mesh>
       {!dead && scars.map((s) => <Scar key={`${s.key}-${s.ts}`} scar={s} />)}
+      {!dead && <Shards enraged={enraged} />}
     </group>
   );
 }
@@ -85,5 +90,35 @@ function Scar({ scar }) {
       <circleGeometry args={[0.11, 12]} />
       <meshBasicMaterial color="#ff9d3d" transparent opacity={scar.heat * 0.8} toneMapped={false} depthWrite={false} />
     </mesh>
+  );
+}
+
+// Slow-orbiting rock shards — debris caught in the golem's pull.
+const SHARDS = [
+  { r: 3.2, y: 1.6, s: 0.16, sp: 0.32, ph: 0 },
+  { r: 3.6, y: 2.6, s: 0.11, sp: 0.22, ph: 2.1 },
+  { r: 2.9, y: 3.4, s: 0.13, sp: 0.41, ph: 4.4 },
+];
+function Shards({ enraged }) {
+  const refs = useRef([]);
+  useFrame((state) => {
+    const t = state.clock.elapsedTime;
+    SHARDS.forEach((s, i) => {
+      const m = refs.current[i];
+      if (!m) return;
+      const a = t * s.sp * (enraged ? 1.6 : 1) + s.ph;
+      m.position.set(Math.cos(a) * s.r * 0.55, s.y - BODY_H / 2 + Math.sin(a * 0.7) * 0.18, Math.sin(a) * 0.5);
+      m.rotation.z = a * 0.6;
+    });
+  });
+  return (
+    <>
+      {SHARDS.map((s, i) => (
+        <mesh key={i} ref={(el) => (refs.current[i] = el)}>
+          <planeGeometry args={[s.s, s.s * 0.8]} />
+          <meshBasicMaterial color="#5b6b7d" toneMapped={false} />
+        </mesh>
+      ))}
+    </>
   );
 }

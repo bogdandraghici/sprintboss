@@ -30,7 +30,7 @@ export function EnrageTimer({ view }) {
       </span>
       <span className="text-right">
         <span className="enrage-chip" data-s={s.enraged ? 'enraged' : 'ok'}>
-          {s.enraged ? '⚠ ENRAGED' : 'ON TRACK'}
+          {s.remaining <= 0 && s.total > 0 ? '✦ CLEARED' : s.enraged ? '⚠ ENRAGED' : 'ON TRACK'}
         </span>
         <span className="label label-faint block mt-1">ends {fmtDate(view.sprint.end)}</span>
       </span>
