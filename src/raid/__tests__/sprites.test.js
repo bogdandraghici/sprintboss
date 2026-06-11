@@ -108,6 +108,7 @@ describe('artSlugFor', () => {
   it('returns the painted-art slug for the pilot fighter', () => {
     expect(artSlugFor('gabriel.\u200bmuscalu')).toBe('paladin');
     expect(artSlugFor('Mihai Saru')).toBe('mihai');
+    expect(artSlugFor('Serban Chiricescu')).toBe('serban');
   });
   it('returns a per-fighter art scale, defaulting to 1', () => {
     expect(artScaleFor('Mihai Saru')).toBe(0.85);
@@ -115,7 +116,7 @@ describe('artSlugFor', () => {
     expect(artScaleFor('Total Stranger')).toBe(1);
   });
   it('returns null for matrix fighters and unknown assignees', () => {
-    expect(artSlugFor('Serban Chiricescu')).toBe(null);
+    expect(artSlugFor('Calin Nicoara')).toBe(null);
     expect(artSlugFor('Total Stranger')).toBe(null);
   });
 });

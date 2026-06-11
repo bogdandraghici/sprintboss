@@ -59,7 +59,7 @@ const HAIR = {
 // Armor colors follow the approved mockup: vivid, one hue per fighter, so the
 // party reads as distinct silhouettes from across the room.
 export const ROSTER = {
-  'Serban Chiricescu': { hair: 'short', weapon: 'sword',   palette: { H: '#2b2118', A: '#5d8fd6' } },
+  'Serban Chiricescu': { hair: 'short', weapon: 'sword',   palette: { H: '#2b2118', A: '#5d8fd6' }, art: 'serban' },
   'Calin Nicoara':     { hair: 'buzz',  weapon: 'hammer',  palette: { H: '#1d1813', A: '#d87a5a' } },
   // Gabi's Jira display name is the raw account id WITH a zero-width space
   // (U+200B) after the dot — written as an escape so the invisible char
