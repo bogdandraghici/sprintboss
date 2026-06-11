@@ -59,6 +59,18 @@ function Floor() {
   );
 }
 
+// A large invisible plane behind everything. Any click that isn't a fighter
+// (whose hit-box stops propagation) falls through to here and clears focus.
+// `visible` stays true so three.js still raycasts it; opacity 0 hides it.
+function ClearBackdrop({ onClear }) {
+  return (
+    <mesh position={[0, 4, -6]} onClick={() => onClear()}>
+      <planeGeometry args={[60, 30]} />
+      <meshBasicMaterial transparent opacity={0} depthWrite={false} />
+    </mesh>
+  );
+}
+
 const EMBERS = LITE ? 40 : 120;
 function Embers({ enraged }) {
   const ref = useRef();
@@ -88,7 +100,7 @@ function Embers({ enraged }) {
   );
 }
 
-export default function ArenaScene({ view, party = [], minions = [], horde = 0, actions = [] }) {
+export default function ArenaScene({ view, party = [], minions = [], horde = 0, actions = [], focus = null, onFocus = () => {} }) {
   const enraged = view.stats.enraged;
   const stage = bossStage(view.stats);
   const tableau = deriveTableau(view);
@@ -177,6 +189,7 @@ export default function ArenaScene({ view, party = [], minions = [], horde = 0, 
       <CameraRig />
       <Environment enraged={enraged} lite={LITE} />
       <Floor />
+      <ClearBackdrop onClear={() => onFocus(null)} />
       {party.map((f, i) => (
         <FighterSprite
           key={f.name}
@@ -187,6 +200,8 @@ export default function ArenaScene({ view, party = [], minions = [], horde = 0, 
           aura={auras.get(f.name) || 0}
           beaconHeat={blockHeat.get(f.name) || 0}
           tableau={tableau}
+          focus={focus}
+          onFocus={onFocus}
           position={[-8.2 + (i % 5) * 2.2 + Math.floor(i / 5) * 0.6, 0, 0.2 - Math.floor(i / 5) * 0.85]}
         />
       ))}
