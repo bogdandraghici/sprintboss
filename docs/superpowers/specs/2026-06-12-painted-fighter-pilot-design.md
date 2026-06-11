@@ -43,7 +43,8 @@ happens only if the pilot feels right, as a separate follow-up.
   `scripts/key-art.py` flow. If automated keying leaves halos, Bogdan exports
   a transparent version instead (he has the originals).
 - Loader: `src/raid/fighterArt.js` mirroring `bossArt.js` — cached texture,
-  linear filter (painted art), **downscaled at load to ≤512px tall** so a
+  nearest filtering exactly like the boss (the art style is chunky pixels;
+  nearest keeps blocks crisp), **downscaled at load to ≤512px tall** so a
   future 8-10 character roster doesn't bloat TV VRAM.
 - `src/raid/sprites/roster.js` gains an optional `art: '<slug>'` field per
   person. For the pilot, the paladin is assigned to the roster's hammer-class
