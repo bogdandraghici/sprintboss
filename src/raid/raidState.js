@@ -95,6 +95,18 @@ export function deriveDock(view, focus = null) {
   return { groups, blocked };
 }
 
+// Per-column ticket counts for a focused assignee, keyed by column index.
+// Feeds the truth ticker when a fighter is focused. focus null -> empty map.
+export function focusColumnCounts(view, focus) {
+  const counts = new Map();
+  if (!focus) return counts;
+  for (const i of view.issues) {
+    if (i.assignee !== focus) continue;
+    counts.set(i.col, (counts.get(i.col) || 0) + 1);
+  }
+  return counts;
+}
+
 // End-of-fight tableau: 'victory' (boss dead), 'defeat' (sprint over, hp left).
 export function deriveTableau(view) {
   if (view.stats.total > 0 && view.stats.remaining <= 0) return 'victory';

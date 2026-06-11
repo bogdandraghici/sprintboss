@@ -1,7 +1,7 @@
 // src/raid/__tests__/raidState.test.js
 import { describe, it, expect } from 'vitest';
 import { deriveParty, deriveMinions, pulseActions, MINION_CAP } from '../raidState';
-import { bossStage, deriveDock, deriveTableau } from '../raidState';
+import { bossStage, deriveDock, deriveTableau, focusColumnCounts } from '../raidState';
 
 const aging = { freshDays: 2, warmDays: 5 }; // ageBand: >5d = stale
 const mkIssue = (over) => ({
@@ -143,6 +143,24 @@ describe('deriveDock', () => {
   it('null focus behaves exactly like no focus', () => {
     const view = { columns, issues: [mk('A-1', 0, { assignee: 'Ana' }), mk('A-2', 1, {})] };
     expect(deriveDock(view, null)).toEqual(deriveDock(view));
+  });
+});
+
+describe('focusColumnCounts', () => {
+  const mk = (key, col, assignee) => ({ key, col, assignee });
+  it('counts a focused assignee per column index', () => {
+    const view = { issues: [
+      mk('A-1', 0, 'Ana'), mk('A-2', 0, 'Ana'), mk('A-3', 1, 'Ana'),
+      mk('B-1', 0, 'Bo'),
+    ] };
+    const c = focusColumnCounts(view, 'Ana');
+    expect(c.get(0)).toBe(2);
+    expect(c.get(1)).toBe(1);
+    expect(c.get(2)).toBeUndefined();
+  });
+  it('null focus returns an empty map', () => {
+    const view = { issues: [mk('A-1', 0, 'Ana')] };
+    expect(focusColumnCounts(view, null).size).toBe(0);
   });
 });
 
