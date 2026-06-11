@@ -35,8 +35,8 @@ const RECIPES = [
   [4, 0, 0],   // KNEEL_A
   [4, 0, 1],   // KNEEL_B breathe
   [5, 0, 0],   // DOWN
-  [2, 0, 0],   // VICTORY_A weapon pumped overhead
-  [2, 0, -1],  // VICTORY_B hop
+  [2, 0, 0],   // VICTORY_A weapon raised
+  [2, 0, 1],   // VICTORY_B settle-bounce (down, like IDLE_C — an up-shift would clip the raised weapon tip)
 ];
 
 const BASE_PALETTE = {
@@ -44,8 +44,10 @@ const BASE_PALETTE = {
   B: '#2a3340', P: '#232a35', W: '#6b5b4a', L: '#dce8ff', G: '#7fe7ff',
 };
 
-// Hair overlays (9-wide) composed at the class's per-pose hairAt anchor
-// (drafts — art-directed later).
+// Hair overlays (9-wide) composed at the class's per-pose hairAt anchor.
+// compose() is additive-only — these can cover the baked-in hair cap but never
+// erase it, so low-profile styles read mostly through palette (drafts —
+// art-directed later).
 const HAIR = {
   short:  ['.KHHHHHK.', 'KHHHHHHHK'],
   buzz:   ['.........', '.KHHHHHK.'],
