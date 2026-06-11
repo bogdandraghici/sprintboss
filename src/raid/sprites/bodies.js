@@ -1,6 +1,7 @@
 // src/raid/sprites/bodies.js
 // Base humanoid, 14x20. Frame order must match FRAME in roster.js.
 // Drafts: art-directed in preview later. Keep dimensions stable.
+import sword from './classes/sword';
 
 export function compose(base, overlay, ox, oy) {
   const rows = base.map((r) => [...r]);
@@ -173,3 +174,21 @@ export const BODY_HEADLESS = BODY_FRAMES.map((frame, fi) => {
       : [...row].map((ch, x) => (x >= b.x0 && x <= b.x1 ? '.' : ch)).join('')
   );
 });
+
+/* --- 20×28 per-class bodies (hi-res redraw) ------------------------------- */
+
+export const CLASSES = { sword };
+
+const eraseHead = (frame, b) =>
+  frame.map((row, y) =>
+    y < b.y0 || y > b.y1
+      ? row
+      : [...row].map((ch, x) => (x >= b.x0 && x <= b.x1 ? '.' : ch)).join('')
+  );
+
+export const HEADLESS = Object.fromEntries(
+  Object.entries(CLASSES).map(([k, c]) => [
+    k,
+    c.poses.map((f, i) => eraseHead(f, c.headBoxes[i])),
+  ])
+);

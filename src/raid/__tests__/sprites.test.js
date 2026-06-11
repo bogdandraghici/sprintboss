@@ -1,6 +1,7 @@
 // src/raid/__tests__/sprites.test.js
 import { describe, it, expect } from 'vitest';
 import { compose, BODY_FRAMES, BODY_HEADLESS, HEAD_ANCHORS } from '../sprites/bodies';
+import { CLASSES, HEADLESS } from '../sprites/bodies';
 import {
   framesFor, headlessFramesFor, paletteFor, ROSTER, FRAME,
   HEAD_ANCHORS15, SPRITE_W, SPRITE_H,
@@ -98,4 +99,37 @@ describe('boss / minion / slash', () => {
     for (const f of MINION_FRAMES) expect(() => rasterize(f, BOSS_PALETTE)).not.toThrow();
     expect(() => rasterize(SLASH, BOSS_PALETTE)).not.toThrow();
   });
+});
+
+describe('class bodies (20×28)', () => {
+  const CHARS = '.KSHABPWLG';
+  for (const [cls, c] of Object.entries(CLASSES)) {
+    it(`${cls}: 6 poses, 20×28, palette-clean`, () => {
+      expect(c.poses).toHaveLength(6);
+      for (const f of c.poses) {
+        expect(f).toHaveLength(28);
+        for (const row of f) {
+          expect(row).toHaveLength(20);
+          for (const ch of row) expect(CHARS).toContain(ch);
+        }
+      }
+    });
+    it(`${cls}: head boxes erase cleanly, anchors in bounds, hairAt per pose`, () => {
+      expect(c.headBoxes).toHaveLength(6);
+      expect(c.headAnchors).toHaveLength(6);
+      expect(c.hairAt).toHaveLength(6);
+      c.headBoxes.forEach((b, i) => {
+        const hf = HEADLESS[cls][i];
+        for (let y = b.y0; y <= b.y1; y++) {
+          expect(hf[y].slice(b.x0, b.x1 + 1)).toBe('.'.repeat(b.x1 - b.x0 + 1));
+        }
+      });
+      for (const [cx, cy] of c.headAnchors) {
+        expect(cx).toBeGreaterThanOrEqual(0);
+        expect(cx).toBeLessThanOrEqual(20);
+        expect(cy).toBeGreaterThanOrEqual(0);
+        expect(cy).toBeLessThanOrEqual(28);
+      }
+    });
+  }
 });
