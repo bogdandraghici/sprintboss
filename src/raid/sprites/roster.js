@@ -60,7 +60,7 @@ const HAIR = {
 // party reads as distinct silhouettes from across the room.
 export const ROSTER = {
   'Serban Chiricescu': { hair: 'short', weapon: 'sword',   palette: { H: '#2b2118', A: '#5d8fd6' } },
-  'Calin Nicoara':     { hair: 'buzz',  weapon: 'hammer',  palette: { H: '#1d1813', A: '#d87a5a' } },
+  'Calin Nicoara':     { hair: 'buzz',  weapon: 'hammer',  palette: { H: '#1d1813', A: '#d87a5a' }, art: 'paladin' },
   'Cristina Stanica':  { hair: 'long',  weapon: 'staff',   palette: { H: '#4a3220', A: '#8d7fd6' } },
   'Andrei Scheau':     { hair: 'spiky', weapon: 'bow',     palette: { H: '#332620', A: '#3fbf9a' } },
   'Alex Preda':        { hair: 'short', weapon: 'daggers', palette: { H: '#16120e', A: '#7a8aa8' } },
@@ -74,6 +74,10 @@ const personOf = (name) => ROSTER[name] || ROSTER.__recruit__;
 export function paletteFor(name) {
   return { ...BASE_PALETTE, ...personOf(name).palette };
 }
+
+// Painted-art slug for a person, or null → the pixel-matrix path renders.
+// Unknown assignees resolve through __recruit__, which has no art.
+export const artSlugFor = (name) => personOf(name).art || null;
 
 function build(name, headless) {
   const p = personOf(name);

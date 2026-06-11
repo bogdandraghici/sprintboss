@@ -1,7 +1,7 @@
 // src/raid/__tests__/sprites.test.js
 import { describe, it, expect } from 'vitest';
 import { compose, CLASSES, HEADLESS } from '../sprites/bodies';
-import { framesFor, headlessFramesFor, paletteFor, ROSTER, FRAME, headAnchors40For, SPRITE_W, SPRITE_H } from '../sprites/roster';
+import { framesFor, headlessFramesFor, paletteFor, ROSTER, FRAME, headAnchors40For, SPRITE_W, SPRITE_H, artSlugFor } from '../sprites/roster';
 import { BOSS_FRAMES, BOSS_PALETTE, MINION_FRAMES, SLASH, bossFrames } from '../sprites/boss';
 import { rasterize } from '../sprites/rasterize';
 
@@ -101,6 +101,16 @@ describe('boss / minion / slash', () => {
   it('minion and slash render', () => {
     for (const f of MINION_FRAMES) expect(() => rasterize(f, BOSS_PALETTE)).not.toThrow();
     expect(() => rasterize(SLASH, BOSS_PALETTE)).not.toThrow();
+  });
+});
+
+describe('artSlugFor', () => {
+  it('returns the painted-art slug for the pilot fighter', () => {
+    expect(artSlugFor('Calin Nicoara')).toBe('paladin');
+  });
+  it('returns null for matrix fighters and unknown assignees', () => {
+    expect(artSlugFor('Serban Chiricescu')).toBe(null);
+    expect(artSlugFor('Total Stranger')).toBe(null);
   });
 });
 
