@@ -107,6 +107,7 @@ describe('boss / minion / slash', () => {
 describe('artSlugFor', () => {
   it('returns the painted-art slug for the pilot fighter', () => {
     expect(artSlugFor('gabriel.\u200bmuscalu')).toBe('paladin');
+    expect(artSlugFor('Mihai Saru')).toBe('mihai');
   });
   it('returns null for matrix fighters and unknown assignees', () => {
     expect(artSlugFor('Serban Chiricescu')).toBe(null);
