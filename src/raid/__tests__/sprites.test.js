@@ -29,9 +29,9 @@ describe('body + roster frames (28×40 pipeline)', () => {
       }
     }
   });
-  it('frames carry the automatic rim-light pass', () => {
+  it('frames stay flat — no auto rim/outline artifacts (mockup look)', () => {
     const idle = framesFor('Serban Chiricescu')[FRAME.IDLE_A];
-    expect(idle.some((row) => row.includes('R'))).toBe(true);
+    expect(idle.every((row) => !row.includes('R'))).toBe(true);
   });
   it('unknown names fall back to the recruit look', () => {
     expect(paletteFor('Unknown Person')).toEqual(paletteFor('__recruit__'));

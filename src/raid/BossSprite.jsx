@@ -30,7 +30,7 @@ export default function BossSprite({ enraged, hit, summon, stage = 0, scars = []
     [enraged]
   );
   const entry = useMemo(
-    () => sheetTexture(`boss:v2:s${Math.min(stage, 3)}:${enraged ? 'enraged' : 'calm'}`, bossFrames(stage), palette),
+    () => sheetTexture(`boss:v3:s${Math.min(stage, 3)}:${enraged ? 'enraged' : 'calm'}`, bossFrames(stage), palette),
     [palette, enraged, stage]
   );
   const group = useRef();

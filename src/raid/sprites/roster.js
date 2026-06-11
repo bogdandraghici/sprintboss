@@ -2,12 +2,13 @@
 // Hand-made look per teammate: palette + hair overlay + weapon.
 // Names must match Jira display names. '__recruit__' is the unknown-assignee fallback.
 //
-// Frames are assembled from the 14×20 base bodies via RECIPES, upscaled 2×
-// (28×40), then given automatic outline + rim-light passes. Editing art still
-// means editing the 14×20 matrices in bodies.js / weapons.js.
+// Frames are assembled from the 14×20 base bodies via RECIPES, then upscaled
+// 2× (28×40). Flat chunky pixels on purpose — the approved mockup look; the
+// hand-drawn K outlines in the matrices are the only outlines. Editing art
+// still means editing the 14×20 matrices in bodies.js / weapons.js.
 import { BODY_FRAMES, BODY_HEADLESS, HEAD_ANCHORS, compose } from './bodies';
 import { WEAPONS } from './weapons';
-import { up2, shift, outline, rimLight } from './ops';
+import { up2, shift } from './ops';
 
 export const FRAME = {
   IDLE_A: 0, IDLE_B: 1, IDLE_C: 2, IDLE_D: 3,
@@ -39,9 +40,8 @@ const RECIPES = [
 ];
 
 const BASE_PALETTE = {
-  K: '#0d1016', S: '#c9935f', H: '#3a2f26', A: '#46566b',
-  B: '#2a3340', P: '#232a35', W: '#6b5b4a', L: '#bfefff', G: '#7fe7ff',
-  R: '#dff4ff', // rim light, written by the rimLight pass
+  K: '#0d1016', S: '#e8b48c', H: '#3a2f26', A: '#46566b',
+  B: '#2a3340', P: '#232a35', W: '#6b5b4a', L: '#dce8ff', G: '#7fe7ff',
 };
 
 // Hair overlays sit at [4, 0] over the head rows (drafts — art-directed later).
@@ -53,15 +53,17 @@ const HAIR = {
   spiky:  ['KH.HK.', 'KHHHHK'],
 };
 
+// Armor colors follow the approved mockup: vivid, one hue per fighter, so the
+// party reads as distinct silhouettes from across the room.
 export const ROSTER = {
-  'Serban Chiricescu': { hair: 'short', weapon: 'sword',   palette: { H: '#2b2118', A: '#4a5d74' } },
-  'Calin Nicoara':     { hair: 'buzz',  weapon: 'hammer',  palette: { H: '#1d1813', A: '#5d5446' } },
-  'Cristina Stanica':  { hair: 'long',  weapon: 'staff',   palette: { H: '#4a3220', A: '#5b4a6b' } },
-  'Andrei Scheau':     { hair: 'spiky', weapon: 'bow',     palette: { H: '#332620', A: '#3d5c52' } },
-  'Alex Preda':        { hair: 'short', weapon: 'daggers', palette: { H: '#16120e', A: '#444c63' } },
-  'Corina Ivanov':     { hair: 'bun',   weapon: 'sword',   palette: { H: '#52341d', A: '#6b4a55' } },
-  'Mihai Saru':        { hair: 'short', weapon: 'staff',   palette: { H: '#26201a', A: '#3f5a6b' } },
-  '__recruit__':       { hair: 'buzz',  weapon: 'sword',   palette: { H: '#3a3a3a', A: '#4a4a52' } },
+  'Serban Chiricescu': { hair: 'short', weapon: 'sword',   palette: { H: '#2b2118', A: '#5d8fd6' } },
+  'Calin Nicoara':     { hair: 'buzz',  weapon: 'hammer',  palette: { H: '#1d1813', A: '#d87a5a' } },
+  'Cristina Stanica':  { hair: 'long',  weapon: 'staff',   palette: { H: '#4a3220', A: '#8d7fd6' } },
+  'Andrei Scheau':     { hair: 'spiky', weapon: 'bow',     palette: { H: '#332620', A: '#3fbf9a' } },
+  'Alex Preda':        { hair: 'short', weapon: 'daggers', palette: { H: '#16120e', A: '#7a8aa8' } },
+  'Corina Ivanov':     { hair: 'bun',   weapon: 'sword',   palette: { H: '#52341d', A: '#e0a93f' } },
+  'Mihai Saru':        { hair: 'short', weapon: 'staff',   palette: { H: '#26201a', A: '#36c8a0' } },
+  '__recruit__':       { hair: 'buzz',  weapon: 'sword',   palette: { H: '#3a3a3a', A: '#6b7280' } },
 };
 
 const personOf = (name) => ROSTER[name] || ROSTER.__recruit__;
@@ -77,8 +79,7 @@ function build(name, headless) {
     const w = WEAPONS[p.weapon][ws];
     if (w) f = compose(f, w.grid, w.at[0], w.at[1]);
     f = up2(f);
-    if (dx || dy) f = shift(f, dx * 2, dy * 2);
-    return rimLight(outline(f));
+    return dx || dy ? shift(f, dx * 2, dy * 2) : f;
   });
 }
 

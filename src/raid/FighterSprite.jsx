@@ -35,7 +35,7 @@ const IDLE_CYCLE = [FRAME.IDLE_A, FRAME.IDLE_B, FRAME.IDLE_C, FRAME.IDLE_D];
 // tableau: 'victory' | 'defeat' | null (end-of-sprint poses).
 export default function FighterSprite({ fighter, attack, onStrike, position, phase = 0, aura = 0, beaconHeat = 0, tableau = null }) {
   const entry = useMemo(
-    () => sheetTexture(`fighter:${fighter.name}:headless:v2`, headlessFramesFor(fighter.name), paletteFor(fighter.name)),
+    () => sheetTexture(`fighter:${fighter.name}:headless:v3`, headlessFramesFor(fighter.name), paletteFor(fighter.name)),
     [fighter.name]
   );
   const headTex = useMemo(() => avatarTexture(fighter.name, fighter.avatar), [fighter.name, fighter.avatar]);

@@ -3,7 +3,7 @@ import { useMemo, useRef } from 'react';
 import { useFrame } from '@react-three/fiber';
 import { Text } from '@react-three/drei';
 import { sheetTexture, setFrame } from './sprites/textures';
-import { MINION_FRAMES, BOSS_PALETTE } from './sprites/boss';
+import { MINION_FRAMES, MINION_PALETTE } from './sprites/boss';
 
 const PX = 0.09;
 
@@ -13,7 +13,7 @@ export const minionPos = (index) => [2.6 + (index % 3) * 0.75, 0.36, 0.6 + Math.
 
 export default function MinionSprite({ issue, index, horde = 0 }) {
   // Key by slot index mod MINION_CAP (6) so the cache stays bounded at ≤6 entries.
-  const entry = useMemo(() => sheetTexture(`minion:${index % 6}`, MINION_FRAMES, BOSS_PALETTE), [index]);
+  const entry = useMemo(() => sheetTexture(`minion:v2:${index % 6}`, MINION_FRAMES, MINION_PALETTE), [index]);
   const mesh = useRef();
   const glyph = useRef();
   const born = useRef(null);
