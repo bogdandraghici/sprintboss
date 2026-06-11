@@ -12,12 +12,12 @@ export function rasterize(frame, palette) {
       if (ch === '.') return;
       const hex = palette[ch];
       if (!hex) throw new Error(`no palette entry for '${ch}'`);
-      if (!/^#[0-9a-fA-F]{6}$/.test(hex)) throw new Error(`palette '${ch}' must be #rrggbb, got '${hex}'`);
+      if (!/^#[0-9a-fA-F]{6}([0-9a-fA-F]{2})?$/.test(hex)) throw new Error(`palette '${ch}' must be #rrggbb or #rrggbbaa, got '${hex}'`);
       const i = (y * w + x) * 4;
       data[i] = parseInt(hex.slice(1, 3), 16);
       data[i + 1] = parseInt(hex.slice(3, 5), 16);
       data[i + 2] = parseInt(hex.slice(5, 7), 16);
-      data[i + 3] = 255;
+      data[i + 3] = hex.length === 9 ? parseInt(hex.slice(7, 9), 16) : 255;
     });
   });
   return { width: w, height: h, data };

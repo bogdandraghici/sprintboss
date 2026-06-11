@@ -5,12 +5,13 @@
 import { compose } from './bodies';
 import { up2 } from './ops';
 
-// Dark slate per the approved mockup — the boss reads as a looming mass with
-// burning eyes, not a light-gray robot.
+// Slate golem per the approved mockup — flat un-outlined blocks, a head fused
+// into the shoulders, ember eyes, and a translucent fringe ('m') dissolving
+// off the silhouette.
 export const BOSS_PALETTE = {
-  K: '#0d1016', M: '#4a5168', T: '#6e7896', D: '#2b3044', E: '#ff6a3d',
+  K: '#0d1016', M: '#6e7790', T: '#9aa3b5', D: '#4d5570', E: '#ff5a2d',
   G: '#7fe7ff', C: '#e8eef4', W: '#6b5b4a', L: '#bfefff',
-  O: '#ff9d3d',
+  O: '#ff9d3d', m: '#6e779066',
 };
 
 // Scope-creep minions are their own creature — mockup green, not boss slate.
@@ -18,36 +19,37 @@ export const MINION_PALETTE = {
   K: '#0d1016', M: '#69b35e', D: '#2e6b2a', E: '#ffd75e',
 };
 
-// The golem, redrawn to the approved mockup silhouette: small head with 2×2
-// ember eyes, massive shoulders, heavy dark arms ending in fists, narrow
-// waist, sturdy legs. No machinery — it's a creature, not a robot.
+// The golem, redrawn to the approved mockup: a looming slate mass. Wide
+// rounded head with big 2×2 ember eyes, shoulders flowing straight out of the
+// jaw, a dark crevice splitting the torso, stubby legs. No hard outline —
+// flat dithered blocks; 'm' is the ghost-fringe dissolving off the edges.
 const B_IDLE_A = [
-  '.........KKKKKKKKKK.........',  // 0  head top
-  '.........KTTTTTTTTK.........',  // 1  lit crown
-  '.........KMMMMMMMMK.........',  // 2
-  '.........KMEEMMEEMK.........',  // 3  eyes
-  '.........KMEEMMEEMK.........',  // 4
-  '.........KMMMMMMMMK.........',  // 5  jaw
-  '..........KMMMMMMK..........',  // 6  neck
-  '...KKKKKKKKMMMMMMKKKKKKKK...',  // 7  shoulder line
-  '..KTTTTTTTMMMMMMMMTTTTTTTK..',  // 8  lit shoulder tops
-  '.KTMMMMMMMMMMMMMMMMMMMMMMTK.',  // 9
-  '.KMMMMMMMMMMMMMMMMMMMMMMMMK.',  // 10
-  '.KDDDDKKMMMMMMMMMMMMKKDDDDK.',  // 11 arms split from torso
-  '.KDDDDK.KMMMMMMMMMMK.KDDDDK.',  // 12
-  '.KDDDDK.KMMMMMMMMMMK.KDDDDK.',  // 13
-  '.KDDDDK.KMMMMMMMMMMK.KDDDDK.',  // 14
-  '.KDDDDK.KMMMMMMMMMMK.KDDDDK.',  // 15
-  'KKDDDDKK.KMMMMMMMMK.KKDDDDKK',  // 16 fists
-  'KDDDDDDK.KMMMMMMMMK.KDDDDDDK',  // 17
-  'KKKKKKKK.KMMMMMMMMK.KKKKKKKK',  // 18
-  '.........KMMMMMMMMK.........',  // 19 hips
-  '........KMMMK..KMMMK........',  // 20 legs
-  '........KMMMK..KMMMK........',  // 21
-  '........KMMMK..KMMMK........',  // 22
-  '.......KDMMMK..KMMMDK.......',  // 23 feet flare
-  '......KDDMMMK..KMMMDDK......',  // 24
-  '......KKKKKKK..KKKKKKK......',  // 25
+  '........mTTTTTTTTTTm........',  // 0  head top
+  '........TMMMMMMMMMMT........',  // 1
+  '......m.MMMMMMMMMMMM.m......',  // 2
+  '........MMEEMMMMEEMM........',  // 3  eyes
+  '........MMEEMMMMEEMM........',  // 4
+  '........MMMMMMMMMMMM........',  // 5  jaw
+  '.........DMMMMMMMMD.........',  // 6  chin
+  '...mTTTTMMMMMMMMMMMMTTTTm...',  // 7  shoulder line
+  '..mTMMMMMMMMMMMMMMMMMMMMTm..',  // 8  lit shoulder tops
+  '...DDDDMMMMMMKKMMMMMMDDDD...',  // 9  crevice opens
+  '.m.DDDDMMTMMMKKMMMTMMDDDD.m.',  // 10
+  '...DDDDMMMMMMKKMMMMMMDDDD...',  // 11
+  '...DDDDMMMMMMKKMMMMMMDDDD...',  // 12
+  '...DDDDMMMTMMKKMMMMMMDDDD...',  // 13
+  'm..DDDDMMMMMMKKMMTMMMDDDD..m',  // 14
+  '...DDDDMMMMMMKKMMMMMMDDDD...',  // 15
+  '......DDMMMMMKKMMMMMDD.m....',  // 16 taper
+  '....m.DDMMMMMKKMMMMMDD......',  // 17
+  '.......DMMMMMKKMMMMMD.......',  // 18 hips
+  '........MMMMM..MMMMM........',  // 19 legs
+  '........MMMMD..DMMMM........',  // 20
+  '........MMMMM..MMMMM........',  // 21
+  '........MMMMD..DMMMM........',  // 22
+  '........MMMMM..MMMMM........',  // 23
+  '.......MMMMMM..MMMMMM.......',  // 24 feet flare
+  '.......DDDDDD..DDDDDD.......',  // 25
 ];
 
 // Breathing: the head bobs down a pixel.
@@ -55,18 +57,17 @@ const B_IDLE_B = B_IDLE_A.map((row, y) =>
   y === 0 ? '.'.repeat(28) : y <= 6 ? B_IDLE_A[y - 1] : row
 );
 
-// Summon cast: arms wrenched up beside the head, fists to the sky.
+// Summon cast: arms wrenched up beside the head; torso narrows below.
 const B_CAST = B_IDLE_A.map((row, y) => {
-  if (y === 1) return '.KDDK....KTTTTTTTTK....KDDK.';
-  if (y === 2) return '.KDDK....KMMMMMMMMK....KDDK.';
-  if (y === 3) return '.KDDK....KMEEMMEEMK....KDDK.';
-  if (y === 4) return '.KDDK....KMEEMMEEMK....KDDK.';
-  if (y === 5) return '.KDDK....KMMMMMMMMK....KDDK.';
-  if (y === 6) return '.KDDDK....KMMMMMMK....KDDDK.';
-  if (y === 7) return '..KKDDDKKKKMMMMMMKKKKDDDKK..';
-  if (y === 11) return '........KMMMMMMMMMMMMK......';
-  if (y >= 12 && y <= 15) return '.........KMMMMMMMMMMK.......';
-  if (y >= 16 && y <= 18) return '.........KMMMMMMMMK.........';
+  if (y === 0) return '..DDD...mTTTTTTTTTTm...DDD..';
+  if (y === 1) return '..DDD...TMMMMMMMMMMT...DDD..';
+  if (y === 2) return '..DDD...MMMMMMMMMMMM...DDD..';
+  if (y === 3) return '..DDD...MMEEMMMMEEMM...DDD..';
+  if (y === 4) return '..DDD...MMEEMMMMEEMM...DDD..';
+  if (y === 5) return '..DDD...MMMMMMMMMMMM...DDD..';
+  if (y === 6) return '...DDD...DMMMMMMMMD...DDD...';
+  if (y === 7) return '...DDDTTMMMMMMMMMMMMMMTTDDD.';
+  if (y >= 11 && y <= 15) return '.......DMMMMMKKMMMMMD.......';
   return row;
 });
 
@@ -145,8 +146,8 @@ const CRACK_3 = [
 ];
 const CRACKS = [null, CRACK_1, CRACK_2, CRACK_3];
 
-// Staged frames: cracks accumulate, then 2× upscale. Flat pixels — the
-// hand-drawn K outline is the outline (mockup look).
+// Staged frames: cracks accumulate, then 2× upscale. Flat pixels, no
+// outline pass — the mockup boss is an un-outlined mass.
 // stage 0..3 — stage 4 (dead) is a scene animation, not a sheet.
 export function bossFrames(stage) {
   const s = Math.max(0, Math.min(3, stage));

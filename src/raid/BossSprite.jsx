@@ -7,7 +7,7 @@ import { addShake } from './shakeBus';
 import { frozen } from './timeBus';
 import { hueOf } from '../lib';
 
-const PX = 0.085; // 56x52 -> ≈ 4.8 x 4.4 world units — fits the frustum with the new full-width head
+const PX = 0.064; // 56x52 -> ≈ 3.6 x 3.3 world units — mockup proportion, smaller than the old golem
 const BOSS_X = 4.6;
 const BODY_W = 56 * PX;
 const BODY_H = 52 * PX;
@@ -30,7 +30,7 @@ export default function BossSprite({ enraged, hit, summon, stage = 0, scars = []
     [enraged]
   );
   const entry = useMemo(
-    () => sheetTexture(`boss:v5:s${Math.min(stage, 3)}:${enraged ? 'enraged' : 'calm'}`, bossFrames(stage), palette),
+    () => sheetTexture(`boss:v6:s${Math.min(stage, 3)}:${enraged ? 'enraged' : 'calm'}`, bossFrames(stage), palette),
     [palette, enraged, stage]
   );
   const group = useRef();
