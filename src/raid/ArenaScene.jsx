@@ -15,6 +15,7 @@ import SlashFX from './SlashFX';
 import ImpactFX from './ImpactFX';
 import Debris from './Debris';
 import Effects from './Effects';
+import Environment from './Environment';
 
 // ?lite — for TVs that can't hold 60fps: lower dpr, no post chain, fewer particles.
 export const LITE = typeof window !== 'undefined' && new URLSearchParams(window.location.search).has('lite');
@@ -165,6 +166,7 @@ export default function ArenaScene({ view, party = [], minions = [], horde = 0, 
       <pointLight position={[4.5, 4, 2]} intensity={enraged ? 110 : 50} color={enraged ? '#ff5d5d' : '#ff9d5c'} />
       <TimeKeeper />
       <CameraRig />
+      <Environment enraged={enraged} lite={LITE} />
       <Floor />
       <Debris kills={kills} />
       {party.map((f, i) => (
