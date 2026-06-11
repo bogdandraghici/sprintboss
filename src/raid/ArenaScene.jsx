@@ -5,14 +5,13 @@ import { cssVar } from './cssVar';
 import { drainShake, addShake } from './shakeBus';
 import { addFreeze, drainFreeze } from './timeBus';
 import { bossStage, deriveTableau } from './raidState';
-import { fighterAuras, fighterBlockHeat, bossScars, debris } from './heat';
+import { fighterAuras, fighterBlockHeat, bossScars } from './heat';
 import FighterSprite from './FighterSprite';
 import BossSprite from './BossSprite';
 import MinionSprite, { minionPos } from './MinionSprite';
 import FloatNum from './FloatNum';
 import SlashFX from './SlashFX';
 import ImpactFX from './ImpactFX';
-import Debris from './Debris';
 import Effects from './Effects';
 import Environment from './Environment';
 
@@ -98,7 +97,10 @@ export default function ArenaScene({ view, party = [], minions = [], horde = 0, 
   const auras = useMemo(() => fighterAuras(view.events, view.issues, view.now), [view]);
   const blockHeat = useMemo(() => fighterBlockHeat(view.events, view.issues, view.now), [view]);
   const scars = useMemo(() => bossScars(view.events, view.now), [view]);
-  const kills = useMemo(() => debris(view.events, view.now), [view]);
+  // Planted-sword debris removed in the mockup pass — boss scars + HP segment
+  // afterglow already carry the "we closed tickets" signal; the swords just
+  // littered the baseline at the smaller sprite scale. heat.js still exports
+  // debris() so retro/timeMachine reconstructions stay intact if it comes back.
 
   const [floats, setFloats] = useState([]);
   const nextFloat = useRef(0);
@@ -175,7 +177,6 @@ export default function ArenaScene({ view, party = [], minions = [], horde = 0, 
       <CameraRig />
       <Environment enraged={enraged} lite={LITE} />
       <Floor />
-      <Debris kills={kills} />
       {party.map((f, i) => (
         <FighterSprite
           key={f.name}
