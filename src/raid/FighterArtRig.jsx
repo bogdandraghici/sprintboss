@@ -28,7 +28,7 @@ function Rig({ fighter, attack, onStrike, position, phase = 0, aura = 0, beaconH
   const body = useRef();
   const mat = useRef();
   const auraMat = useRef();
-  const anim = useRef({ id: null, t: 99, struck: false, points: 1 });
+  const anim = useRef({ id: null, t: 99, struck: false, points: 1 }); // t seeds past ATK_TOTAL: no phantom attack on mount
   const [ghosts, setGhosts] = useState([]);
   const [dust, setDust] = useState([]);
   const nextFx = useRef(0);
