@@ -1,6 +1,6 @@
 // src/raid/sprites/classes/staff.js
 // Robed caster, 20×28, gem staff drawn in. Pure data — no imports (node-loadable).
-// Chars: K outline, S skin, H hair, A robe, B dark trim/hem, P pants (unused), W staff shaft, L metal (unused), G gem glow.
+// Chars: K outline, S skin, H hair, A robe, B dark trim/hem, W staff shaft, G gem glow.
 // No legs: the robe widens from the waist to a flat B-hemmed base on the floor —
 // the only skirt-shaped lower half on the roster, so it reads "caster" at a glance.
 // Fighters face RIGHT. Staff is planted at the right side, gem at head height.
@@ -37,7 +37,7 @@ const IDLE_A = [
   '..KKKKKKKKKKKKKKKK..',
 ];
 
-// Breathing: the staff gem glints — glow spills up through the top cap.
+// Breathing: staff gem glints a row higher into the top cap.
 const IDLE_B_EDITS = {
   1: '......KHHHHHK.KGGK..',
 };
