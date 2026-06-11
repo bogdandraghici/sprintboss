@@ -26,11 +26,11 @@ const scarPos = (key) => {
 export default function BossSprite({ enraged, hit, summon, stage = 0, scars = [], tableau = null }) {
   const dead = tableau === 'victory';
   const palette = useMemo(
-    () => (enraged ? { ...BOSS_PALETTE, E: '#ff2222', G: '#ff5d5d', C: '#ffd479' } : BOSS_PALETTE),
+    () => (enraged ? { ...BOSS_PALETTE, E: '#ff2222', e: '#7a1010', G: '#ff5d5d', C: '#ffd479' } : BOSS_PALETTE),
     [enraged]
   );
   const entry = useMemo(
-    () => sheetTexture(`boss:v7:s${Math.min(stage, 3)}:${enraged ? 'enraged' : 'calm'}`, bossFrames(stage), palette),
+    () => sheetTexture(`boss:v8:s${Math.min(stage, 3)}:${enraged ? 'enraged' : 'calm'}`, bossFrames(stage), palette),
     [palette, enraged, stage]
   );
   const group = useRef();

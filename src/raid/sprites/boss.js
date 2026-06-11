@@ -5,13 +5,15 @@
 import { compose } from './bodies';
 import { up2 } from './ops';
 
-// Slate golem per the approved mockup — flat un-outlined blocks, a head fused
-// into the shoulders, ember eyes, and a translucent fringe ('m') dissolving
-// off the silhouette.
+// Slate golem matched to the close-up mockup — flat un-outlined blocks in a
+// three-tone neutral slate ramp (D dark recess, M body, T lit edge/sternum),
+// twin ember eyes with a darker-orange socket glow ('e'). No center crevice,
+// no ghost fringe: clean solid silhouette.
 export const BOSS_PALETTE = {
-  K: '#0d1016', M: '#6e7790', T: '#9aa3b5', D: '#4d5570', E: '#ff5a2d',
+  K: '#0d1016', M: '#4e5468', T: '#727b91', D: '#33384a', E: '#ff6033',
+  e: '#c23d1c',
   G: '#7fe7ff', C: '#e8eef4', W: '#6b5b4a', L: '#bfefff',
-  O: '#ff9d3d', m: '#6e779066',
+  O: '#ff9d3d', m: '#4e546866',
 };
 
 // Scope-creep minions are their own creature — mockup green, not boss slate.
@@ -19,37 +21,37 @@ export const MINION_PALETTE = {
   K: '#0d1016', M: '#69b35e', D: '#2e6b2a', E: '#ffd75e',
 };
 
-// The golem, redrawn to the approved mockup: a looming slate mass. Wide
-// rounded head with big 2×2 ember eyes, shoulders flowing straight out of the
-// jaw, a dark crevice splitting the torso, stubby legs. No hard outline —
-// flat dithered blocks; 'm' is the ghost-fringe dissolving off the edges.
+// The golem, matched to the close-up mockup: rounded slate head with twin
+// ember eyes (socket glow below), the head flowing straight into wide
+// shoulders, chunky arms hanging at the sides, a lighter sternum down the
+// upper torso, tapering to a column base. Solid edges, no crevice.
 const B_IDLE_A = [
-  '........mTTTTTTTTTTm........',  // 0  head top
-  '........TMMMMMMMMMMT........',  // 1
-  '......m.MMMMMMMMMMMM.m......',  // 2
-  '........MMEEMMMMEEMM........',  // 3  eyes
-  '........MMEEMMMMEEMM........',  // 4
-  '........MMMMMMMMMMMM........',  // 5  jaw
-  '.........DMMMMMMMMD.........',  // 6  chin
-  '...mTTTTMMMMMMMMMMMMTTTTm...',  // 7  shoulder line
-  '..mTMMMMMMMMMMMMMMMMMMMMTm..',  // 8  lit shoulder tops
-  '...DDDDMMMMMMKKMMMMMMDDDD...',  // 9  crevice opens
-  '.m.DDDDMMTMMMKKMMMTMMDDDD.m.',  // 10
-  '...DDDD.MMMMMKKMMMMM.DDDD...',  // 11 arms drift off the torso
-  '...DDDD.MMMMMKKMMMMM.DDDD...',  // 12
-  '...DDDD.MMTMMKKMMMMM.DDDD...',  // 13
-  'm..DDDD.MMMMMKKMMTMM.DDDD..m',  // 14
-  '...DDDD.MMMMMKKMMMMM.DDDD...',  // 15
-  '......DDMMMMMKKMMMMMDD.m....',  // 16 taper
-  '....m.DDMMMMMKKMMMMMDD......',  // 17
-  '.......DMMMMMKKMMMMMD.......',  // 18 hips
-  '.......MMMMMMKKMMMMMM.......',  // 19 one massive column to the ground
-  '.......MMMTMMKKMMMMMM.......',  // 20
-  '.......MMMMMMKKMMTMMM.......',  // 21
-  '........MMMMMKKMMMMM........',  // 22
-  '........MMMMMKKMMMMM........',  // 23
-  '........DMMMMKKMMMMD........',  // 24
-  '.........DDDDDDDDDD.........',  // 25 base shadow
+  '..........TTTTTTTT..........',  // 0  head top (rounded)
+  '.........TMMMMMMMMT.........',  // 1
+  '........MMMMMMMMMMMM........',  // 2  brow
+  '........MMMEEMMEEMMM........',  // 3  eyes
+  '........MMMEEMMEEMMM........',  // 4
+  '........MMMeeMMeeMMM........',  // 5  socket glow
+  '........MMMMMMMMMMMM........',  // 6  lower face
+  '.....TTTTTTTTTTTTTTTTTT.....',  // 7  lit shoulder top
+  '....TMMMMMMMMMMMMMMMMMMT....',  // 8  shoulders
+  '....MMMMMMMMMMMMMMMMMMMM....',  // 9
+  '....DDDKMMMMMTTMMMMMKDDD....',  // 10 armpit notch + sternum
+  '....DDDDMMMMMTTMMMMMDDDD....',  // 11 arms hang at the sides
+  '....DDDDMMMMMTTMMMMMDDDD....',  // 12
+  '....DDDDMMMMMTTMMMMMDDDD....',  // 13
+  '....DDDDMMMMMMMMMMMMDDDD....',  // 14
+  '....DDDDMMMMMMMMMMMMDDDD....',  // 15
+  '......DDMMMMMMMMMMMMDD......',  // 16 arms taper
+  '......DDMMMMMMMMMMMMDD......',  // 17
+  '.......DMMMMMMMMMMMMD.......',  // 18 hips
+  '........MMMMMMMMMMMM........',  // 19 column
+  '........MMMMMMMMMMMM........',  // 20
+  '........MMMMMMMMMMMM........',  // 21
+  '........MMMMMDDMMMMM........',  // 22 leg split begins
+  '........MMMMMDDMMMMM........',  // 23
+  '........DMMMMDDMMMMD........',  // 24 base
+  '........DDDDDDDDDDDD........',  // 25 base shadow
 ];
 
 // Breathing: the head bobs down a pixel.
@@ -57,17 +59,19 @@ const B_IDLE_B = B_IDLE_A.map((row, y) =>
   y === 0 ? '.'.repeat(28) : y <= 6 ? B_IDLE_A[y - 1] : row
 );
 
-// Summon cast: arms wrenched up beside the head; torso narrows below.
+// Summon cast: arms wrenched up beside the head. Rows 8-10 keep the arm roots
+// (and the cracks that compose there); 11-17 drop the side arms.
 const B_CAST = B_IDLE_A.map((row, y) => {
-  if (y === 0) return '..DDD...mTTTTTTTTTTm...DDD..';
-  if (y === 1) return '..DDD...TMMMMMMMMMMT...DDD..';
+  if (y === 0) return '..DDD.....TTTTTTTT.....DDD..';
+  if (y === 1) return '..DDD....TMMMMMMMMT....DDD..';
   if (y === 2) return '..DDD...MMMMMMMMMMMM...DDD..';
-  if (y === 3) return '..DDD...MMEEMMMMEEMM...DDD..';
-  if (y === 4) return '..DDD...MMEEMMMMEEMM...DDD..';
-  if (y === 5) return '..DDD...MMMMMMMMMMMM...DDD..';
-  if (y === 6) return '...DDD...DMMMMMMMMD...DDD...';
-  if (y === 7) return '...DDDTTMMMMMMMMMMMMMMTTDDD.';
-  if (y >= 11 && y <= 15) return '.......DMMMMMKKMMMMMD.......';
+  if (y === 3) return '..DDD...MMMEEMMEEMMM...DDD..';
+  if (y === 4) return '..DDD...MMMEEMMEEMMM...DDD..';
+  if (y === 5) return '..DDD...MMMeeMMeeMMM...DDD..';
+  if (y === 6) return '..DDD...MMMMMMMMMMMM...DDD..';
+  if (y === 7) return '...DDDMMMMMMMMMMMMMMMMDDD...';
+  if (y >= 11 && y <= 13) return '........MMMMMTTMMMMM........';
+  if (y >= 14 && y <= 17) return '........MMMMMMMMMMMM........';
   return row;
 });
 
