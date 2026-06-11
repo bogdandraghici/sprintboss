@@ -70,6 +70,7 @@ export const ROSTER = {
   'Alex Preda':        { hair: 'short', weapon: 'daggers', palette: { H: '#16120e', A: '#7a8aa8' } },
   'Corina Ivanov':     { hair: 'bun',   weapon: 'sword',   palette: { H: '#52341d', A: '#e0a93f' } },
   'Mihai Saru':        { hair: 'short', weapon: 'staff',   palette: { H: '#26201a', A: '#36c8a0' }, art: 'mihai', artScale: 0.85 },
+  'Andra Popazu':      { hair: 'long',  weapon: 'staff',   palette: { H: '#3a2a1a', A: '#6fae3a' }, art: 'andra' },
   '__recruit__':       { hair: 'buzz',  weapon: 'sword',   palette: { H: '#3a3a3a', A: '#6b7280' } },
 };
 
