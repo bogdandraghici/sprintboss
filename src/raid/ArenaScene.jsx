@@ -209,7 +209,7 @@ export default function ArenaScene({ view, party = [], minions = [], horde = 0, 
             tableau={tableau}
             focus={focus}
             onFocus={onFocus}
-            position={[-8.2 + (i % 5) * 2.2 + Math.floor(i / 5) * 0.6, 0, 0.2 - Math.floor(i / 5) * 0.85]}
+            position={[-8.4 + (i % 5) * 2.55 + Math.floor(i / 5) * 0.8, 0, 0.2 - Math.floor(i / 5) * 1.05]}
           />
         );
       })}

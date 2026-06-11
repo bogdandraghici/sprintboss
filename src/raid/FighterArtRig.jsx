@@ -13,7 +13,7 @@ import { fitPlane } from './bossArtMath';
 import { attackPose, idlePose, victoryPose, DOWN_ROT, SLUMP } from './artPose';
 import { frozen } from './timeBus';
 
-const ART_FIGHTER_H = 1.6; // world height — designer-tuned live in the preview
+const ART_FIGHTER_H = 1.78; // world height — designer-tuned live in the preview
 const GHOST_LIFE = 0.35;
 const DUST_LIFE = 0.6;
 
