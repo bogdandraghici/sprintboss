@@ -2,3 +2,6 @@ node_modules
 dist
 .env
 .DS_Store
+
+# Raw/source boss art — local master only; the keyed/used asset is idle.png
+public/boss/*-raw.png

@@ -12,7 +12,7 @@ const PX = 0.064; // matrix fallback: 56x52 -> ≈ 3.6 x 3.3 world units
 const BOSS_X = 4.6;
 const BODY_W = 56 * PX;
 const BODY_H = 52 * PX;
-const ART_H = 3.6; // world height for the loaded sprite (width derives from aspect)
+const ART_H = 4.4; // world height for the loaded sprite (width derives from aspect)
 
 // Deterministic scar spot on the torso, hashed from the issue key, in the
 // plane's own w×h so it lands right whether art or matrix is in use.
@@ -84,8 +84,10 @@ export default function BossSprite({ enraged, hit, summon, stage = 0, scars = []
 
     // Flash white on hit + a green wash while casting. Enrage reddens the art
     // by tint (the matrix path reddens via palette swap instead, so skip it).
+    // Painted art already carries its own colour — enrage is a gentle warm/angry
+    // shift, not a flat red multiply (which would crush the illustration to a blob).
     const redden = usingArt && enraged;
-    const r0 = redden ? 1.4 : 1, g0 = redden ? 0.58 : 1, b0 = redden ? 0.58 : 1;
+    const r0 = redden ? 1.18 : 1, g0 = redden ? 0.82 : 1, b0 = redden ? 0.78 : 1;
     const w = f.flash * 3;
     mat.current.color.setRGB(r0 + w, g0 + w + (castActive ? 1.0 : 0), b0 + w);
 
@@ -113,7 +115,7 @@ export default function BossSprite({ enraged, hit, summon, stage = 0, scars = []
           ref={mat}
           map={usingArt ? art.idle : entry.tex}
           transparent
-          alphaTest={usingArt ? 0.5 : 0.05}
+          alphaTest={usingArt ? 0.02 : 0.05}
           toneMapped={false}
         />
       </mesh>

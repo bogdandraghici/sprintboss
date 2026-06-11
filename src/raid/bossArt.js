@@ -16,9 +16,13 @@ function load(url) {
     loader.load(
       url,
       (tex) => {
-        tex.magFilter = THREE.NearestFilter; // pixel-art: no blur on upscale
-        tex.minFilter = THREE.NearestFilter;
-        tex.generateMipmaps = false;
+        // Painted art (not pixel): smooth + mipmapped for a clean downscale to
+        // the boss's on-screen size. (Was NearestFilter when we expected pixel
+        // sprites — the delivered art is illustrated, so linear reads better.)
+        tex.magFilter = THREE.LinearFilter;
+        tex.minFilter = THREE.LinearMipmapLinearFilter;
+        tex.generateMipmaps = true;
+        tex.anisotropy = 4;
         tex.colorSpace = THREE.SRGBColorSpace;
         resolve(tex);
       },
