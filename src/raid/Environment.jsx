@@ -104,7 +104,7 @@ function Dust() {
 // War banners planted around the battlefield — pixel-art prop, loaded once and
 // instanced at a few background spots (behind the action line). Decorative.
 const BANNER_SPOTS = [
-  { x: -9.6, z: -1.0, h: 3.3 },
+  { x: -10.8, z: -1.0, h: 3.3 },
 ];
 // Objects this far back sit on the y=0 plane but project above the visible
 // baseline; drop them so the pole base meets the floor (grows with distance).
