@@ -1,6 +1,6 @@
 // src/raid/sprites/classes/daggers.js
 // Small hooded rogue, 20×28, twin daggers drawn in. Pure data — no imports (node-loadable).
-// Chars: K outline, S skin, H hair, A armor, B dark hood/boots, P pants, W grip, L blade, G gem.
+// Chars: K outline, S skin, A armor, B dark hood/boots, P pants, W grip, L blade, G gem.
 // Smallest silhouette on the roster: ~22 rows standing (head from row 6), knees always bent.
 // The head is wrapped in a pointed B hood — only the face shows; hairAt is null on EVERY pose
 // (hair never composes onto this class; the hood erases with the head via the head box).
