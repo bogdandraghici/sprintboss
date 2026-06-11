@@ -71,6 +71,7 @@ export const ROSTER = {
   'Corina Ivanov':     { hair: 'bun',   weapon: 'sword',   palette: { H: '#52341d', A: '#e0a93f' }, art: 'corina' },
   'Mihai Saru':        { hair: 'short', weapon: 'staff',   palette: { H: '#26201a', A: '#36c8a0' }, art: 'mihai', artScale: 0.85 },
   'Andra Popazu':      { hair: 'long',  weapon: 'staff',   palette: { H: '#3a2a1a', A: '#6fae3a' }, art: 'andra' },
+  'Tiberiu Birloiu':   { hair: 'short', weapon: 'hammer',  palette: { H: '#2e2118', A: '#e0852a' }, art: 'tibi' },
   '__recruit__':       { hair: 'buzz',  weapon: 'sword',   palette: { H: '#3a3a3a', A: '#6b7280' } },
 };
 
