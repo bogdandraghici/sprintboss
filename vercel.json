@@ -8,9 +8,6 @@
     { "source": "/auth/(.*)", "destination": "/api/index" },
     { "source": "/healthz", "destination": "/api/index" }
   ],
-  "crons": [
-    { "path": "/api/refresh", "schedule": "* * * * *" }
-  ],
   "functions": {
     "api/index.js": {
       "maxDuration": 15

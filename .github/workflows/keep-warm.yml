@@ -1,0 +1,33 @@
+# Optional snapshot keep-warm — only needed if you care about fast first-load
+# when no client has been polling. The dashboard itself already refreshes the
+# KV snapshot on every 60s client poll (see server/snapshotStore.js); this
+# workflow is for the empty-room case.
+#
+# To enable:
+#   1. Set repo secrets VERCEL_URL (e.g. https://sprint-boss.vercel.app) and
+#      CRON_SECRET (must match the Vercel env var of the same name).
+#   2. Remove the `if: false` line below.
+#
+# GitHub Actions cron is best-effort — ticks can be delayed or skipped under
+# platform load. That's fine for a wall display, not fine for SLA work.
+
+name: keep-snapshot-warm
+on:
+  schedule:
+    - cron: '*/5 * * * *'
+  workflow_dispatch:
+
+jobs:
+  ping:
+    if: false  # ← delete this line to enable
+    runs-on: ubuntu-latest
+    timeout-minutes: 2
+    steps:
+      - name: Trigger snapshot refresh
+        env:
+          VERCEL_URL: ${{ secrets.VERCEL_URL }}
+          CRON_SECRET: ${{ secrets.CRON_SECRET }}
+        run: |
+          curl -fsS \
+            -H "Authorization: Bearer ${CRON_SECRET}" \
+            "${VERCEL_URL%/}/api/refresh"

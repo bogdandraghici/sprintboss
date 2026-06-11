@@ -33,7 +33,7 @@ Ambient wall-display app that visualizes our live Jira sprint as a boss fight. E
   preview.
 - Sprites are in-code pixel matrices (strings + palette), rasterized to CanvasTextures at runtime — no image assets. Roster in `sprites/roster.js`; unknown assignees get the `__recruit__` fallback. Attack pulses route by **issue key**, not event actor (the actor is whoever dragged the ticket).
 - Avatars load via `/api/avatar` proxy (host-allowlisted) — the Atlassian CDN has no CORS headers and would taint WebGL textures.
-- Snapshot cache lives in `server/snapshotStore.js`: in-memory on dev/Render, Vercel KV when `KV_REST_API_URL` is set. Long-lived hosts refresh via `setInterval` in `server/index.js`; on Vercel that branch is skipped and `/api/refresh` (guarded by `CRON_SECRET`, exempt from the Google session middleware) is hit by Vercel Cron every minute — see [vercel.json](vercel.json), [api/index.js](api/index.js).
+- Snapshot cache lives in `server/snapshotStore.js`: in-memory on dev/Render, Vercel KV when `KV_REST_API_URL` is set. Long-lived hosts refresh via `setInterval` in `server/index.js`; on Vercel that branch is skipped and `getSnapshot()` refreshes lazily on read — the 60s client poll IS the refresh cadence (Hobby plan has no usable cron). `/api/refresh` (guarded by `CRON_SECRET`, exempt from the Google session middleware) is still available for the empty-room keep-warm case via the optional [.github/workflows/keep-warm.yml](.github/workflows/keep-warm.yml).
 - Both views share HUD widgets from `src/components/hud.jsx`. `BossFigure.jsx` (SVG golem) is also used by boot/no-sprint screens — don't delete it.
 
 ## Constraints & conventions

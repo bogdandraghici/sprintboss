@@ -56,16 +56,21 @@ Vercel KV — replacing the long-lived `setInterval` poll.
    `https://<your-vercel-domain>/auth/callback` (and any custom domain you
    point at the project). The dev/Render redirect URI keeps working in
    parallel.
-5. **Cron cadence.** [vercel.json](vercel.json) schedules `/api/refresh`
-   every minute (`* * * * *`). Per-minute crons need the **Pro plan**; on
-   Hobby the minimum is daily and the snapshot would stale out fast. If
-   you're stuck on Hobby, drop the cron and rely on the lazy refresh in
-   `getSnapshot()` (every cold start refetches Jira), or proxy an external
-   uptime ping at `/api/refresh` instead.
+5. **Keeping the snapshot warm.** No Vercel Cron is configured — on the
+   Hobby plan per-minute crons aren't available, and we don't need them.
+   `getSnapshot()` in [server/snapshotStore.js](server/snapshotStore.js)
+   refreshes lazily: when the KV entry is older than `CONFIG.pollMs` (60s),
+   the next read refetches Jira inline before responding. The dashboard
+   client polls every 60s, so an open TV effectively *is* the cron — every
+   poll triggers a refresh when the cache expires. If you ever want the
+   snapshot kept warm even when no client is open (faster first-load for
+   walk-ups), see [.github/workflows/keep-warm.yml](.github/workflows/keep-warm.yml)
+   — a ready-to-enable GitHub Actions cron that curls `/api/refresh` every
+   5 minutes (set `VERCEL_URL` and `CRON_SECRET` as repo secrets).
 
 After the first deploy: visit `https://<your-vercel-domain>/api/refresh`
-once (with `Authorization: Bearer $CRON_SECRET`) to seed KV before opening
-the dashboard, or just wait one minute for the cron's first tick.
+once (with `Authorization: Bearer $CRON_SECRET`) to seed KV, or just open
+the dashboard — the first request will refresh on the spot.
 
 ## Modes (top-right)
 
