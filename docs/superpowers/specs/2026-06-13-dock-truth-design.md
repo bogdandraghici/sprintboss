@@ -92,7 +92,9 @@ about — are the ones most at risk of bad data.
 
 - No truth-ticker aggregate ("7 veterans").
 - No per-story on-track/at-risk forecast.
-- No carryover marks on the HP bar or in standup mode.
+- No carryover marks on the HP bar. (The shared `Ticket` card carries its badge
+  wherever the card renders — including the standup overlay; "no standup mode"
+  here means no standup-specific carryover stats, not suppressing the card's badge.)
 - No story progress in the quest-log/HUD band.
 
 ## Testing

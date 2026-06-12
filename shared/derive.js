@@ -13,7 +13,8 @@ export function priorSprintsOf(closedSprints, currentSprintId) {
   if (!Array.isArray(closedSprints)) return [];
   return closedSprints
     .filter((s) => s && String(s.id) !== String(currentSprintId))
-    .map((s) => ({ id: s.id, name: s.name || String(s.id) }));
+    .map((s) => ({ id: s.id, name: s.name || String(s.id) }))
+    .sort((a, b) => Number(a.id) - Number(b.id));
 }
 
 /**

@@ -22,6 +22,11 @@ describe('priorSprintsOf', () => {
   it('falls back to the id when a sprint has no name', () => {
     expect(priorSprintsOf([{ id: 40 }], 42)).toEqual([{ id: 40, name: '40' }]);
   });
+
+  it('sorts priors by id so display order is chronological regardless of API order', () => {
+    const closed = [{ id: 41, name: 'Sprint 41' }, { id: 39, name: 'Sprint 39' }, { id: 40, name: 'Sprint 40' }];
+    expect(priorSprintsOf(closed, 42).map((s) => s.id)).toEqual([39, 40, 41]);
+  });
 });
 
 describe('deriveSnapshot priorSprints passthrough', () => {

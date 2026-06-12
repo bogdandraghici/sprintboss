@@ -1,8 +1,9 @@
 // src/components/Dock.jsx
 // The data half of the command deck: real tickets, grouped by board column and,
-// within each column, sub-grouped by story (the Jira parent). Stories with 2+
-// tickets get a colored sub-header; singletons + parentless tickets fold into a
-// quiet "Other" cluster (folded singletons keep their story name inline).
+// within each column, sub-grouped by story (the Jira parent). Every parent gets
+// its own colored sub-header + a hairline story-wide progress meter (even a
+// single-ticket story); only truly parentless tickets fold into the quiet
+// "Other" cluster (no meter, story names inline where needed).
 import { useMemo } from 'react';
 import Ticket from './Ticket';
 import { deriveDock, groupByStory, storyColor, storyProgress } from '../raid/raidState';
