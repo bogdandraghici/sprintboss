@@ -116,6 +116,7 @@ export default function BossSprite({ enraged, hit, summon, stage = 0, scars = []
           transparent
           alphaTest={usingArt ? 0.4 : 0.05}
           toneMapped={false}
+          fog={false}
         />
       </mesh>
       {/* Art path: cracks are scene overlays (the matrix bakes them into the sheet). */}

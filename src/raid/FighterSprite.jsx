@@ -104,7 +104,7 @@ export default function FighterSprite({ fighter, attack, onStrike, position, pha
       )}
       <mesh position={[0, PX * (SPRITE_H / 2), 0]}>
         <planeGeometry args={[SPRITE_W * PX, SPRITE_H * PX]} />
-        <meshBasicMaterial ref={mat} map={entry.tex} transparent alphaTest={0.5} toneMapped={false} />
+        <meshBasicMaterial ref={mat} map={entry.tex} transparent alphaTest={0.5} toneMapped={false} fog={false} />
       </mesh>
       {/* Selection cue: a teal ring on the floor under the focused fighter. */}
       {focus === fighter.name && (
@@ -116,7 +116,7 @@ export default function FighterSprite({ fighter, attack, onStrike, position, pha
       {/* initial head height is approximate — useFrame re-anchors it every frame */}
       <mesh ref={head} position={[0, PX * 47, 0.02]}>
         <planeGeometry args={[HEAD_SIZE, HEAD_SIZE]} />
-        <meshBasicMaterial ref={headMat} map={headTex} transparent alphaTest={0.5} toneMapped={false} />
+        <meshBasicMaterial ref={headMat} map={headTex} transparent alphaTest={0.5} toneMapped={false} fog={false} />
       </mesh>
       {aura > 0 && (
         <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, 0.02, 0]}>

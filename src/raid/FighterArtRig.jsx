@@ -87,7 +87,7 @@ function Rig({ fighter, attack, onStrike, position, phase = 0, aura = 0, beaconH
       <group ref={body}>
         <mesh position={[0, H / 2, 0]}>
           <planeGeometry args={[W, H]} />
-          <meshBasicMaterial ref={mat} map={tex} transparent alphaTest={0.4} toneMapped={false} />
+          <meshBasicMaterial ref={mat} map={tex} transparent alphaTest={0.4} toneMapped={false} fog={false} />
         </mesh>
       </group>
       {focus === fighter.name && (
@@ -119,7 +119,7 @@ function Ghost({ g, tex, w, h }) {
   return (
     <mesh position={[g.x, h / 2, -0.02]}>
       <planeGeometry args={[w, h]} />
-      <meshBasicMaterial ref={m} map={tex} transparent opacity={0.35} alphaTest={0.05} toneMapped={false} depthWrite={false} />
+      <meshBasicMaterial ref={m} map={tex} transparent opacity={0.35} alphaTest={0.05} toneMapped={false} depthWrite={false} fog={false} />
     </mesh>
   );
 }

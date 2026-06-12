@@ -39,7 +39,7 @@ export default function MinionSprite({ issue, index, horde = 0 }) {
       </mesh>
       <mesh ref={mesh}>
         <planeGeometry args={[10 * PX, 8 * PX]} />
-        <meshBasicMaterial map={entry.tex} transparent alphaTest={0.5} toneMapped={false} />
+        <meshBasicMaterial map={entry.tex} transparent alphaTest={0.5} toneMapped={false} fog={false} />
       </mesh>
       {horde > 0 && (
         <Text position={[0.55, 0.3, 0]} fontSize={0.28} color="#a3e635" anchorX="left">
