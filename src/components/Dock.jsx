@@ -3,14 +3,15 @@
 // within each column, sub-grouped by story (the Jira parent). Stories with 2+
 // tickets get a colored sub-header; singletons + parentless tickets fold into a
 // quiet "Other" cluster (folded singletons keep their story name inline).
+import { useMemo } from 'react';
 import Ticket from './Ticket';
 import { deriveDock, groupByStory, storyColor, storyProgress } from '../raid/raidState';
 
 export default function Dock({ view, onSelect, focus = null }) {
-  const { groups, blocked } = deriveDock(view, focus);
+  const { groups, blocked } = useMemo(() => deriveDock(view, focus), [view, focus]);
   // Story-wide (never focus-filtered): the meter is a fact about the objective,
   // not the person — the cards beneath already filter.
-  const progress = storyProgress(view);
+  const progress = useMemo(() => storyProgress(view), [view]);
   return (
     <div className="dock">
       {groups.map((g) => <DockGroup key={g.idx} group={g} view={view} onSelect={onSelect} progress={progress} />)}
