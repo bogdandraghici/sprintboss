@@ -3,6 +3,7 @@
 import { useMemo, useState, useEffect } from 'react';
 import ArenaScene from './ArenaScene';
 import Dock from '../components/Dock';
+import FighterBar from '../components/FighterBar';
 import TruthTicker from '../components/TruthTicker';
 import { EnrageTimer, HpBar, DamageLog } from '../components/hud';
 import { deriveParty, deriveMinions, pulseActions } from './raidState';
@@ -46,6 +47,7 @@ export default function RaidView({ view, pulses, onSelect }) {
           <DamageLog view={view} />
         </div>
       </div>
+      <FighterBar party={party} focus={focus} onFocus={setFocus} />
       <Dock view={view} onSelect={onSelect} focus={focus} />
       <TruthTicker view={view} onSelect={onSelect} focus={focus} />
     </section>
