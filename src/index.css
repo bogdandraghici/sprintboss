@@ -388,7 +388,7 @@ html[data-theme='light'] .standup { background: rgba(231, 228, 220, 0.88); }
   height: 3px;
   border-radius: 3px;
   background: var(--steel-2);
-  transform: translateY(2px); /* sit just below the arena edge */
+  transform: translateY(0); /* sit right on the arena edge */
   transition: background 0.15s ease, width 0.15s ease;
 }
 .arena-resize:hover .arena-resize-grip,
