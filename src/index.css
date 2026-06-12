@@ -47,21 +47,21 @@ html[data-theme='dark'] {
 }
 
 html[data-theme='light'] {
-  /* steel daylight — the night-shift floor with the lights on */
+  /* daylight — pure neutral ground; color is reserved for signals */
   color-scheme: light;
-  --bg: #dfe4e9;
-  --bg-grid: rgba(50, 80, 110, 0.04);
-  --panel: #f6f8fa;
-  --panel-2: #eef1f4;
-  --inset: #e2e7ec;
-  --line: #c3ccd6;
-  --line-2: #a4b2c0;
-  --ink: #1c2733;
-  --dim: #5d6f81;
-  --faint: #8c9aa8;
-  --steel: #8a9aab;
-  --steel-2: #64798d;
-  --steel-3: #d3dae1;
+  --bg: #f1f1f0;
+  --bg-grid: rgba(60, 60, 60, 0.035);
+  --panel: #fdfdfc;
+  --panel-2: #f7f7f6;
+  --inset: #ebebea;
+  --line: #dcdcda;
+  --line-2: #bcbcb9;
+  --ink: #1f2326;
+  --dim: #62686e;
+  --faint: #94999e;
+  --steel: #9aa0a6;
+  --steel-2: #73797f;
+  --steel-3: #dddfe0;
   --eye: #0c9e8d;
   --belt: #d4dbe2;
   --belt-stripe: rgba(180, 122, 10, 0.55);
@@ -581,6 +581,14 @@ html[data-theme='light'] .panel { box-shadow: 0 0.4rem 1.4rem rgba(28, 39, 51, 0
 html[data-theme='light'] .enrage-math { box-shadow: 0 0.8rem 2rem rgba(28, 39, 51, 0.25); }
 html[data-theme='light'] .avatar { border-color: rgba(28, 39, 51, 0.25); }
 html[data-theme='light'] .fc-stat { background: rgba(28, 39, 51, 0.035); }
+
+/* the decorative color layer (story hues from JS, stale washes) is tuned to
+   glow on dark ground; on white it shouts. Pull it toward ink / fade it. */
+html[data-theme='light'] .story-cap { color: color-mix(in srgb, var(--capc, var(--faint)) 55%, var(--ink)); }
+html[data-theme='light'] .substory .bar { background: color-mix(in srgb, var(--barc, var(--steel-3)) 70%, var(--ink)); }
+html[data-theme='light'] .substory .nm { color: color-mix(in srgb, var(--nmc, var(--dim)) 50%, var(--ink)); }
+/* no stale wash on light ground — the bold red age numeral carries staleness */
+html[data-theme='light'] .ticket[data-age='stale'] { background: var(--panel-2); }
 
 /* framed viewport: the dark arena is a monitor on the light deck — panel
    border language plus a thin dark inner keyline so the seam is deliberate */

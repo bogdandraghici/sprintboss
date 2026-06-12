@@ -111,12 +111,15 @@ read or written.)
 ## Constraints & conventions
 
 - React 18 → pinned to @react-three/fiber **v8** / drei v9. No TypeScript — plain JSX. Theming via CSS variables in `index.css` (dark-first; scene reads them via `cssVar()` at mount).
-- Light theme is "steel daylight" (cool blue-gray, same steel family as dark).
-  Every 3D canvas is pinned to the dark palette via theme-independent
-  `--scene-*` tokens in `:root` (`index.css`) — scene code reads those, never
-  themed vars; in light mode the arena renders as a framed dark viewport.
-  Light-only fixes live in the `steel-daylight overrides` section at the end of
-  `index.css`, all scoped to `html[data-theme='light']`.
+- Light theme is pure neutral (white panels on quiet light gray — Bogdan
+  rejected blue-gray and warm-paper grounds; color belongs to signals only, so
+  light mode also deepens the JS story hues toward ink and drops the stale red
+  card wash, keeping staleness in the age numeral). Every 3D canvas is pinned
+  to the dark palette via theme-independent `--scene-*` tokens in `:root`
+  (`index.css`) — scene code reads those, never themed vars; in light mode the
+  arena renders as a framed dark viewport. Light-only fixes live in the
+  `steel-daylight overrides` section at the end of `index.css`, all scoped to
+  `html[data-theme='light']`.
 - Board quirks: blocked is a *column* (treated as blocked zone), nothing is story-pointed (tickets mode), heavy mid-sprint scope creep.
 - Workflow: commits go directly to `main`; pushes to github.com/flowx-ai/sprint-boss need Bogdan's explicit OK. `npm run dev` (live) / `npm run mock` (synthetic events for animation testing). Design docs: `docs/superpowers/specs/`, plans: `docs/superpowers/plans/`.
 - Sprite art is draft quality pending Bogdan's art-direction pass; he's a designer — consult him before visual decisions.
