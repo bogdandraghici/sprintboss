@@ -93,6 +93,10 @@ export const artSlugFor = (name) => personOf(name).art || null;
 // Lets a wide/seated pose read at the right size next to standing fighters.
 export const artScaleFor = (name) => personOf(name).artScale || 1;
 
+// Weapon class for a person ('sword' | 'hammer' | 'bow' | 'staff' | 'daggers').
+// Unknown assignees resolve through __recruit__ (which is 'sword').
+export const weaponFor = (name) => personOf(name).weapon;
+
 function build(name, headless) {
   const p = personOf(name);
   const cls = CLASSES[p.weapon];
