@@ -28,7 +28,7 @@ export default function RaidView({ view, pulses, onSelect }) {
     const h = arenaRef.current?.getBoundingClientRect().height;
     if (h == null) return;
     drag.current = { down: true, startY: e.clientY, startH: h };
-    e.currentTarget.setPointerCapture(e.pointerId);
+    try { e.currentTarget.setPointerCapture(e.pointerId); } catch { /* capture is best-effort */ }
   };
   const onResizeMove = (e) => {
     const d = drag.current;
@@ -37,8 +37,11 @@ export default function RaidView({ view, pulses, onSelect }) {
   };
   const onResizeUp = (e) => {
     drag.current.down = false;
-    e.currentTarget.releasePointerCapture?.(e.pointerId);
+    try { e.currentTarget.releasePointerCapture?.(e.pointerId); } catch { /* may already be released */ }
   };
+  // pointercancel (touch interrupt, alt-tab, system dialog) can drop the capture
+  // without an 'up'; reset so the next drag re-reads a fresh start height.
+  const onResizeCancel = () => { drag.current.down = false; };
 
   // Esc clears the focus.
   useEffect(() => {
@@ -82,6 +85,7 @@ export default function RaidView({ view, pulses, onSelect }) {
         onPointerDown={onResizeDown}
         onPointerMove={onResizeMove}
         onPointerUp={onResizeUp}
+        onPointerCancel={onResizeCancel}
         onDoubleClick={() => setArenaH(null)}
       >
         <span className="arena-resize-grip" />
