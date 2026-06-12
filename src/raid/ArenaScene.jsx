@@ -176,7 +176,7 @@ function floorTexture(bg, panel) {
 
 function Floor() {
   const tex = useMemo(
-    () => floorTexture(cssVar('--bg', '#0a0e13'), cssVar('--panel-2', '#0c1219')),
+    () => floorTexture(cssVar('--scene-bg', '#0a0e13'), cssVar('--scene-panel', '#0c1219')),
     []
   );
   return (
@@ -263,7 +263,7 @@ function FighterNames({ party, focus }) {
             renderOrder={18}
           >
             {firstName(f.name)}
-            <meshBasicMaterial color={focused ? cssVar('--ink', '#e8eef4') : cssVar('--dim', '#8da0b3')}
+            <meshBasicMaterial color={focused ? cssVar('--scene-ink', '#e8eef4') : cssVar('--scene-dim', '#8da0b3')}
               transparent opacity={op} depthTest={false} depthWrite={false} toneMapped={false} fog={false} />
           </Text>
         );
@@ -392,8 +392,8 @@ export default function ArenaScene({ view, party = [], minions = [], horde = 0, 
       gl={{ antialias: false }}
       style={{ position: 'absolute', inset: 0 }}
     >
-      <color attach="background" args={[cssVar('--bg', '#0a0e13')]} />
-      <fog attach="fog" args={[cssVar('--bg', '#0a0e13'), 12, 25]} />
+      <color attach="background" args={[cssVar('--scene-bg', '#0a0e13')]} />
+      <fog attach="fog" args={[cssVar('--scene-bg', '#0a0e13'), 12, 25]} />
       <ambientLight intensity={0.35} />
       <pointLight position={[-4, 5, 4]} intensity={60} color="#7fe7ff" />
       <pointLight position={[4.5, 4, 2]} intensity={enraged ? 110 : 50} color={enraged ? '#ff5d5d' : '#ff9d5c'} />

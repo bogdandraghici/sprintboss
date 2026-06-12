@@ -15,6 +15,13 @@
   --red: #ff5263;
   --lime: #a8e34d;
   --ember: #ff7847;
+
+  /* 3D scene tokens — every canvas (arena, fighter card) is pinned to the
+     dark palette in BOTH themes; scenes read these, never the themed vars. */
+  --scene-bg: #0a0e13;
+  --scene-panel: #0c1219;
+  --scene-ink: #e8eef4;
+  --scene-dim: #8da0b3;
 }
 
 html[data-theme='dark'] {
@@ -371,7 +378,7 @@ html[data-theme='light'] .standup { background: rgba(231, 228, 220, 0.88); }
 
 /* ── raid arena ─────────────────────────────────────────────── */
 .raidview { display: flex; flex-direction: column; min-height: 0; gap: 0.6rem; }
-.arena { position: relative; flex: 0 1 22vh; min-height: 0; border: 1px solid var(--line); border-radius: 10px; overflow: hidden; background: var(--bg); }
+.arena { position: relative; flex: 0 1 22vh; min-height: 0; border: 1px solid var(--line); border-radius: 10px; overflow: hidden; background: var(--scene-bg); }
 .arena-resize {
   flex: none;
   height: 14px;
