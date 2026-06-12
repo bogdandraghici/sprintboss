@@ -1,4 +1,4 @@
-// The factory golem. Flat SVG, themed via CSS variables, animated via CSS.
+// The boss golem (boot / no-sprint screens). Flat SVG, themed via CSS variables, animated via CSS.
 // Every detail encodes state: chest gauge needle = HP remaining,
 // cracks appear as HP drops, eyes/steam go red when enraged.
 

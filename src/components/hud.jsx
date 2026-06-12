@@ -1,5 +1,5 @@
 // src/components/hud.jsx
-// Raid-frame widgets shared by the arena HUD (and formerly BossPanel).
+// Raid-frame widgets for the arena HUD.
 import { useEffect, useMemo, useReducer, useState } from 'react';
 import { fmtCountdown, fmtDate, fmtDays, timeAgo, cls, DAY } from '../lib';
 import { segmentHeat } from '../raid/heat';

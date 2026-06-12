@@ -2,10 +2,13 @@
 
 Ambient wall-display app that visualizes our live Jira sprint as a boss fight. Express server polls Jira (flowx.atlassian.net, board 28 "MVP Team"), serves `/api/snapshot`; React client renders it. Built for a TV: calm base state, punchy event animations.
 
-## The two views (header toggle, persisted in `sb-view`)
+## The view
 
-- **Raid** (default; stored key `raid`, legacy `arena` migrates): the "command
-  deck". Top band = per-ticket boss HP bar + scar timeline + enrage timer.
+The single view is **Raid** — the "command deck". (The legacy Factory view and
+the header view-toggle were removed; the `sb-view` localStorage key is no longer
+read or written.)
+
+- **Raid**: Top band = per-ticket boss HP bar + scar timeline + enrage timer.
   Middle = HD-2D Three.js battle scene (`src/raid/`) — near-textless spectacle
   (the damage log floats over it as a translucent combat log), save for a subtle
   first-name caption planted on the floor under each fighter's feet
@@ -43,8 +46,6 @@ Ambient wall-display app that visualizes our live Jira sprint as a boss fight. E
   exported for retro/tests but no longer rendered — the on-floor ember-glow
   circles were cut.) `?lite` query flag drops post-processing/dpr for weak TV
   hardware.
-- **Factory** (legacy): conveyor-belt line (`FactoryLine.jsx`) + boss panel
-  (`BossPanel.jsx`).
 
 ## Architecture rules
 
@@ -66,7 +67,7 @@ Ambient wall-display app that visualizes our live Jira sprint as a boss fight. E
 - **Boss is the exception to no-image-assets**: it renders a generated sprite from `public/boss/idle.png` (optional `cast.png`) when present, else falls back to the in-code matrix (`sprites/boss.js`). Loader `bossArt.js` (linear filter — the art is painted, not pixel), layout math `bossArtMath.js` (fitPlane/crackSpecs, tested). Enrage/hit/HP-cracks/death are applied in-engine over a clean static sprite (so generate calm art); see `public/boss/README.md` for the generation spec + `scripts/key-art.py` to key out a white background.
 - Avatars load via `/api/avatar` proxy (host-allowlisted) — the Atlassian CDN has no CORS headers and would taint WebGL textures.
 - Snapshot cache lives in `server/snapshotStore.js`: in-memory on dev/Render, Vercel KV when `KV_REST_API_URL` is set. Long-lived hosts refresh via `setInterval` in `server/index.js`; on Vercel that branch is skipped and `getSnapshot()` refreshes lazily on read — the 60s client poll IS the refresh cadence (Hobby plan has no usable cron). `/api/refresh` (guarded by `CRON_SECRET`, exempt from the Google session middleware) is still available for the empty-room keep-warm case via the optional [.github/workflows/keep-warm.yml](.github/workflows/keep-warm.yml).
-- Both views share HUD widgets from `src/components/hud.jsx`. `BossFigure.jsx` (SVG golem) is also used by boot/no-sprint screens — don't delete it.
+- The Raid HUD widgets live in `src/components/hud.jsx`. `BossFigure.jsx` (SVG golem) is used by boot/no-sprint screens — don't delete it.
 
 ## Constraints & conventions
 
