@@ -6,7 +6,9 @@ import {
 } from '@react-three/postprocessing';
 import { freezeLeft } from './timeBus';
 
-// enraged: red-shifted grade. tableau 'defeat': desaturated. lite: no post at all.
+// enraged: red-shifted grade. lite: no post at all. (Defeat no longer drains
+// scene saturation — that read as "discolored/broken"; the boss crumble, red
+// enrage grade, vignette and HUD grade carry the overrun story instead.)
 export default function Effects({ enraged = false, tableau = null, lite = false }) {
   const ca = useRef();
   useFrame(() => {
@@ -21,7 +23,7 @@ export default function Effects({ enraged = false, tableau = null, lite = false 
     <EffectComposer>
       <Bloom luminanceThreshold={0.35} intensity={1.15} mipmapBlur />
       <Noise opacity={0.045} />
-      <HueSaturation saturation={tableau === 'defeat' ? -0.55 : enraged ? 0.12 : 0} />
+      <HueSaturation saturation={enraged ? 0.12 : 0} />
       <ChromaticAberration ref={ca} />
       <Vignette darkness={0.5} eskil={false} />
     </EffectComposer>
