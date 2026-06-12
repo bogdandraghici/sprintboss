@@ -16,12 +16,20 @@ Ambient wall-display app that visualizes our live Jira sprint as a boss fight. E
   blocked = fighter downed with beacon; boss cracks at 75/50/25% HP
   (`bossStage`) and crumbles on a cleared sprint; sprint overrun = defeat grade.
   Clicking a fighter focuses them — dock, HP bar, scene, and ticker all filter
-  to their tickets (presentation lens only; Esc or empty-space click clears).
+  to their tickets (presentation lens only; the scene cue is dimming the
+  non-focused fighters, no floor ring; Esc or empty-space click clears). Each
+  figure is grounded by a soft radial contact shadow planted on the floor (not
+  parented to the body, so they lift off it when they bob/lunge); the floor
+  itself is a depth-gradient plane (front sheen → panel tone → melts into the
+  fog) rather than a flat line — both in `ArenaScene.jsx` as generated
+  CanvasTextures.
   **Afterglow** (`src/raid/heat.js`): events leave residue that cools over
-  hours — gold HP segments (~2h), boss scars (~24h), ember
-  auras, fresher-burns-brighter beacons — all pure functions of
-  `view.now − event.ts`, so retro reconstructs them. `?lite` query flag drops
-  post-processing/dpr for weak TV hardware.
+  hours — gold HP segments (~2h), boss scars (~24h),
+  fresher-burns-brighter beacons — all pure functions of
+  `view.now − event.ts`, so retro reconstructs them. (`fighterAuras` is still
+  exported for retro/tests but no longer rendered — the on-floor ember-glow
+  circles were cut.) `?lite` query flag drops post-processing/dpr for weak TV
+  hardware.
 - **Factory** (legacy): conveyor-belt line (`FactoryLine.jsx`) + boss panel
   (`BossPanel.jsx`).
 

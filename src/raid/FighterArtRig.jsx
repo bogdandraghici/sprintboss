@@ -23,12 +23,11 @@ export default function FighterArtRig(props) {
   return <Rig {...props} tex={tex} />;
 }
 
-function Rig({ fighter, attack, onStrike, position, phase = 0, aura = 0, beaconHeat = 0, tableau = null, focus = null, onFocus, lite = false, tex }) {
+function Rig({ fighter, attack, onStrike, position, phase = 0, beaconHeat = 0, tableau = null, focus = null, onFocus, lite = false, tex }) {
   const [W, H] = useMemo(() => fitPlane(tex.image.width, tex.image.height, ART_FIGHTER_H * artScaleFor(fighter.name)), [tex, fighter.name]);
   const group = useRef();
   const body = useRef();
   const mat = useRef();
-  const auraMat = useRef();
   const anim = useRef({ id: null, t: 99, struck: false, points: 1 }); // t seeds past ATK_TOTAL: no phantom attack on mount
   const [ghosts, setGhosts] = useState([]);
   const [dust, setDust] = useState([]);
@@ -66,7 +65,6 @@ function Rig({ fighter, attack, onStrike, position, phase = 0, aura = 0, beaconH
     group.current.position.set(position[0] + x, y, position[2]);
     body.current.rotation.z = rot;
     body.current.scale.y = sy;
-    if (auraMat.current) auraMat.current.opacity = aura * (0.32 + 0.1 * Math.sin(t * 2 + phase));
   });
 
   return (
@@ -90,18 +88,6 @@ function Rig({ fighter, attack, onStrike, position, phase = 0, aura = 0, beaconH
           <meshBasicMaterial ref={mat} map={tex} transparent alphaTest={0.4} toneMapped={false} fog={false} />
         </mesh>
       </group>
-      {focus === fighter.name && (
-        <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, 0.03, 0]}>
-          <ringGeometry args={[0.42, 0.55, 40]} />
-          <meshBasicMaterial color="#7fe7ff" transparent opacity={0.75} toneMapped={false} depthWrite={false} />
-        </mesh>
-      )}
-      {aura > 0 && (
-        <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, 0.02, 0]}>
-          <circleGeometry args={[0.55, 24]} />
-          <meshBasicMaterial ref={auraMat} color="#ff9d5c" transparent opacity={0} toneMapped={false} depthWrite={false} />
-        </mesh>
-      )}
       {ghosts.map((g) => <Ghost key={g.id} g={g} tex={tex} w={W} h={H} />)}
       {dust.map((d) => <Dust key={d.id} d={d} />)}
       {fighter.status === 'down' && <Beacon heat={beaconHeat} />}

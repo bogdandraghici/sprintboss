@@ -1,12 +1,13 @@
 // src/raid/ArenaScene.jsx
 import { Canvas, useFrame, useThree } from '@react-three/fiber';
+import * as THREE from 'three';
 import { useMemo, useState, useEffect, useRef } from 'react';
 import { cssVar } from './cssVar';
 import { drainShake, addShake } from './shakeBus';
 import { addFreeze, drainFreeze } from './timeBus';
 import { bossStage, deriveTableau } from './raidState';
 import * as cc from './cameraControls';
-import { fighterAuras, fighterBlockHeat, bossScars } from './heat';
+import { fighterBlockHeat, bossScars } from './heat';
 import FighterSprite from './FighterSprite';
 import FighterArtRig from './FighterArtRig';
 import { artSlugFor } from './sprites/roster';
@@ -137,21 +138,99 @@ function CameraRig() {
   return null;
 }
 
-// Mockup floor: a matte near-bg plane plus a thin light baseline strip at the
-// fighters' feet. No reflector — the old mirror painted a warm band that rose
-// up behind the party.
+// Floor depth gradient, painted into a 1-D (depth-axis) canvas: the surface
+// catches a steel sheen toward the front where the point-lights reach, eases
+// back to the panel tone, then dissolves into the bg/fog at the far edge — so
+// there's no hard horizon line, the floor fades into distance. A feathered
+// bright band sits at the fighters' z: it replaces the old hard baseline strip
+// (which read as a tightrope) with a soft glow that still anchors their feet.
+// flipY maps canvas-top -> v=1; the plane's -π/2 rotation maps v=1 -> world -z,
+// so canvas-top is the FAR edge. Tunable live — see verification pass.
+function floorTexture(bg, panel) {
+  const c = document.createElement('canvas');
+  c.width = 16; c.height = 256;
+  const g = c.getContext('2d');
+  const grad = g.createLinearGradient(0, 0, 0, 256);
+  grad.addColorStop(0.0, bg);       // far edge: melt into background/fog
+  grad.addColorStop(0.4, panel);    // mid-back: flat panel tone
+  grad.addColorStop(0.7, '#0f1722'); // front: a whisper of lift, barely above panel
+  grad.addColorStop(1.0, '#0b1118'); // very front: settles back toward bg
+  g.fillStyle = grad;
+  g.fillRect(0, 0, 16, 256);
+  // Feet glow band — feathered, centred on the fighters' z (canvas mid).
+  // Just enough to anchor feet without becoming its own bright stripe.
+  const band = g.createLinearGradient(0, 92, 0, 168);
+  band.addColorStop(0, 'rgba(154,163,181,0)');
+  band.addColorStop(0.5, 'rgba(154,163,181,0.22)');
+  band.addColorStop(1, 'rgba(154,163,181,0)');
+  g.globalCompositeOperation = 'lighter';
+  g.fillStyle = band;
+  g.fillRect(0, 92, 16, 76);
+  const tex = new THREE.CanvasTexture(c);
+  tex.colorSpace = THREE.SRGBColorSpace;
+  tex.minFilter = THREE.LinearFilter;
+  return tex;
+}
+
 function Floor() {
-  const color = useMemo(() => cssVar('--panel-2', '#0c1219'), []);
+  const tex = useMemo(
+    () => floorTexture(cssVar('--bg', '#0a0e13'), cssVar('--panel-2', '#0c1219')),
+    []
+  );
+  return (
+    <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, 0, 0]}>
+      <planeGeometry args={[40, 24]} />
+      <meshBasicMaterial map={tex} />
+    </mesh>
+  );
+}
+
+// Soft radial contact shadow shared by every grounded figure. Black with an
+// alpha falloff so it darkens whatever floor tone sits under it.
+const SHADOW_TEX = typeof document !== 'undefined' ? (() => {
+  const c = document.createElement('canvas');
+  c.width = c.height = 128;
+  const g = c.getContext('2d');
+  const grad = g.createRadialGradient(64, 64, 0, 64, 64, 64);
+  grad.addColorStop(0, 'rgba(0,0,0,0.85)');
+  grad.addColorStop(0.5, 'rgba(0,0,0,0.45)');
+  grad.addColorStop(1, 'rgba(0,0,0,0)');
+  g.fillStyle = grad;
+  g.fillRect(0, 0, 128, 128);
+  return new THREE.CanvasTexture(c);
+})() : null;
+
+// A flattened ellipse laid on the floor (y just above the plane). Planted in
+// world space — NOT parented to a bobbing/lunging body — so figures visibly
+// rise off it when they jump, lunge, or (the boss) breathe.
+function GroundShadow({ x, z, w, d = w * 0.4, opacity = 0.5 }) {
+  return (
+    <mesh rotation={[-Math.PI / 2, 0, 0]} position={[x, 0.012, z]} scale={[w, d, 1]}>
+      <planeGeometry args={[1, 1]} />
+      <meshBasicMaterial map={SHADOW_TEX} transparent opacity={opacity} depthWrite={false} toneMapped={false} />
+    </mesh>
+  );
+}
+
+// Where each fighter stands — shared by the sprite layer and the shadow layer
+// so they can't drift apart.
+const fighterPos = (i) => [-16.5 + (i % 7) * 3.0 + Math.floor(i / 7) * 0.9, 0, 0.2 - Math.floor(i / 7) * 1.7];
+
+function GroundShadows({ party, minions, tableau, focus }) {
+  // Contact shadows are planted on the floor under every grounded figure.
+  const bossGone = tableau === 'victory';
   return (
     <>
-      <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, 0, 0]}>
-        <planeGeometry args={[40, 24]} />
-        <meshBasicMaterial color={color} />
-      </mesh>
-      <mesh position={[0, 0.02, 0.5]}>
-        <planeGeometry args={[40, 0.05]} />
-        <meshBasicMaterial color="#9aa3b5" transparent opacity={0.55} toneMapped={false} />
-      </mesh>
+      {party.map((f, i) => {
+        const [x, , z] = fighterPos(i);
+        const op = focus && f.name !== focus ? 0.2 : 0.5;
+        return <GroundShadow key={f.name} x={x} z={z} w={0.95} opacity={op} />;
+      })}
+      {!bossGone && minions.map((m, i) => {
+        const [x, , z] = minionPos(i);
+        return <GroundShadow key={m.key} x={x} z={z} w={0.6} opacity={0.45} />;
+      })}
+      {!bossGone && <GroundShadow x={4.6} z={-0.4} w={2.6} d={0.95} opacity={0.55} />}
     </>
   );
 }
@@ -203,7 +282,6 @@ export default function ArenaScene({ view, party = [], minions = [], horde = 0, 
   const tableau = deriveTableau(view);
 
   // Afterglow inputs — pure functions of (events, issues, view.now): retro-safe.
-  const auras = useMemo(() => fighterAuras(view.events, view.issues, view.now), [view]);
   const blockHeat = useMemo(() => fighterBlockHeat(view.events, view.issues, view.now), [view]);
   const scars = useMemo(() => bossScars(view.events, view.now), [view]);
   // Planted-sword debris removed in the mockup pass — boss scars + HP segment
@@ -286,6 +364,7 @@ export default function ArenaScene({ view, party = [], minions = [], horde = 0, 
       <CameraRig />
       <Environment enraged={enraged} lite={LITE} />
       <Floor />
+      <GroundShadows party={party} minions={minions} tableau={tableau} focus={focus} />
       <ClearBackdrop onClear={() => onFocus(null)} />
       {party.map((f, i) => {
         const art = artSlugFor(f.name);
@@ -299,12 +378,11 @@ export default function ArenaScene({ view, party = [], minions = [], horde = 0, 
             phase={i * 0.7}
             attack={actions.find((a) => a.kind === 'attack' && a.fighter === i) || null}
             onStrike={strike}
-            aura={auras.get(f.name) || 0}
             beaconHeat={blockHeat.get(f.name) || 0}
             tableau={tableau}
             focus={focus}
             onFocus={onFocus}
-            position={[-16.5 + (i % 7) * 3.0 + Math.floor(i / 7) * 0.9, 0, 0.2 - Math.floor(i / 7) * 1.7]}
+            position={fighterPos(i)}
           />
         );
       })}
