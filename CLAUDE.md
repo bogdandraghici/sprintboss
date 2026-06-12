@@ -13,7 +13,13 @@ read or written.)
   (the damage log floats over it as a translucent combat log), save for a subtle
   first-name caption planted on the floor under each fighter's feet
   (`FighterNames` in `ArenaScene.jsx`: muted `--dim`, low-opacity, focus-aware,
-  world-space so it doesn't bob with the body). Below = ticket
+  world-space so it doesn't bob with the body). Below the scene, a
+  **fighter roster bar** (`FighterBar.jsx`) sits above the dock: a strip of
+  avatar + first-name chips (one per party member) that drives the same focus
+  lens as clicking a fighter in the arena — click a chip to filter the whole
+  command deck to that fighter; clearing stays via Esc / empty-space click. It's
+  pure presentation (drives `setFocus`, no state of its own). The `firstName`
+  helper it shares with the floor captions now lives in `src/lib.js`. Below = ticket
   dock (`Dock.jsx`): real tickets grouped by board column and, within each
   column, sub-grouped by **story** (the Jira parent) — every story gets its own
   colored sub-header (even a single-ticket one, so a story reads the same in
