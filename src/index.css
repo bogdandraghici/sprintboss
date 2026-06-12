@@ -485,6 +485,11 @@ html[data-theme='light'] .standup { background: rgba(223, 228, 233, 0.88); }
 .substory .bar { width: 0.18rem; height: 0.82rem; border-radius: 2px; background: var(--barc, var(--steel-3)); flex: none; }
 .substory .nm { font-size: 0.66rem; font-weight: 600; color: var(--nmc, var(--dim)); min-width: 0; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
 .substory .ct { font-family: var(--font-m); font-size: 0.6rem; color: var(--faint); flex: none; }
+/* Hairline story-wide progress under each story sub-header. Fill = done/total
+   across ALL sprint issues (storyProgress), in the story's identity color.
+   No count text by design. */
+.story-meter { height: 2px; margin: 0.1rem 0.2rem 0.22rem; border-radius: 1px; overflow: hidden; background: color-mix(in srgb, var(--barc, var(--steel-3)) 20%, transparent); }
+.story-meter > span { display: block; height: 100%; border-radius: 1px; background: var(--barc, var(--steel-3)); transition: width 0.6s ease; }
 .dock-blocked-card { display: flex; flex-direction: column; gap: 0.15rem; }
 .dock-reason { font-size: 0.66rem; color: var(--red); padding: 0 0.3rem; }
 
@@ -586,6 +591,7 @@ html[data-theme='light'] .fc-stat { background: rgba(28, 39, 51, 0.035); }
    glow on dark ground; on white it shouts. Pull it toward ink / fade it. */
 html[data-theme='light'] .story-cap { color: color-mix(in srgb, var(--capc, var(--faint)) 55%, var(--ink)); }
 html[data-theme='light'] .substory .bar { background: color-mix(in srgb, var(--barc, var(--steel-3)) 70%, var(--ink)); }
+html[data-theme='light'] .story-meter > span { background: color-mix(in srgb, var(--barc, var(--steel-3)) 70%, var(--ink)); }
 html[data-theme='light'] .substory .nm { color: color-mix(in srgb, var(--nmc, var(--dim)) 50%, var(--ink)); }
 /* no stale wash on light ground — the bold red age numeral carries staleness */
 html[data-theme='light'] .ticket[data-age='stale'] { background: var(--panel-2); }

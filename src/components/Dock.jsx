@@ -4,13 +4,16 @@
 // tickets get a colored sub-header; singletons + parentless tickets fold into a
 // quiet "Other" cluster (folded singletons keep their story name inline).
 import Ticket from './Ticket';
-import { deriveDock, groupByStory, storyColor } from '../raid/raidState';
+import { deriveDock, groupByStory, storyColor, storyProgress } from '../raid/raidState';
 
 export default function Dock({ view, onSelect, focus = null }) {
   const { groups, blocked } = deriveDock(view, focus);
+  // Story-wide (never focus-filtered): the meter is a fact about the objective,
+  // not the person — the cards beneath already filter.
+  const progress = storyProgress(view);
   return (
     <div className="dock">
-      {groups.map((g) => <DockGroup key={g.idx} group={g} view={view} onSelect={onSelect} />)}
+      {groups.map((g) => <DockGroup key={g.idx} group={g} view={view} onSelect={onSelect} progress={progress} />)}
       <div className="dock-group dock-blocked" data-occupied={blocked.length > 0}>
         <div className="dock-head">
           <span className="label" style={{ color: blocked.length ? 'var(--red)' : 'var(--faint)' }}>
@@ -35,7 +38,7 @@ export default function Dock({ view, onSelect, focus = null }) {
   );
 }
 
-function DockGroup({ group, view, onSelect }) {
+function DockGroup({ group, view, onSelect, progress }) {
   const { stories, other } = groupByStory(group.issues);
   return (
     <div className="dock-group" data-kind={group.kind}>
@@ -43,20 +46,27 @@ function DockGroup({ group, view, onSelect }) {
         <span className="label">{group.name} · {group.issues.length}</span>
       </div>
       <div className="dock-cards">
-        {stories.map((s) => (
-          <div key={s.key} className="story-cluster">
-            <div className="substory" style={{ '--barc': s.color, '--nmc': s.color }}>
-              <span className="bar" />
-              <span className="nm">{s.name}</span>
-              <span className="ct">{s.issues.length}</span>
+        {stories.map((s) => {
+          const p = progress.get(s.key);
+          const pct = p && p.total ? (p.done / p.total) * 100 : 0;
+          return (
+            <div key={s.key} className="story-cluster">
+              <div className="substory" style={{ '--barc': s.color, '--nmc': s.color }}>
+                <span className="bar" />
+                <span className="nm">{s.name}</span>
+                <span className="ct">{s.issues.length}</span>
+              </div>
+              <div className="story-meter" style={{ '--barc': s.color }} title={p ? `${p.done}/${p.total} done` : undefined}>
+                <span style={{ width: `${pct}%` }} />
+              </div>
+              <div className="subcards">
+                {s.issues.map((i) => (
+                  <Ticket key={i.key} issue={i} view={view} onSelect={onSelect} accent={s.color} />
+                ))}
+              </div>
             </div>
-            <div className="subcards">
-              {s.issues.map((i) => (
-                <Ticket key={i.key} issue={i} view={view} onSelect={onSelect} accent={s.color} />
-              ))}
-            </div>
-          </div>
-        ))}
+          );
+        })}
         {other.length > 0 && (
           <div className="story-cluster">
             <div className="substory">
