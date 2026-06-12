@@ -215,7 +215,7 @@ function GroundShadow({ x, z, w, d = w * 0.4, opacity = 0.5 }) {
 
 // Where each fighter stands — shared by the sprite layer and the shadow layer
 // so they can't drift apart.
-const fighterPos = (i) => [-16.5 + (i % 7) * 3.0 + Math.floor(i / 7) * 0.9, 0, 0.2 - Math.floor(i / 7) * 1.7];
+const fighterPos = (i) => [-18.5 + (i % 7) * 3.9 + Math.floor(i / 7) * 1.2, 0, 0.2 - Math.floor(i / 7) * 2.0];
 
 function GroundShadows({ party, minions, tableau, focus }) {
   // Contact shadows are planted on the floor under every grounded figure.
