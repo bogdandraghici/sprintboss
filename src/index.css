@@ -50,7 +50,7 @@ html[data-theme='light'] {
   /* steel daylight — the night-shift floor with the lights on */
   color-scheme: light;
   --bg: #dfe4e9;
-  --bg-grid: rgba(50, 80, 110, 0.07);
+  --bg-grid: rgba(50, 80, 110, 0.04);
   --panel: #f6f8fa;
   --panel-2: #eef1f4;
   --inset: #e2e7ec;
@@ -569,13 +569,12 @@ html[data-theme='light'] .standup { background: rgba(223, 228, 233, 0.88); }
    softer and bluer (ink-steel, not black). Dark mode is untouched. */
 
 html[data-theme='light'] body {
-  /* the room vignette: black is too heavy on steel daylight */
+  /* no room vignette in daylight — the ink wash muddied the lower band */
   background:
-    radial-gradient(120% 90% at 50% -10%, transparent 60%, rgba(28, 39, 51, 0.12)),
     linear-gradient(var(--bg-grid) 1px, transparent 1px),
     linear-gradient(90deg, var(--bg-grid) 1px, transparent 1px),
     var(--bg);
-  background-size: 100% 100%, 3rem 3rem, 3rem 3rem, 100% 100%;
+  background-size: 3rem 3rem, 3rem 3rem, 100% 100%;
 }
 
 html[data-theme='light'] .panel { box-shadow: 0 0.4rem 1.4rem rgba(28, 39, 51, 0.14); }
