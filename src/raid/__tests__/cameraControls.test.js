@@ -1,7 +1,7 @@
 import { describe, it, expect } from 'vitest';
 import {
   clampZoom, ease, viewHalf, clampPan, cursorZoomPan, dragToPan, swayFactor,
-  ZOOM_MIN, ZOOM_MAX, PAN_EXTENT,
+  ZOOM_MIN, ZOOM_MAX, CONTENT, HOME,
 } from '../cameraControls';
 
 describe('clampZoom', () => {
@@ -40,17 +40,18 @@ describe('viewHalf', () => {
 });
 
 describe('clampPan', () => {
-  it('forbids panning at zoom 1 (whole scene already framed)', () => {
-    const half = viewHalf(0.61, 12.4, 4, 1); // real wide band: halfW > extent.x
-    expect(half.halfW).toBeGreaterThan(PAN_EXTENT.x);
-    const p = clampPan({ x: 5, y: 2 }, half);
-    expect(p).toEqual({ x: 0, y: 0 });
+  it('lets you reach every fighter — pan spans the full content width', () => {
+    // leftmost fighter (~-16.5) and the boss side (+6.5) are both reachable
+    expect(clampPan({ x: -16.5, y: 0 }).x).toBeCloseTo(-16.5);
+    expect(clampPan({ x: 6.5, y: 0 }).x).toBeCloseTo(6.5);
   });
-  it('allows bounded panning when zoomed in', () => {
-    const half = { halfW: 4, halfH: 1 };
-    const p = clampPan({ x: 999, y: 999 }, half, { x: 12, y: 3.2 });
-    expect(p.x).toBeCloseTo(12 - 4); // 8
-    expect(p.y).toBeCloseTo(3.2 - 1); // 2.2
+  it('clamps the look-point to the content bounds (offset from HOME)', () => {
+    const p = clampPan({ x: -999, y: 999 });
+    expect(p.x).toBeCloseTo(CONTENT.xMin - HOME.x);
+    expect(p.y).toBeCloseTo(CONTENT.yMax - HOME.y);
+    const q = clampPan({ x: 999, y: -999 });
+    expect(q.x).toBeCloseTo(CONTENT.xMax - HOME.x);
+    expect(q.y).toBeCloseTo(CONTENT.yMin - HOME.y);
   });
 });
 

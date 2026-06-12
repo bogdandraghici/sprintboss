@@ -61,7 +61,7 @@ function CameraRig() {
       const oldHalf = cc.viewHalf(vFov(), HOME_DIST, aspect, oldZoom);
       const newHalf = cc.viewHalf(vFov(), HOME_DIST, aspect, newZoom);
       c.tgt.zoom = newZoom;
-      c.tgt.pan = cc.clampPan(cc.cursorZoomPan(c.tgt.pan, ndc, oldHalf, newHalf), newHalf);
+      c.tgt.pan = cc.clampPan(cc.cursorZoomPan(c.tgt.pan, ndc, oldHalf, newHalf));
     };
     const onDown = (e) => {
       if (e.button !== 0) return;
@@ -79,7 +79,7 @@ function CameraRig() {
       const c = ctrl.current; c.idle = 0;
       const r = rectOf();
       const half = cc.viewHalf(vFov(), HOME_DIST, r.width / r.height, c.tgt.zoom);
-      c.tgt.pan = cc.clampPan(cc.dragToPan(c.tgt.pan, e.clientX - d.lx, e.clientY - d.ly, half, r.width, r.height), half);
+      c.tgt.pan = cc.clampPan(cc.dragToPan(c.tgt.pan, e.clientX - d.lx, e.clientY - d.ly, half, r.width, r.height));
       d.lx = e.clientX; d.ly = e.clientY;
     };
     const onUp = (e) => {

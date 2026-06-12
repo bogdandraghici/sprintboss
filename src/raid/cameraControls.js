@@ -5,13 +5,15 @@
 
 export const ZOOM_MIN = 1;        // default framing (can't zoom out past it)
 export const ZOOM_MAX = 3;        // closest inspect
-export const IDLE_RETURN_S = 4;   // seconds idle before easing back home
+export const IDLE_RETURN_S = 6;   // seconds idle before easing back home
 export const DRAG_THRESHOLD = 8;  // px before a press counts as a pan (not a click)
 
-// Half-span (world units) of content the camera may center on, measured from
-// the home target. Fighters run ~-16.5..+2.4 and the boss sits at +4.6, so the
-// reachable extent is a touch wider than the fighter line on each side.
-export const PAN_EXTENT = { x: 12, y: 3.2 };
+// World bounds the camera's look-point may travel to — the whole cast plus the
+// boss, with a little air around the edges. Fighters run ~-16.5..+2.4 and the
+// boss/minions sit out to ~+6.5, so you can center on any of them.
+export const CONTENT = { xMin: -18.5, xMax: 8.5, yMin: 0.5, yMax: 2.7 };
+// Where the camera looks at rest (pan offsets are measured from here).
+export const HOME = { x: 0, y: 1.65 };
 
 export const clamp = (v, lo, hi) => Math.min(hi, Math.max(lo, v));
 export const clampZoom = (z) => clamp(z, ZOOM_MIN, ZOOM_MAX);
@@ -31,12 +33,14 @@ export function viewHalf(vFov, dist, aspect, zoom) {
   return { halfH, halfW: halfH * aspect };
 }
 
-// Keep pan within bounds so panning never reveals empty space past the content.
-// At zoom 1 the whole line fits, so the reachable range collapses to 0.
-export function clampPan(pan, half, extent = PAN_EXTENT) {
-  const maxX = Math.max(0, extent.x - half.halfW);
-  const maxY = Math.max(0, extent.y - half.halfH);
-  return { x: clamp(pan.x, -maxX, maxX), y: clamp(pan.y, -maxY, maxY) };
+// Clamp the look-point to the content span so you can center on any fighter
+// (even an edge one, which may show a little space beyond it) but can't drift
+// off into empty world. Pan is an offset from HOME.
+export function clampPan(pan, content = CONTENT, home = HOME) {
+  return {
+    x: clamp(pan.x, content.xMin - home.x, content.xMax - home.x),
+    y: clamp(pan.y, content.yMin - home.y, content.yMax - home.y),
+  };
 }
 
 // Adjust pan so the world point under the cursor stays put across a zoom step
