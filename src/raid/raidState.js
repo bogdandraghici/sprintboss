@@ -95,6 +95,42 @@ export function deriveDock(view, focus = null) {
   return { groups, blocked };
 }
 
+// Per-story accent palette (draft — Bogdan art-directs later). Hues chosen to
+// read on both themes; collisions accepted (two stories may share a hue).
+export const STORY_PALETTE = ['#5fb0f2', '#c08cf0', '#62d4a8', '#f0a35f', '#e0708f', '#7dd3c0', '#b3a4f0', '#e8c45f'];
+
+// Deterministic story key -> palette hue, stable across columns and polls.
+export function storyColor(parentKey) {
+  let h = 0;
+  for (let i = 0; i < parentKey.length; i++) h = (Math.imul(h, 31) + parentKey.charCodeAt(i)) >>> 0;
+  return STORY_PALETTE[h % STORY_PALETTE.length];
+}
+
+// Group one column's issues by parent story. A parent with 2+ tickets in this
+// column becomes its own colored cluster; singletons + parentless fold into
+// `other`. Clusters ordered worst-first by stalest member; `other` last and
+// sorted by staleness. Pure: input order within a parent is preserved, so pass
+// issues already sorted stalest-first (columnSince asc).
+export function groupByStory(issues) {
+  const byParent = new Map();
+  const other = [];
+  for (const it of issues) {
+    if (!it.parentKey) { other.push(it); continue; }
+    const b = byParent.get(it.parentKey) || { key: it.parentKey, name: it.parentName || it.parentKey, issues: [] };
+    b.issues.push(it);
+    byParent.set(it.parentKey, b);
+  }
+  const stories = [];
+  for (const b of byParent.values()) {
+    if (b.issues.length >= 2) stories.push({ key: b.key, name: b.name, color: storyColor(b.key), issues: b.issues });
+    else other.push(...b.issues);
+  }
+  const stalest = (list) => list.reduce((m, i) => Math.min(m, i.columnSince), Infinity);
+  stories.sort((a, b) => stalest(a.issues) - stalest(b.issues) || a.key.localeCompare(b.key));
+  other.sort((a, b) => a.columnSince - b.columnSince);
+  return { stories, other };
+}
+
 // Per-column ticket counts for a focused assignee, keyed by column index.
 // Feeds the truth ticker when a fighter is focused. focus null -> empty map.
 export function focusColumnCounts(view, focus) {
