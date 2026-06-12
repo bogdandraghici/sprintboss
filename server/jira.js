@@ -1,7 +1,7 @@
 // Jira Cloud client. Normalizes Agile-API data into the shape derive.js expects.
 
 import { CONFIG, applyWipDefaults, FALLBACK_COLUMNS } from '../shared/config.js';
-import { deriveSnapshot } from '../shared/derive.js';
+import { deriveSnapshot, priorSprintsOf } from '../shared/derive.js';
 
 export function createJiraSource(env) {
   const base = (env.JIRA_BASE_URL || '').replace(/\/+$/, '');
@@ -67,7 +67,7 @@ export function createJiraSource(env) {
   }
 
   async function getIssues(sprintId, f) {
-    const fieldList = ['summary', 'status', 'assignee', 'created', 'updated', 'labels', 'parent', 'issuetype', f.storyPoints, f.flagged]
+    const fieldList = ['summary', 'status', 'assignee', 'created', 'updated', 'labels', 'parent', 'issuetype', 'closedSprints', f.storyPoints, f.flagged]
       .filter(Boolean)
       .join(',');
     const all = [];
@@ -123,6 +123,7 @@ export function createJiraSource(env) {
       flagged,
       blockedReason: flagged ? (labels.find((l) => /^blocked/i.test(l)) || 'Flagged as impediment') : null,
       sprintAddedAt,
+      priorSprints: priorSprintsOf(fields.closedSprints, sprintId),
       parentKey: fields.parent?.key || null,
       parentName: fields.parent?.fields?.summary || null,
       issueType: fields.issuetype?.name || null,
