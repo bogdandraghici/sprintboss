@@ -48,7 +48,8 @@ export function createMockSource({ scenario = 'doomed', evolve = true } = {}) {
   ]);
 
   const issues = [];
-  const mk = ({ key, summary, pts, who, createdD, path = [], flags = [], reason = null, addedD = null }) => {
+  const ISSUE_BASE = 'https://example.atlassian.net';
+  const mk = ({ key, summary, pts, who, createdD, path = [], flags = [], reason = null, addedD = null, parent = null, type = 'Task' }) => {
     const created = t0 - createdD * DAY;
     const transitions = [];
     let prev = 'To Do';
@@ -64,39 +65,55 @@ export function createMockSource({ scenario = 'doomed', evolve = true } = {}) {
       flagged: flags.length ? flags[flags.length - 1][1] : false,
       blockedReason: reason,
       sprintAddedAt: addedD != null ? t0 - addedD * DAY : null,
-      url: `https://example.atlassian.net/browse/${key}`,
+      url: `${ISSUE_BASE}/browse/${key}`,
+      // Story grouping + type. Mock has no Atlassian CDN, so issueTypeIcon is
+      // null on purpose — exercises the in-code fallback glyph.
+      parentKey: parent ? parent.key : null,
+      parentName: parent ? parent.name : null,
+      issueType: type,
+      issueTypeIcon: null,
+      isSubtask: type === 'Sub-task',
     });
   };
 
+  // Mock stories (parents). Some get 2+ tickets (own cluster), some 1 (fold to Other).
+  const ST = {
+    billing: { key: 'SB-900', name: 'Billing v2' },
+    compliance: { key: 'SB-901', name: 'Compliance gap' },
+    platform: { key: 'SB-902', name: 'Platform upgrades' },
+    privacy: { key: 'SB-903', name: 'Data privacy' },
+    notify: { key: 'SB-904', name: 'Notifications revamp' },
+  };
+
   // --- Done ---
-  mk({ key: 'SB-101', summary: 'Rotate refresh tokens on session renew', pts: 3, who: NAMES[0], createdD: 9, path: [[6.5, 'In Progress'], [5.5, 'In Review'], [4.8, 'Done']] });
-  mk({ key: 'SB-102', summary: 'Fix flaky pipeline cache step', pts: 5, who: NAMES[1], createdD: 9.5, path: [[6.8, 'In Progress'], [5.9, 'In Review'], [4.2, 'Done']] });
-  mk({ key: 'SB-103', summary: 'Add audit log export (CSV)', pts: 2, who: NAMES[2], createdD: 8.5, path: [[6.0, 'In Progress'], [5.0, 'In Review'], [3.6, 'Done']] });
-  mk({ key: 'SB-104', summary: 'Patch CVE in base image layer', pts: 3, who: NAMES[3], createdD: 8, path: [[4.0, 'In Progress'], [2.5, 'In Review'], [1.4, 'Done']] });
-  mk({ key: 'SB-105', summary: 'Empty-state copy for reports page', pts: 1, who: NAMES[4], createdD: 8, path: [[2.0, 'In Progress'], [1.2, 'In Review'], [0.6, 'Done']] });
+  mk({ key: 'SB-101', summary: 'Rotate refresh tokens on session renew', pts: 3, who: NAMES[0], createdD: 9, path: [[6.5, 'In Progress'], [5.5, 'In Review'], [4.8, 'Done']], parent: ST.compliance, type: 'Story' });
+  mk({ key: 'SB-102', summary: 'Fix flaky pipeline cache step', pts: 5, who: NAMES[1], createdD: 9.5, path: [[6.8, 'In Progress'], [5.9, 'In Review'], [4.2, 'Done']], parent: ST.platform, type: 'Bug' });
+  mk({ key: 'SB-103', summary: 'Add audit log export (CSV)', pts: 2, who: NAMES[2], createdD: 8.5, path: [[6.0, 'In Progress'], [5.0, 'In Review'], [3.6, 'Done']], parent: ST.compliance, type: 'Task' });
+  mk({ key: 'SB-104', summary: 'Patch CVE in base image layer', pts: 3, who: NAMES[3], createdD: 8, path: [[4.0, 'In Progress'], [2.5, 'In Review'], [1.4, 'Done']], parent: ST.platform, type: 'Bug' });
+  mk({ key: 'SB-105', summary: 'Empty-state copy for reports page', pts: 1, who: NAMES[4], createdD: 8, path: [[2.0, 'In Progress'], [1.2, 'In Review'], [0.6, 'Done']], type: 'Sub-task' });
 
   // --- In Review (4 on belt + 1 blocked → 5/3 = jam) ---
-  mk({ key: 'SB-106', summary: 'Migrate billing webhooks to v2 signatures', pts: 5, who: NAMES[5], createdD: 10, path: [[6.9, 'In Progress'], [4.6, 'In Review']] });
-  mk({ key: 'SB-107', summary: 'Refactor notification fan-out worker', pts: 3, who: NAMES[0], createdD: 9, path: [[6.2, 'In Progress'], [3.9, 'In Review']] });
-  mk({ key: 'SB-108', summary: 'Rate-limit the public search endpoint', pts: 2, who: NAMES[1], createdD: 8, path: [[5.0, 'In Progress'], [2.1, 'In Review']] });
-  mk({ key: 'SB-109', summary: 'Dark-mode tokens for email templates', pts: 3, who: NAMES[2], createdD: 8, path: [[3.0, 'In Progress'], [0.4, 'In Review']] });
-  mk({ key: 'SB-114', summary: 'GDPR data-residency matrix', pts: 3, who: NAMES[2], createdD: 9, path: [[5.5, 'In Progress'], [3.2, 'In Review']], flags: [[2.4, true]], reason: 'Legal sign-off pending' });
+  mk({ key: 'SB-106', summary: 'Migrate billing webhooks to v2 signatures', pts: 5, who: NAMES[5], createdD: 10, path: [[6.9, 'In Progress'], [4.6, 'In Review']], parent: ST.billing, type: 'Story' });
+  mk({ key: 'SB-107', summary: 'Refactor notification fan-out worker', pts: 3, who: NAMES[0], createdD: 9, path: [[6.2, 'In Progress'], [3.9, 'In Review']], parent: ST.notify, type: 'Task' });
+  mk({ key: 'SB-108', summary: 'Rate-limit the public search endpoint', pts: 2, who: NAMES[1], createdD: 8, path: [[5.0, 'In Progress'], [2.1, 'In Review']], parent: ST.platform, type: 'Task' });
+  mk({ key: 'SB-109', summary: 'Dark-mode tokens for email templates', pts: 3, who: NAMES[2], createdD: 8, path: [[3.0, 'In Progress'], [0.4, 'In Review']], parent: ST.notify, type: 'Sub-task' });
+  mk({ key: 'SB-114', summary: 'GDPR data-residency matrix', pts: 3, who: NAMES[2], createdD: 9, path: [[5.5, 'In Progress'], [3.2, 'In Review']], flags: [[2.4, true]], reason: 'Legal sign-off pending', parent: ST.compliance, type: 'Task' });
 
   // --- In Progress (3 on belt + 1 blocked = 4/4, full but not jammed) ---
-  mk({ key: 'SB-110', summary: 'Bulk import: streaming CSV parser', pts: 5, who: NAMES[3], createdD: 8, path: [[5.2, 'In Progress']] });
-  mk({ key: 'SB-111', summary: 'Session replay sampling config', pts: 3, who: NAMES[4], createdD: 8, path: [[1.6, 'In Progress']] });
-  mk({ key: 'SB-120', summary: 'URGENT: enterprise SSO cert rotation', pts: 5, who: NAMES[0], createdD: 4.2, path: [[3.9, 'In Progress']], addedD: 4.2 });
-  mk({ key: 'SB-113', summary: 'Payment provider sandbox flow', pts: 5, who: NAMES[1], createdD: 9, path: [[4.5, 'In Progress']], flags: [[3.1, true]], reason: 'Waiting on vendor API keys' });
+  mk({ key: 'SB-110', summary: 'Bulk import: streaming CSV parser', pts: 5, who: NAMES[3], createdD: 8, path: [[5.2, 'In Progress']], parent: ST.billing, type: 'Story' });
+  mk({ key: 'SB-111', summary: 'Session replay sampling config', pts: 3, who: NAMES[4], createdD: 8, path: [[1.6, 'In Progress']], parent: ST.privacy, type: 'Task' });
+  mk({ key: 'SB-120', summary: 'URGENT: enterprise SSO cert rotation', pts: 5, who: NAMES[0], createdD: 4.2, path: [[3.9, 'In Progress']], addedD: 4.2, parent: ST.compliance, type: 'Bug' });
+  mk({ key: 'SB-113', summary: 'Payment provider sandbox flow', pts: 5, who: NAMES[1], createdD: 9, path: [[4.5, 'In Progress']], flags: [[3.1, true]], reason: 'Waiting on vendor API keys', parent: ST.billing, type: 'Task' });
 
   // --- To Do ---
-  mk({ key: 'SB-112', summary: 'Fix timezone drift in scheduler', pts: null, who: NAMES[5], createdD: 8 });
-  mk({ key: 'SB-115', summary: 'Self-serve workspace deletion', pts: 3, who: NAMES[3], createdD: 9 });
-  mk({ key: 'SB-116', summary: 'Upgrade Node 20 → 22 across services', pts: 5, who: NAMES[4], createdD: 9 });
-  mk({ key: 'SB-117', summary: 'Consolidate feature-flag SDKs', pts: 2, who: NAMES[5], createdD: 8.5 });
-  mk({ key: 'SB-118', summary: 'Error budget dashboard tile', pts: null, who: NAMES[0], createdD: 8 });
-  mk({ key: 'SB-119', summary: 'Archive stale workspaces job', pts: 8, who: NAMES[1], createdD: 9 });
-  mk({ key: 'SB-121', summary: 'Customer-requested: API key scopes UI', pts: 3, who: NAMES[4], createdD: 1.8, addedD: 1.8 });
-  mk({ key: 'SB-122', summary: 'Hotfix follow-up: cache invalidation tests', pts: 2, who: NAMES[3], createdD: 0.12, addedD: 0.12 });
+  mk({ key: 'SB-112', summary: 'Fix timezone drift in scheduler', pts: null, who: NAMES[5], createdD: 8, type: 'Bug' });
+  mk({ key: 'SB-115', summary: 'Self-serve workspace deletion', pts: 3, who: NAMES[3], createdD: 9, parent: ST.platform, type: 'Story' });
+  mk({ key: 'SB-116', summary: 'Upgrade Node 20 → 22 across services', pts: 5, who: NAMES[4], createdD: 9, parent: ST.platform, type: 'Task' });
+  mk({ key: 'SB-117', summary: 'Consolidate feature-flag SDKs', pts: 2, who: NAMES[5], createdD: 8.5, type: 'Task' });
+  mk({ key: 'SB-118', summary: 'Error budget dashboard tile', pts: null, who: NAMES[0], createdD: 8, parent: ST.notify, type: 'Sub-task' });
+  mk({ key: 'SB-119', summary: 'Archive stale workspaces job', pts: 8, who: NAMES[1], createdD: 9, parent: ST.platform, type: 'Story' });
+  mk({ key: 'SB-121', summary: 'Customer-requested: API key scopes UI', pts: 3, who: NAMES[4], createdD: 1.8, addedD: 1.8, parent: ST.privacy, type: 'Task' });
+  mk({ key: 'SB-122', summary: 'Hotfix follow-up: cache invalidation tests', pts: 2, who: NAMES[3], createdD: 0.12, addedD: 0.12, type: 'Bug' });
 
   if (scenario === 'healthy') {
     // Land enough recent work that the rolling velocity clears the deadline.
