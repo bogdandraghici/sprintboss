@@ -153,7 +153,7 @@ export function createMockSource({ scenario = 'doomed', evolve = true } = {}) {
       created: nowTs, statusName: 'To Do', transitions: [],
       flagHistory: [], flagged: false, blockedReason: null,
       sprintAddedAt: nowTs,
-      url: `https://example.atlassian.net/browse/${key}`,
+      url: `${ISSUE_BASE}/browse/${key}`,
     });
     return key;
   }
