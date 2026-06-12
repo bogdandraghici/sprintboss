@@ -8,7 +8,7 @@ describe('cardStats', () => {
   it('returns the five numeric cells in order', () => {
     const stats = cardStats(f, 4);
     expect(stats.map((s) => s.label)).toEqual([
-      'Completed', 'Moved 24h', 'In flight', 'Stale', 'Blocked',
+      'Completed', 'Updated 24h', 'In flight', 'Stale', 'Blocked',
     ]);
   });
 

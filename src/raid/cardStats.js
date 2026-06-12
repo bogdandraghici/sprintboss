@@ -9,7 +9,7 @@ import { weaponFor } from './sprites/roster';
 export function cardStats(fighter, movedCount) {
   return [
     { key: 'done',    label: 'Completed', value: fighter.done,    tone: 'done' },
-    { key: 'moved',   label: 'Moved 24h', value: movedCount,      tone: null },
+    { key: 'moved',   label: 'Updated 24h', value: movedCount,    tone: null },
     { key: 'open',    label: 'In flight', value: fighter.open,    tone: null },
     { key: 'stale',   label: 'Stale',     value: fighter.stale,   tone: 'stale' },
     { key: 'blocked', label: 'Blocked',   value: fighter.blocked, tone: 'blocked' },
