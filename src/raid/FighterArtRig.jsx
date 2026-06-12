@@ -8,7 +8,7 @@ import { useMemo, useRef, useState } from 'react';
 import { useFrame } from '@react-three/fiber';
 import FighterSprite, { Beacon } from './FighterSprite';
 import { useFighterArt } from './fighterArt';
-import { artScaleFor } from './sprites/roster';
+import { artScaleFor, flipFor } from './sprites/roster';
 import { fitPlane } from './bossArtMath';
 import { attackPose, idlePose, victoryPose, ATK_TOTAL, DOWN_ROT, SLUMP } from './artPose';
 import { frozen } from './timeBus';
@@ -77,7 +77,7 @@ function Rig({ fighter, attack, onStrike, position, phase = 0, beaconHeat = 0, t
   });
 
   return (
-    <group ref={group} position={position}>
+    <group ref={group} position={position} scale-x={flipFor(fighter.name)}>
       {/* Oversized invisible click target (same contract as FighterSprite). */}
       {onFocus && (
         <mesh

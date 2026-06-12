@@ -66,7 +66,7 @@ export const ROSTER = {
   // can't be lost by an editor; exact-match key.
   'gabriel.\u200bmuscalu': { hair: 'buzz', weapon: 'hammer', palette: { H: '#1d1813', A: '#c9a23f' }, art: 'paladin' },
   'Cristina Stanica':  { hair: 'long',  weapon: 'staff',   palette: { H: '#4a3220', A: '#8d7fd6' }, art: 'cristinas' },
-  'Andrei Scheau':     { hair: 'spiky', weapon: 'bow',     palette: { H: '#332620', A: '#3fbf9a' }, art: 'andreis' },
+  'Andrei Scheau':     { hair: 'spiky', weapon: 'bow',     palette: { H: '#332620', A: '#3fbf9a' }, art: 'andreis', flip: true },
   'Andrei Dumitrescu': { hair: 'short', weapon: 'sword',   palette: { H: '#2e2018', A: '#b5413a' }, art: 'andreid' },
   'Alex Preda':        { hair: 'short', weapon: 'daggers', palette: { H: '#16120e', A: '#7a8aa8' }, art: 'alexpreda' },
   'Corina Ivanov':     { hair: 'bun',   weapon: 'sword',   palette: { H: '#52341d', A: '#e0a93f' }, art: 'corina' },
@@ -96,6 +96,11 @@ export const artScaleFor = (name) => personOf(name).artScale || 1;
 // Weapon class for a person ('sword' | 'hammer' | 'bow' | 'staff' | 'daggers').
 // Unknown assignees resolve through __recruit__ (which is 'sword').
 export const weaponFor = (name) => personOf(name).weapon;
+
+// Horizontal-facing multiplier for a person's sprite: -1 mirrors the figure
+// (for art drawn facing the opposite way from the rest of the party), else 1.
+// Applied as scale.x on the rig's outer group in both FighterArtRig/Sprite.
+export const flipFor = (name) => (personOf(name).flip ? -1 : 1);
 
 // Per-fighter vertical framing nudge (world units, +up/−down) for the standup
 // FighterCard only — compensates for art PNGs whose figure sits high/low in

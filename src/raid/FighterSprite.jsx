@@ -2,7 +2,7 @@
 import { useMemo, useRef } from 'react';
 import { useFrame } from '@react-three/fiber';
 import { sheetTexture, setFrame } from './sprites/textures';
-import { headlessFramesFor, paletteFor, FRAME, headAnchors40For, SPRITE_W, SPRITE_H } from './sprites/roster';
+import { headlessFramesFor, paletteFor, FRAME, headAnchors40For, SPRITE_W, SPRITE_H, flipFor } from './sprites/roster';
 import { avatarTexture } from './avatarTexture';
 import { frozen } from './timeBus';
 import { newFlourish, stepFlourish, flourishEligible } from './flourish';
@@ -97,7 +97,7 @@ export default function FighterSprite({ fighter, attack, onStrike, position, pha
   });
 
   return (
-    <group ref={group} position={position}>
+    <group ref={group} position={position} scale-x={flipFor(fighter.name)}>
       {/* Oversized invisible click target — the swaying sprite is small; this
           makes it easy to hit. stopPropagation so the backdrop doesn't clear. */}
       {onFocus && (
