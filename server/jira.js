@@ -67,7 +67,7 @@ export function createJiraSource(env) {
   }
 
   async function getIssues(sprintId, f) {
-    const fieldList = ['summary', 'status', 'assignee', 'created', 'updated', 'labels', f.storyPoints, f.flagged]
+    const fieldList = ['summary', 'status', 'assignee', 'created', 'updated', 'labels', 'parent', 'issuetype', f.storyPoints, f.flagged]
       .filter(Boolean)
       .join(',');
     const all = [];
@@ -123,6 +123,13 @@ export function createJiraSource(env) {
       flagged,
       blockedReason: flagged ? (labels.find((l) => /^blocked/i.test(l)) || 'Flagged as impediment') : null,
       sprintAddedAt,
+      parentKey: fields.parent?.key || null,
+      parentName: fields.parent?.fields?.summary || null,
+      issueType: fields.issuetype?.name || null,
+      issueTypeIcon: fields.issuetype?.iconUrl
+        ? `/api/icon?url=${encodeURIComponent(fields.issuetype.iconUrl)}`
+        : null,
+      isSubtask: fields.issuetype?.subtask === true,
       _hasChangelog: histories.length > 0 || !issue.changelog,
     };
   }
