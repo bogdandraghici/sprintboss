@@ -6,6 +6,16 @@ export const HOUR = 3_600_000;
 
 const ts = (v) => (typeof v === 'number' ? v : +new Date(v));
 
+// Jira's Agile API ships each issue's closed-sprint memberships. Everything
+// before the current sprint is "carryover". String-compare ids defensively —
+// the API returns numbers, but ids that round-trip through JSON/env can stringify.
+export function priorSprintsOf(closedSprints, currentSprintId) {
+  if (!Array.isArray(closedSprints)) return [];
+  return closedSprints
+    .filter((s) => s && String(s.id) !== String(currentSprintId))
+    .map((s) => ({ id: s.id, name: s.name || String(s.id) }));
+}
+
 /**
  * @param sprint  {id, name, goal?, state, startDate, endDate}
  * @param issues  normalized: {key, summary, url, assignee, points|null, created,
@@ -116,6 +126,7 @@ export function deriveSnapshot({ sprint, issues, columns, config, now = Date.now
       issueType: raw.issueType ?? null,
       issueTypeIcon: raw.issueTypeIcon ?? null,
       isSubtask: raw.isSubtask ?? false,
+      priorSprints: raw.priorSprints ?? [],
       colHistory, flagHistory,
     };
   });
