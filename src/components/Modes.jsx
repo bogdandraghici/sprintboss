@@ -2,6 +2,8 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import Avatar from './Avatar';
 import Ticket from './Ticket';
 import { fmtDateTime, fmtDate, DAY } from '../lib';
+import FighterCard from '../raid/FighterCard';
+import { deriveParty } from '../raid/raidState';
 
 /* ── standup: per-person — what moved in the last 24h, and where
       everything else is parked ───────────────────────────────────── */
@@ -94,6 +96,8 @@ export function StandupOverlay({ snap, onExit, onSelect }) {
   const people = useMemo(() => buildStandup(snap, snap.now - DAY), [snap]);
   const [sel, setSel] = useState(0);
   const person = people[Math.min(sel, people.length - 1)];
+  const party = useMemo(() => deriveParty(snap), [snap]);
+  const fighter = person ? party.find((f) => f.name === person.name) : null;
 
   useEffect(() => {
     const onKey = (e) => {
@@ -125,10 +129,10 @@ export function StandupOverlay({ snap, onExit, onSelect }) {
       </div>
 
       {person && (
-        <div className="panel su-board">
-          <div className="flex items-center gap-3 mb-2">
-            <Avatar name={person.name} src={person.avatar} size="2.2rem" />
-            <span className="text-[1.05rem] font-semibold">{person.name}</span>
+        <div className="su-body">
+          {fighter && <FighterCard fighter={fighter} movedCount={person.moved.length} />}
+          <div className="panel su-board">
+          <div className="flex items-center mb-2">
             <span className="label label-faint ml-auto">
               {person.moved.length} moved · {person.still.length} parked
             </span>
@@ -173,6 +177,7 @@ export function StandupOverlay({ snap, onExit, onSelect }) {
               </div>
             </div>
           ))}
+          </div>
         </div>
       )}
     </div>
