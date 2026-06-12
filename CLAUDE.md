@@ -91,8 +91,7 @@ read or written.)
   (`src/raid/FighterCard.jsx`): a standalone mini R3F `<Canvas>` reusing the
   arena's exact rig selection (`artSlugFor` → `FighterArtRig`/`FighterSprite`,
   self-animating idle/shadow-box off the render clock), plus a status badge,
-  name, weapon-class role, and a 5-cell stat grid from `deriveParty` + the
-  standup moved count. Pure bits in `cardStats.js`; the card module is
+  name, and a 5-cell stat grid from `deriveParty` + the standup moved count. Pure bits in `cardStats.js`; the card module is
   `FighterCard.jsx` (capital F) — keep its stem distinct from any lowercase
   helper so the case-insensitive macOS FS doesn't mis-resolve the import.
   The card's tight crop can clip art PNGs that sit high in frame, so a

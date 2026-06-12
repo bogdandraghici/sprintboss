@@ -9,7 +9,7 @@ import FighterSprite from './FighterSprite';
 import FighterArtRig from './FighterArtRig';
 import { artSlugFor, cardYFor } from './sprites/roster';
 import { LITE } from './ArenaScene';
-import { cardStats, weaponClassLabel } from './cardStats';
+import { cardStats } from './cardStats';
 
 const STATUS = {
   fighting:  { label: 'Fighting',  tone: 'fighting' },
@@ -80,7 +80,6 @@ export default function FighterCard({ fighter, movedCount }) {
       </div>
       <div className="fc-name">
         <div className="fc-n">{fighter.name}</div>
-        <div className="fc-role">{weaponClassLabel(fighter.name)}</div>
       </div>
       <div className="fc-stats">
         {stats.map((s) => (
