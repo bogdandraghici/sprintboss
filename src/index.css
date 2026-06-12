@@ -326,6 +326,7 @@ html[data-theme='light'] .standup { background: rgba(231, 228, 220, 0.88); }
 
 .su-board {
   width: min(40rem, 50vw); flex: 0 1 auto; min-height: 0; overflow-y: auto;
+  border-radius: 14px; /* match the fighter card */
   padding: 1.1rem 1.3rem; animation: pop-in 0.25s cubic-bezier(0.2, 0.9, 0.3, 1.1);
   scrollbar-width: thin; scrollbar-color: var(--line-2) transparent;
 }
