@@ -19,7 +19,12 @@ read or written.)
   lens as clicking a fighter in the arena — click a chip to filter the whole
   command deck to that fighter; clearing stays via Esc / empty-space click. It's
   pure presentation (drives `setFocus`, no state of its own). The `firstName`
-  helper it shares with the floor captions now lives in `src/lib.js`. Below = ticket
+  helper it shares with the floor captions now lives in `src/lib.js`. The arena's
+  height is **user-adjustable**: a grip on its bottom edge (`.arena-resize` in
+  `RaidView.jsx`) drag-resizes the scene (session-only `arenaH` state, not
+  persisted; double-click resets to the CSS default), bounded by the pure tested
+  `clampArenaHeight` in `src/raid/arenaResize.js` — another presentation lens
+  like fighter focus / camera pan, never part of `view`. Below = ticket
   dock (`Dock.jsx`): real tickets grouped by board column and, within each
   column, sub-grouped by **story** (the Jira parent) — every story gets its own
   colored sub-header (even a single-ticket one, so a story reads the same in
