@@ -293,7 +293,7 @@ button { font: inherit; color: inherit; background: none; border: 0; padding: 0;
 /* ── modal, modes, header ───────────────────────────────────────── */
 
 .backdrop { position: fixed; inset: 0; background: rgba(4, 8, 12, 0.55); backdrop-filter: blur(3px); z-index: 60; display: grid; place-items: center; animation: fade 0.18s ease-out; }
-html[data-theme='light'] .backdrop { background: rgba(60, 58, 48, 0.4); }
+html[data-theme='light'] .backdrop { background: rgba(28, 39, 51, 0.4); }
 @keyframes fade { from { opacity: 0; } }
 
 .modal { width: min(34rem, 92vw); padding: 1.2rem 1.4rem; animation: modal-in 0.22s cubic-bezier(0.2, 0.9, 0.3, 1.1); }
@@ -312,7 +312,7 @@ html[data-theme='light'] .backdrop { background: rgba(60, 58, 48, 0.4); }
 
 /* standup overlay — per-person daily summary */
 .standup { position: fixed; inset: 0; z-index: 50; background: rgba(4, 8, 12, 0.78); backdrop-filter: blur(6px); display: flex; flex-direction: column; align-items: center; padding: 2.2rem 1rem 1.6rem; gap: 1rem; }
-html[data-theme='light'] .standup { background: rgba(231, 228, 220, 0.88); }
+html[data-theme='light'] .standup { background: rgba(223, 228, 233, 0.88); }
 
 .su-people { display: flex; gap: 0.5rem; flex-wrap: wrap; justify-content: center; max-width: min(60rem, 96vw); }
 .person {
@@ -563,3 +563,29 @@ html[data-theme='light'] .standup { background: rgba(231, 228, 220, 0.88); }
 .fc-stat[data-tone="done"] .fc-v    { color: var(--teal); }
 .fc-stat[data-tone="stale"] .fc-v   { color: var(--amber); }
 .fc-stat[data-tone="blocked"] .fc-v { color: var(--red); }
+
+/* ── steel-daylight overrides ───────────────────────────────────────
+   Hardcoded colors tuned for dark ground, re-tuned for light. Shadows go
+   softer and bluer (ink-steel, not black). Dark mode is untouched. */
+
+html[data-theme='light'] body {
+  /* the room vignette: black is too heavy on steel daylight */
+  background:
+    radial-gradient(120% 90% at 50% -10%, transparent 60%, rgba(28, 39, 51, 0.12)),
+    linear-gradient(var(--bg-grid) 1px, transparent 1px),
+    linear-gradient(90deg, var(--bg-grid) 1px, transparent 1px),
+    var(--bg);
+  background-size: 100% 100%, 3rem 3rem, 3rem 3rem, 100% 100%;
+}
+
+html[data-theme='light'] .panel { box-shadow: 0 0.4rem 1.4rem rgba(28, 39, 51, 0.14); }
+html[data-theme='light'] .enrage-math { box-shadow: 0 0.8rem 2rem rgba(28, 39, 51, 0.25); }
+html[data-theme='light'] .avatar { border-color: rgba(28, 39, 51, 0.25); }
+html[data-theme='light'] .fc-stat { background: rgba(28, 39, 51, 0.035); }
+
+/* framed viewport: the dark arena is a monitor on the light deck — panel
+   border language plus a thin dark inner keyline so the seam is deliberate */
+html[data-theme='light'] .arena {
+  border-color: #9fb0c0;
+  box-shadow: inset 0 0 0 1px rgba(10, 14, 19, 0.65), 0 2px 10px rgba(28, 39, 51, 0.18);
+}
