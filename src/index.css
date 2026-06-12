@@ -372,22 +372,23 @@ html[data-theme='light'] .standup { background: rgba(231, 228, 220, 0.88); }
 .raidview { display: flex; flex-direction: column; min-height: 0; gap: 0.6rem; }
 .arena { position: relative; flex: 0 1 22vh; min-height: 0; border: 1px solid var(--line); border-radius: 10px; overflow: hidden; background: var(--bg); }
 .arena-resize {
-  position: absolute;
-  left: 0; right: 0; bottom: 0;
+  flex: none;
   height: 14px;
+  margin-top: -14px; /* ride up over the arena's bottom edge — no layout cost */
+  position: relative;
+  z-index: 6;
   display: flex;
-  align-items: flex-end;
+  align-items: center;
   justify-content: center;
-  padding-bottom: 0;
   cursor: ns-resize;
   touch-action: none;
-  z-index: 6;
 }
 .arena-resize-grip {
   width: 2.5rem;
   height: 3px;
   border-radius: 3px;
   background: var(--steel-2);
+  transform: translateY(4px); /* sit just below the arena edge */
   transition: background 0.15s ease, width 0.15s ease;
 }
 .arena-resize:hover .arena-resize-grip,

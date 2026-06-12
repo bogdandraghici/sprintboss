@@ -76,19 +76,19 @@ export default function RaidView({ view, pulses, onSelect }) {
         <div className="combat-log">
           <DamageLog view={view} />
         </div>
-        <div
-          className="arena-resize"
-          role="separator"
-          aria-orientation="horizontal"
-          aria-label="Resize battle scene"
-          onPointerDown={onResizeDown}
-          onPointerMove={onResizeMove}
-          onPointerUp={onResizeUp}
-          onPointerCancel={onResizeCancel}
-          onDoubleClick={() => setArenaH(null)}
-        >
-          <span className="arena-resize-grip" />
-        </div>
+      </div>
+      <div
+        className="arena-resize"
+        role="separator"
+        aria-orientation="horizontal"
+        aria-label="Resize battle scene"
+        onPointerDown={onResizeDown}
+        onPointerMove={onResizeMove}
+        onPointerUp={onResizeUp}
+        onPointerCancel={onResizeCancel}
+        onDoubleClick={() => setArenaH(null)}
+      >
+        <span className="arena-resize-grip" />
       </div>
       <FighterBar party={party} focus={focus} onFocus={setFocus} />
       <Dock view={view} onSelect={onSelect} focus={focus} />
