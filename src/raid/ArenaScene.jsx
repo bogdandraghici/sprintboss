@@ -236,6 +236,49 @@ function GroundShadows({ party, minions, tableau, focus }) {
   );
 }
 
+// First name only — keeps the label short under the tight fighter spacing.
+// Splits on space/dot/underscore so "Serban Chiricescu" → "Serban" and
+// "gabriel.muscalu" → "Gabriel".
+function firstNameOf(name) {
+  const first = String(name).split(/[\s._]+/).filter(Boolean)[0] || String(name);
+  return first.charAt(0).toUpperCase() + first.slice(1);
+}
+
+// Subtle identity caption planted on the floor just in front of each fighter's
+// feet (NOT parented to the body) so it stays put while the figure bobs/lunges.
+// Pushed toward the camera (z + NAME_Z) so it reads in front of the boots, not
+// behind the body. Muted + low-opacity so it's a quiet nameplate, not a HUD; the
+// focused fighter's name brightens while the rest fade with the scene.
+const NAME_Y = -0.18;
+const NAME_Z = 0.05;
+function FighterNames({ party, focus }) {
+  return (
+    <>
+      {party.map((f, i) => {
+        const [x, , z] = fighterPos(i);
+        const focused = focus && f.name === focus;
+        const op = focus ? (focused ? 0.95 : 0.12) : 0.5;
+        return (
+          <Text
+            key={f.name}
+            position={[x, NAME_Y, z + NAME_Z]}
+            fontSize={0.2}
+            anchorX="center"
+            anchorY="middle"
+            outlineWidth={0.008}
+            outlineColor="#0b0f14"
+            renderOrder={18}
+          >
+            {firstNameOf(f.name)}
+            <meshBasicMaterial color={focused ? cssVar('--ink', '#e8eef4') : cssVar('--dim', '#8da0b3')}
+              transparent opacity={op} depthTest={false} depthWrite={false} toneMapped={false} fog={false} />
+          </Text>
+        );
+      })}
+    </>
+  );
+}
+
 // A large invisible plane behind everything. Any click that isn't a fighter
 // (whose hit-box stops propagation) falls through to here and clears focus.
 // `visible` stays true so three.js still raycasts it; opacity 0 hides it.
@@ -387,6 +430,7 @@ export default function ArenaScene({ view, party = [], minions = [], horde = 0, 
           />
         );
       })}
+      <FighterNames party={party} focus={focus} />
       <BossSprite
         enraged={enraged} hit={hit} summon={summon}
         stage={stage} scars={scars} tableau={tableau}

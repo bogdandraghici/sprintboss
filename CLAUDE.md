@@ -6,8 +6,11 @@ Ambient wall-display app that visualizes our live Jira sprint as a boss fight. E
 
 - **Raid** (default; stored key `raid`, legacy `arena` migrates): the "command
   deck". Top band = per-ticket boss HP bar + scar timeline + enrage timer.
-  Middle = HD-2D Three.js battle scene (`src/raid/`) — pure spectacle, no text;
-  the damage log floats over it as a translucent combat log. Below = ticket
+  Middle = HD-2D Three.js battle scene (`src/raid/`) — near-textless spectacle
+  (the damage log floats over it as a translucent combat log), save for a subtle
+  first-name caption planted on the floor under each fighter's feet
+  (`FighterNames` in `ArenaScene.jsx`: muted `--dim`, low-opacity, focus-aware,
+  world-space so it doesn't bob with the body). Below = ticket
   dock (`Dock.jsx`): real tickets grouped by board column — every column
   (queue, working, and blocked) shows the full card for all of its issues and
   scrolls internally rather than truncating; blocked also carries its reason.
