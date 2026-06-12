@@ -7,7 +7,7 @@
 import { Canvas } from '@react-three/fiber';
 import FighterSprite from './FighterSprite';
 import FighterArtRig from './FighterArtRig';
-import { artSlugFor } from './sprites/roster';
+import { artSlugFor, cardYFor } from './sprites/roster';
 import { LITE } from './ArenaScene';
 import { cardStats, weaponClassLabel } from './cardStats';
 
@@ -45,7 +45,7 @@ function CardScene({ fighter }) {
         tableau={null}
         focus={null}
         onFocus={() => {}}
-        position={[0, FIGHTER_DROP, 0]}
+        position={[0, FIGHTER_DROP + cardYFor(fighter.name), 0]}
       />
     </Canvas>
   );

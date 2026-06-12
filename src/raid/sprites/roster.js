@@ -69,7 +69,7 @@ export const ROSTER = {
   'Andrei Scheau':     { hair: 'spiky', weapon: 'bow',     palette: { H: '#332620', A: '#3fbf9a' }, art: 'andreis' },
   'Andrei Dumitrescu': { hair: 'short', weapon: 'sword',   palette: { H: '#2e2018', A: '#b5413a' }, art: 'andreid' },
   'Alex Preda':        { hair: 'short', weapon: 'daggers', palette: { H: '#16120e', A: '#7a8aa8' }, art: 'alexpreda' },
-  'Corina Ivanov':     { hair: 'bun',   weapon: 'sword',   palette: { H: '#52341d', A: '#e0a93f' }, art: 'corina' },
+  'Corina Ivanov':     { hair: 'bun',   weapon: 'sword',   palette: { H: '#52341d', A: '#e0a93f' }, art: 'corina', cardY: -0.28 },
   'Mihai Saru':        { hair: 'short', weapon: 'staff',   palette: { H: '#26201a', A: '#36c8a0' }, art: 'mihai', artScale: 0.85 },
   'Andra Popazu':      { hair: 'long',  weapon: 'staff',   palette: { H: '#3a2a1a', A: '#6fae3a' }, art: 'andra' },
   'Tiberiu Birloiu':   { hair: 'short', weapon: 'hammer',  palette: { H: '#2e2118', A: '#e0852a' }, art: 'tibi' },
@@ -96,6 +96,11 @@ export const artScaleFor = (name) => personOf(name).artScale || 1;
 // Weapon class for a person ('sword' | 'hammer' | 'bow' | 'staff' | 'daggers').
 // Unknown assignees resolve through __recruit__ (which is 'sword').
 export const weaponFor = (name) => personOf(name).weapon;
+
+// Per-fighter vertical framing nudge (world units, +up/−down) for the standup
+// FighterCard only — compensates for art PNGs whose figure sits high/low in
+// frame so the head/feet aren't cropped. 0 = the card's default drop.
+export const cardYFor = (name) => personOf(name).cardY || 0;
 
 function build(name, headless) {
   const p = personOf(name);
