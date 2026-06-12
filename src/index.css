@@ -141,8 +141,9 @@ button { font: inherit; color: inherit; background: none; border: 0; padding: 0;
 .ticket[data-age='stale'] { --age-c: var(--red); }
 .ticket[data-age='off'] { --age-c: var(--faint); }
 
-.age-dot { width: 0.45rem; height: 0.45rem; border-radius: 50%; background: var(--age-c, var(--faint)); flex: none; }
-.ticket[data-age='stale'] .age-dot { width: 0.6rem; height: 0.6rem; }
+.itype { width: 0.95rem; height: 0.95rem; display: grid; place-items: center; flex: none; color: var(--faint); }
+.itype img, .itype svg { width: 100%; height: 100%; display: block; object-fit: contain; }
+.story-cap { grid-column: 1 / -2; font-family: var(--font-m); font-size: 0.59rem; letter-spacing: 0.04em; color: var(--capc, var(--faint)); margin-bottom: 0.02rem; }
 
 .ticket-key { font-family: var(--font-m); font-weight: 600; font-size: 0.8rem; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .ticket-face { grid-column: -2; grid-row: 1 / 3; display: grid; place-items: center; align-self: start; }
@@ -150,7 +151,8 @@ button { font: inherit; color: inherit; background: none; border: 0; padding: 0;
   grid-column: 1 / -2; font-size: 0.67rem; color: var(--dim); font-weight: 400;
   line-height: 1.35; overflow-wrap: anywhere; /* full title, as many lines as it takes */
 }
-.ticket-age { font-family: var(--font-m); font-size: 0.7rem; font-weight: 600; color: var(--age-c, var(--dim)); }
+.ticket-age { font-family: var(--font-m); font-size: 0.7rem; font-weight: 700; color: var(--age-c, var(--dim)); }
+.ticket[data-age='stale'] { background: color-mix(in srgb, var(--red) 7%, var(--panel-2)); }
 .ticket-pts { font-family: var(--font-m); font-size: 0.7rem; font-weight: 600; color: var(--faint); min-width: 1.1em; text-align: right; }
 .ticket[data-unestimated='true'] .ticket-pts { color: var(--amber); }
 .ticket[data-scope='true'] .ticket-key::after {
@@ -396,12 +398,18 @@ html[data-theme='light'] .standup { background: rgba(231, 228, 220, 0.88); }
 .dock-blocked { flex: 0 0 15rem; }
 .dock-blocked[data-occupied='true'] { border-color: color-mix(in srgb, var(--red) 50%, var(--line)); }
 .dock-head { flex: none; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
-/* every column shows full cards for all its issues and scrolls internally */
+/* grouped columns read as vertical story clusters, so cards are single-column */
 .dock-cards {
-  display: grid; grid-template-columns: repeat(auto-fill, minmax(13rem, 1fr));
-  gap: 0.3rem; align-content: start; min-height: 0;
+  display: flex; flex-direction: column; gap: 0.3rem; min-height: 0;
   overflow-y: auto; padding-right: 0.15rem;
   scrollbar-width: thin; scrollbar-color: var(--line-2) transparent;
 }
+.story-cluster { display: flex; flex-direction: column; }
+.subcards { display: flex; flex-direction: column; gap: 0.3rem; margin: 0.1rem 0 0.45rem; }
+.story-cluster:last-child .subcards { margin-bottom: 0; }
+.substory { display: flex; align-items: center; gap: 0.4rem; padding: 0.3rem 0.2rem 0.06rem; }
+.substory .bar { width: 0.18rem; height: 0.82rem; border-radius: 2px; background: var(--barc, var(--steel-3)); flex: none; }
+.substory .nm { font-size: 0.66rem; font-weight: 600; color: var(--nmc, var(--dim)); min-width: 0; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
+.substory .ct { font-family: var(--font-m); font-size: 0.6rem; color: var(--faint); flex: none; }
 .dock-blocked-card { display: flex; flex-direction: column; gap: 0.15rem; }
 .dock-reason { font-size: 0.66rem; color: var(--red); padding: 0 0.3rem; }
