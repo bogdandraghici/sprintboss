@@ -130,6 +130,21 @@ export function groupByStory(issues) {
   return { stories, other };
 }
 
+// Story-wide completion, computed over ALL sprint issues — deriveDock excludes
+// done/blocked tickets, so the dock can't aggregate this itself. Feeds the
+// hairline progress meter under each story sub-header. Map(parentKey -> {done, total}).
+export function storyProgress(view) {
+  const m = new Map();
+  for (const i of view.issues) {
+    if (!i.parentKey) continue;
+    const p = m.get(i.parentKey) || { done: 0, total: 0 };
+    p.total += 1;
+    if (i.done) p.done += 1;
+    m.set(i.parentKey, p);
+  }
+  return m;
+}
+
 // Per-column ticket counts for a focused assignee, keyed by column index.
 // Feeds the truth ticker when a fighter is focused. focus null -> empty map.
 export function focusColumnCounts(view, focus) {
