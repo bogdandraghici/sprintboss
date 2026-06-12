@@ -14,9 +14,16 @@ read or written.)
   first-name caption planted on the floor under each fighter's feet
   (`FighterNames` in `ArenaScene.jsx`: muted `--dim`, low-opacity, focus-aware,
   world-space so it doesn't bob with the body). Below = ticket
-  dock (`Dock.jsx`): real tickets grouped by board column — every column
-  (queue, working, and blocked) shows the full card for all of its issues and
-  scrolls internally rather than truncating; blocked also carries its reason.
+  dock (`Dock.jsx`): real tickets grouped by board column and, within each
+  column, sub-grouped by **story** (the Jira parent) — a story with 2+ tickets
+  in that column gets a colored sub-header (`groupByStory`/`storyColor` in
+  `raidState.js`, tested), while singletons + parentless tickets fold into a
+  quiet "Other" cluster (folded singletons keep their story name inline). Every
+  column shows the full card for all of its issues and scrolls internally rather
+  than truncating; blocked also carries its reason. Each card leads with the
+  Jira **issue-type icon** (proxied via `/api/icon`, in-code glyph fallback)
+  instead of a staleness dot — staleness now reads from the bold age value plus
+  a faint red wash on stale cards.
   Bottom = truth ticker. Completing a ticket = the owning fighter attacks (hit-stop,
   sparks, HP drains); between real attacks fighters also **shadow-box** — an
   ambient swing on a staggered ~4–9s per-fighter cadence so the line never goes
@@ -66,6 +73,10 @@ read or written.)
 - Sprites are in-code pixel matrices (strings + palette), rasterized to CanvasTextures at runtime — no image assets. Each weapon class (sword/hammer/bow/staff/daggers) has its own 20×28 body set in `sprites/classes/` with the weapon drawn in (there is no separate weapons module); upscaled 2× to 40×56 sheets. Per-person identity = palette + hair overlay + avatar head; roster in `sprites/roster.js`; unknown assignees get the `__recruit__` fallback. Proof tool: `node scripts/render-class.mjs <class>`. Attack pulses route by **issue key**, not event actor (the actor is whoever dragged the ticket). Pilot exception: a roster entry with `art: '<slug>'` + `public/fighters/<slug>.png` renders via `FighterArtRig` instead — painted art animated procedurally (`artPose.js`), matrix as loading/404 fallback; see `public/fighters/README.md`.
 - **Boss is the exception to no-image-assets**: it renders a generated sprite from `public/boss/idle.png` (optional `cast.png`) when present, else falls back to the in-code matrix (`sprites/boss.js`). Loader `bossArt.js` (linear filter — the art is painted, not pixel), layout math `bossArtMath.js` (fitPlane/crackSpecs, tested). Enrage/hit/HP-cracks/death are applied in-engine over a clean static sprite (so generate calm art); see `public/boss/README.md` for the generation spec + `scripts/key-art.py` to key out a white background.
 - Avatars load via `/api/avatar` proxy (host-allowlisted) — the Atlassian CDN has no CORS headers and would taint WebGL textures.
+- Issue-type icons render from Jira's `issuetype.iconUrl` via the auth'd
+  `/api/icon` proxy (Jira-host-allowlisted; falls back to a generic glyph and to
+  404 in mock). Story = each issue's `parent` (`parentKey`/`parentName`), fetched
+  alongside `issuetype` and carried through `derive.js`.
 - Snapshot cache lives in `server/snapshotStore.js`: in-memory on dev/Render, Vercel KV when `KV_REST_API_URL` is set. Long-lived hosts refresh via `setInterval` in `server/index.js`; on Vercel that branch is skipped and `getSnapshot()` refreshes lazily on read — the 60s client poll IS the refresh cadence (Hobby plan has no usable cron). `/api/refresh` (guarded by `CRON_SECRET`, exempt from the Google session middleware) is still available for the empty-room keep-warm case via the optional [.github/workflows/keep-warm.yml](.github/workflows/keep-warm.yml).
 - The Raid HUD widgets live in `src/components/hud.jsx`. `BossFigure.jsx` (SVG golem) is used by boot/no-sprint screens — don't delete it.
 
