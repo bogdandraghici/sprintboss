@@ -154,6 +154,10 @@ button { font: inherit; color: inherit; background: none; border: 0; padding: 0;
 .story-cap { grid-column: 1 / -2; font-family: var(--font-m); font-size: 0.59rem; letter-spacing: 0.04em; color: var(--capc, var(--faint)); margin-bottom: 0.02rem; }
 
 .ticket-key { font-family: var(--font-m); font-weight: 600; font-size: 0.8rem; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+/* Carryover scar: ×N = this ticket's Nth sprint. Quiet by design (--dim), with
+   a slight ramp at 3+ sprints. Draft treatment — Bogdan's art-direction pass owns it. */
+.ticket-carry { font-family: var(--font-m); font-size: 0.62rem; font-weight: 700; color: var(--dim); margin-left: 0.4em; letter-spacing: 0.02em; }
+.ticket-carry[data-heavy] { color: var(--amber); }
 .ticket-face { grid-column: -2; grid-row: 1 / 3; display: grid; place-items: center; align-self: start; }
 .ticket-summary {
   grid-column: 1 / -2; font-size: 0.67rem; color: var(--dim); font-weight: 400;

@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import Avatar from './Avatar';
-import { ageBand, fmtDays } from '../lib';
+import { ageBand, fmtDays, carryoverLabel, ordinal } from '../lib';
 
 // Generic fallback glyph for unknown types / mock (no iconUrl) / proxy miss.
 function GenericTypeGlyph() {
@@ -33,6 +33,8 @@ function IssueTypeIcon({ src, type }) {
 // (for folded singletons in "Other") and an optional story-color left accent.
 export default function Ticket({ issue, view, onSelect, accent = null, storyCaption = null }) {
   const band = view.flags?.noChangelog ? 'off' : ageBand(issue.daysInColumn, view.aging);
+  const carry = carryoverLabel(issue.priorSprints);
+  const nthSprint = (issue.priorSprints?.length || 0) + 1;
   return (
     <button
       className="ticket pop-in"
@@ -44,7 +46,18 @@ export default function Ticket({ issue, view, onSelect, accent = null, storyCapt
       style={accent ? { borderLeftColor: accent, borderLeftWidth: '3px' } : undefined}
     >
       <IssueTypeIcon src={issue.issueTypeIcon} type={issue.issueType} />
-      <span className="ticket-key">{issue.key}</span>
+      <span className="ticket-key">
+        {issue.key}
+        {carry && (
+          <span
+            className="ticket-carry"
+            data-heavy={nthSprint >= 3 || undefined}
+            title={`${ordinal(nthSprint)} sprint for this ticket`}
+          >
+            {carry}
+          </span>
+        )}
+      </span>
       {band !== 'off' && <span className="ticket-age">{fmtDays(issue.daysInColumn)}</span>}
       {issue.estimated && <span className="ticket-pts">{issue.points}</span>}
       <span className="ticket-face">
