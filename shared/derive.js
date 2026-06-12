@@ -111,6 +111,11 @@ export function deriveSnapshot({ sprint, issues, columns, config, now = Date.now
       blockedReason: blocked ? raw.blockedReason || (inBlockedZone ? `In "${columns[cur.col].name}" column` : null) : null,
       created, addedAt, addedMidSprint,
       done, doneAt: done ? cur.ts : null,
+      parentKey: raw.parentKey ?? null,
+      parentName: raw.parentName ?? null,
+      issueType: raw.issueType ?? null,
+      issueTypeIcon: raw.issueTypeIcon ?? null,
+      isSubtask: raw.isSubtask ?? false,
       colHistory, flagHistory,
     };
   });
