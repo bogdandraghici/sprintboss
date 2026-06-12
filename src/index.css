@@ -50,7 +50,7 @@ html[data-theme='light'] {
   /* daylight — pure neutral ground; color is reserved for signals */
   color-scheme: light;
   --bg: #f1f1f0;
-  --bg-grid: rgba(60, 60, 60, 0.035);
+  --bg-grid: rgba(60, 60, 60, 0.015);
   --panel: #fdfdfc;
   --panel-2: #f7f7f6;
   --inset: #ebebea;
@@ -65,7 +65,7 @@ html[data-theme='light'] {
   --eye: #0c9e8d;
   --belt: #d4dbe2;
   --belt-stripe: rgba(180, 122, 10, 0.55);
-  --glow-red: rgba(210, 51, 65, 0.14);
+  --glow-red: rgba(210, 51, 65, 0); /* no enrage room-glow on light ground — the chip + timer carry it */
   --hatch-dark: rgba(28, 39, 51, 0.22);
   --teal: #0d9488;
   --amber: #b07c08;
