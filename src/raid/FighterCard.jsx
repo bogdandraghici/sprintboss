@@ -18,12 +18,16 @@ const STATUS = {
   down:      { label: 'Down',      tone: 'down' },
 };
 
-// Fighter art is ~2.2 world units tall with feet at y=0. Drop the rig by ~half
-// its height so the body centres on the origin the camera looks at. The camera
-// sits far enough back (z) that a 2.2-tall figure fills only ~70% of the frame
-// — margin top and bottom so heads/feet aren't clipped.
-const FIGHTER_DROP = -1.1;
+// Both rigs anchor the figure's feet at world y≈0, and the art rig overwrites
+// its own group Y every frame (ignoring position[1]) — so the rig can't be
+// moved by its position prop, and R3F's default camera looks at the origin (so
+// raising the camera only tilts it). Framing is therefore done in world space:
+// the camera sits straight on -Z, pulled back to CAM_Z so a ~2.2-unit figure
+// fills the frame with margin, and an OUTER wrapper group (which the rig can't
+// touch) drops the figure by BASE_DROP so the feet land low in the frame with
+// a little ground beneath for the contact shadow.
 const CAM_Z = 5.8;
+const BASE_DROP = -1.3;
 
 function CardScene({ fighter }) {
   const art = artSlugFor(fighter.name);
@@ -41,19 +45,23 @@ function CardScene({ fighter }) {
       <ambientLight intensity={0.5} />
       <pointLight position={[-4, 5, 4]} intensity={50} color="#7fe7ff" />
       <pointLight position={[4.5, 4, 2]} intensity={45} color="#ff9d5c" />
-      <Comp
-        fighter={standing}
-        art={art}
-        lite={LITE}
-        phase={0}
-        attack={null}
-        onStrike={() => {}}
-        beaconHeat={0}
-        tableau={null}
-        focus={null}
-        onFocus={() => {}}
-        position={[0, FIGHTER_DROP + cardYFor(fighter.name), 0]}
-      />
+      {/* Outer group the rig can't overwrite — seats the figure low (BASE_DROP)
+          and carries the per-fighter cardY framing nudge on top. */}
+      <group position={[0, BASE_DROP + cardYFor(fighter.name), 0]}>
+        <Comp
+          fighter={standing}
+          art={art}
+          lite={LITE}
+          phase={0}
+          attack={null}
+          onStrike={() => {}}
+          beaconHeat={0}
+          tableau={null}
+          focus={null}
+          onFocus={() => {}}
+          position={[0, 0, 0]}
+        />
+      </group>
     </Canvas>
   );
 }
