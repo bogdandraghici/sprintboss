@@ -47,29 +47,30 @@ html[data-theme='dark'] {
 }
 
 html[data-theme='light'] {
+  /* steel daylight — the night-shift floor with the lights on */
   color-scheme: light;
-  --bg: #e7e4dc;
-  --bg-grid: rgba(40, 60, 80, 0.06);
-  --panel: #f7f5ef;
-  --panel-2: #efece4;
-  --inset: #e0dcd2;
-  --line: #cfc9bb;
-  --line-2: #b4ac9a;
-  --ink: #181f27;
-  --dim: #5b6a79;
-  --faint: #92978f;
-  --steel: #8d9aa8;
-  --steel-2: #6b7c8d;
-  --steel-3: #c4c9cd;
+  --bg: #dfe4e9;
+  --bg-grid: rgba(50, 80, 110, 0.07);
+  --panel: #f6f8fa;
+  --panel-2: #eef1f4;
+  --inset: #e2e7ec;
+  --line: #c3ccd6;
+  --line-2: #a4b2c0;
+  --ink: #1c2733;
+  --dim: #5d6f81;
+  --faint: #8c9aa8;
+  --steel: #8a9aab;
+  --steel-2: #64798d;
+  --steel-3: #d3dae1;
   --eye: #0c9e8d;
-  --belt: #d8d4c8;
-  --belt-stripe: rgba(146, 104, 10, 0.5);
-  --glow-red: rgba(220, 38, 50, 0.12);
-  --hatch-dark: rgba(60, 50, 30, 0.25);
+  --belt: #d4dbe2;
+  --belt-stripe: rgba(180, 122, 10, 0.55);
+  --glow-red: rgba(210, 51, 65, 0.14);
+  --hatch-dark: rgba(28, 39, 51, 0.22);
   --teal: #0d9488;
-  --amber: #b87905;
-  --red: #dc2636;
-  --lime: #5c9e0b;
+  --amber: #b07c08;
+  --red: #d23341;
+  --lime: #65a30d;
   --ember: #d8521f;
 }
 
