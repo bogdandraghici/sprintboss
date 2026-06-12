@@ -81,10 +81,20 @@ read or written.)
   spread isn't washed out by the environment fog (tuned for camera z≈12.4).
 - Pure logic lives in `src/raid/raidState.js` (party/minions/actions/dock/stage
   selectors), `src/raid/heat.js` (afterglow decay), `src/raid/flourish.js`
-  (ambient-swing scheduler), and `src/raid/sprites/`
+  (ambient-swing scheduler), `src/raid/cardStats.js` (standup-card stat grid +
+  `weaponClassLabel`), and `src/raid/sprites/`
   (20×28 per-class pixel matrices in `sprites/classes/` + `ops.js` upscale
   pipeline + rasterizer) — all vitest-tested (`npm test`). R3F components are
   verified in the browser preview.
+- **Standup mode** (`src/components/Modes.jsx`, `StandupOverlay`) shows, beside
+  the per-person moved/parked board, a full-height **fighter card**
+  (`src/raid/FighterCard.jsx`): a standalone mini R3F `<Canvas>` reusing the
+  arena's exact rig selection (`artSlugFor` → `FighterArtRig`/`FighterSprite`,
+  self-animating idle/shadow-box off the render clock), plus a status badge,
+  name, weapon-class role, and a 5-cell stat grid from `deriveParty` + the
+  standup moved count. Pure bits in `cardStats.js`; the card module is
+  `FighterCard.jsx` (capital F) — keep its stem distinct from any lowercase
+  helper so the case-insensitive macOS FS doesn't mis-resolve the import.
 - Sprites are in-code pixel matrices (strings + palette), rasterized to CanvasTextures at runtime — no image assets. Each weapon class (sword/hammer/bow/staff/daggers) has its own 20×28 body set in `sprites/classes/` with the weapon drawn in (there is no separate weapons module); upscaled 2× to 40×56 sheets. Per-person identity = palette + hair overlay + avatar head; roster in `sprites/roster.js`; unknown assignees get the `__recruit__` fallback. Proof tool: `node scripts/render-class.mjs <class>`. Attack pulses route by **issue key**, not event actor (the actor is whoever dragged the ticket). Pilot exception: a roster entry with `art: '<slug>'` + `public/fighters/<slug>.png` renders via `FighterArtRig` instead — painted art animated procedurally (`artPose.js`), matrix as loading/404 fallback; see `public/fighters/README.md`.
 - **Boss is the exception to no-image-assets**: it renders a generated sprite from `public/boss/idle.png` (optional `cast.png`) when present, else falls back to the in-code matrix (`sprites/boss.js`). Loader `bossArt.js` (linear filter — the art is painted, not pixel), layout math `bossArtMath.js` (fitPlane/crackSpecs, tested). Enrage/hit/HP-cracks/death are applied in-engine over a clean static sprite (so generate calm art); see `public/boss/README.md` for the generation spec + `scripts/key-art.py` to key out a white background.
 - Avatars load via `/api/avatar` proxy (host-allowlisted) — the Atlassian CDN has no CORS headers and would taint WebGL textures.
