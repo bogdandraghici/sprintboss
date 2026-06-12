@@ -387,6 +387,46 @@ html[data-theme='light'] .standup { background: rgba(231, 228, 220, 0.88); }
 .ticker-block { color: var(--red); }
 .ticker-ok { color: var(--teal); }
 
+/* ── raid fighter bar ───────────────────────────────────────── */
+.fighter-bar {
+  display: flex;
+  gap: 0.5rem;
+  align-items: flex-start;
+  overflow-x: auto;
+  flex: 0 0 auto;
+  padding: 0.1rem 0.1rem 0.2rem;
+}
+.fighter-chip {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.25rem;
+  flex: 0 0 auto;
+  width: 3.2rem;
+  padding: 0.3rem 0.2rem;
+  border: 1px solid transparent;
+  border-radius: 8px;
+  background: transparent;
+  color: var(--dim);
+  cursor: pointer;
+  transition: opacity 0.15s ease, border-color 0.15s ease, color 0.15s ease;
+}
+.fighter-chip:hover { border-color: var(--line); color: var(--ink); }
+.fighter-chip[data-active='true'] {
+  border-color: color-mix(in srgb, var(--ink) 40%, var(--line));
+  background: var(--steel-3);
+  color: var(--ink);
+}
+.fighter-chip[data-dimmed='true'] { opacity: 0.35; }
+.fighter-chip-name {
+  font-size: 0.7rem;
+  line-height: 1;
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
 /* ── raid dock ──────────────────────────────────────────────── */
 .dock { display: flex; gap: 0.6rem; flex: 1 1 0; align-items: stretch; min-height: 0; }
 .dock-group {
