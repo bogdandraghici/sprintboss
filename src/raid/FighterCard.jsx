@@ -2,14 +2,14 @@
 // Standup-only: a full-height card showing one fighter live (idle +
 // shadow-boxing), their name/class, and a stat grid. The art stage is a small
 // standalone R3F canvas that reuses the arena's exact rig selection, so the
-// figure matches the battle. Pure logic lives in fighterCard.js; this file is
+// figure matches the battle. Pure logic lives in cardStats.js; this file is
 // verified in the browser preview.
 import { Canvas } from '@react-three/fiber';
 import FighterSprite from './FighterSprite';
 import FighterArtRig from './FighterArtRig';
 import { artSlugFor } from './sprites/roster';
 import { LITE } from './ArenaScene';
-import { cardStats, weaponClassLabel } from './fighterCard';
+import { cardStats, weaponClassLabel } from './cardStats';
 
 const STATUS = {
   fighting:  { label: 'Fighting',  tone: 'fighting' },

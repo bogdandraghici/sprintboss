@@ -1,6 +1,6 @@
-// src/raid/__tests__/fighterCard.test.js
+// src/raid/__tests__/cardStats.test.js
 import { describe, it, expect } from 'vitest';
-import { cardStats, weaponClassLabel } from '../fighterCard';
+import { cardStats, weaponClassLabel } from '../cardStats';
 
 describe('cardStats', () => {
   const f = { done: 3, open: 5, stale: 2, blocked: 1, status: 'fighting' };

@@ -1,4 +1,4 @@
-// src/raid/fighterCard.js
+// src/raid/cardStats.js
 // Pure presentation logic for the standup FighterCard: the stat grid and the
 // weapon→role label. Kept separate from the R3F component so it's unit-tested
 // (the component itself is verified in the browser preview).
