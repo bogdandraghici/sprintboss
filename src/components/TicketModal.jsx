@@ -1,6 +1,6 @@
 import { useEffect } from 'react';
 import Avatar from './Avatar';
-import { ageBand, fmtDays, fmtDate } from '../lib';
+import { ageBand, fmtDays, fmtDate, ordinal } from '../lib';
 
 export default function TicketModal({ issue, view, onClose }) {
   useEffect(() => {
@@ -75,6 +75,14 @@ export default function TicketModal({ issue, view, onClose }) {
               {issue.addedMidSprint && <span style={{ color: 'var(--lime)' }}> (added mid-sprint)</span>}
             </span>
           </Meta>
+          {issue.priorSprints?.length > 0 && (
+            <Meta label="Sprint history">
+              <span className="mono font-bold">{ordinal(issue.priorSprints.length + 1)} sprint</span>{' '}
+              <span style={{ color: 'var(--faint)' }}>
+                after {issue.priorSprints.map((s) => s.name).join(', ')}
+              </span>
+            </Meta>
+          )}
           {issue.done && (
             <Meta label="Completed">
               <span className="mono">{fmtDate(issue.doneAt)}</span>
