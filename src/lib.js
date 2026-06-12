@@ -68,3 +68,16 @@ export function firstName(name) {
   const first = String(name).split(/[\s._]+/).filter(Boolean)[0] || String(name);
   return first.charAt(0).toUpperCase() + first.slice(1);
 }
+
+// Carryover badge text: a ticket with N prior sprints is on its (N+1)th sprint.
+// Null for first-sprint tickets — the badge only exists for veterans.
+export function carryoverLabel(priorSprints) {
+  const n = Array.isArray(priorSprints) ? priorSprints.length : 0;
+  return n >= 1 ? `×${n + 1}` : null;
+}
+
+export function ordinal(n) {
+  const v = n % 100;
+  if (v >= 11 && v <= 13) return `${n}th`;
+  return `${n}${['th', 'st', 'nd', 'rd'][n % 10] || 'th'}`;
+}
