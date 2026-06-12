@@ -1,8 +1,9 @@
 // src/components/FighterBar.jsx
 // A roster strip above the dock: one thumbnail per fighter. Clicking focuses
-// that fighter, filtering the whole command deck (dock, HP bar, scene, ticker).
-// Presentation lens only — drives the same setFocus the arena uses; clearing
-// stays via Esc / empty-space click in the arena.
+// that fighter, filtering the whole command deck (dock, HP bar, scene, ticker);
+// clicking the already-focused chip clears it. Presentation lens only — drives
+// the same toggle the arena fighters use; focus also clears via Esc /
+// empty-space click in the arena.
 import Avatar from './Avatar';
 import { firstName } from '../lib';
 

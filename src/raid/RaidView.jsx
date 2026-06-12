@@ -17,6 +17,10 @@ export default function RaidView({ view, pulses, onSelect }) {
   // Focused fighter (assignee name) or null. Presentation lens only — never
   // mutates `view`, never persisted, not part of retro reconstruction.
   const [focus, setFocus] = useState(null);
+  // Re-selecting the already-focused fighter clears focus; selecting another
+  // switches; passing null (empty-space click) always clears. Drives both the
+  // arena fighters and the roster-bar thumbnails.
+  const toggleFocus = (name) => setFocus((prev) => (prev === name ? null : name));
 
   // Session-only arena height (px) the user can drag; null = CSS default (22vh).
   // Presentation lens only — never mutates `view`, never persisted.
@@ -71,7 +75,7 @@ export default function RaidView({ view, pulses, onSelect }) {
       >
         <ArenaScene
           view={view} party={party} minions={minions} horde={horde} actions={actions}
-          focus={focus} onFocus={setFocus}
+          focus={focus} onFocus={toggleFocus}
         />
         <div className="combat-log">
           <DamageLog view={view} />
@@ -90,7 +94,7 @@ export default function RaidView({ view, pulses, onSelect }) {
       >
         <span className="arena-resize-grip" />
       </div>
-      <FighterBar party={party} focus={focus} onFocus={setFocus} />
+      <FighterBar party={party} focus={focus} onFocus={toggleFocus} />
       <Dock view={view} onSelect={onSelect} focus={focus} />
       <TruthTicker view={view} onSelect={onSelect} focus={focus} />
     </section>

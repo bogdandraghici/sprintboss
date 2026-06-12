@@ -17,7 +17,9 @@ read or written.)
   **fighter roster bar** (`FighterBar.jsx`) sits above the dock: a strip of
   avatar + first-name chips (one per party member) that drives the same focus
   lens as clicking a fighter in the arena — click a chip to filter the whole
-  command deck to that fighter; clearing stays via Esc / empty-space click. It's
+  command deck to that fighter; click it again (or the focused fighter) to clear,
+  or use Esc / empty-space click. Both the arena fighters and the chips go
+  through one `toggleFocus` in `RaidView` (re-click the active one ⇒ clear). It's
   pure presentation (drives `setFocus`, no state of its own). The `firstName`
   helper it shares with the floor captions now lives in `src/lib.js`. The arena's
   height is **user-adjustable**: a grip on its bottom edge (`.arena-resize` in
@@ -52,7 +54,8 @@ read or written.)
   (`bossStage`) and crumbles on a cleared sprint; sprint overrun = defeat grade.
   Clicking a fighter focuses them — dock, HP bar, scene, and ticker all filter
   to their tickets (presentation lens only; the scene cue is dimming the
-  non-focused fighters, no floor ring; Esc or empty-space click clears). Each
+  non-focused fighters, no floor ring; re-clicking the focused fighter, Esc, or
+  an empty-space click clears). Each
   figure is grounded by a soft radial contact shadow planted on the floor (not
   parented to the body, so they lift off it when they bob/lunge); the floor
   itself is a depth-gradient plane (front sheen → panel tone → melts into the
