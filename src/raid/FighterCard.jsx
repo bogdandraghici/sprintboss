@@ -28,6 +28,7 @@ const STATUS = {
 // a little ground beneath for the contact shadow.
 const CAM_Z = 5.8;
 const BASE_DROP = -1.3;
+const CARD_SCALE = 1.2; // figures read a touch larger in the card than the arena
 
 function CardScene({ fighter }) {
   const art = artSlugFor(fighter.name);
@@ -45,9 +46,10 @@ function CardScene({ fighter }) {
       <ambientLight intensity={0.5} />
       <pointLight position={[-4, 5, 4]} intensity={50} color="#7fe7ff" />
       <pointLight position={[4.5, 4, 2]} intensity={45} color="#ff9d5c" />
-      {/* Outer group the rig can't overwrite — seats the figure low (BASE_DROP)
-          and carries the per-fighter cardY framing nudge on top. */}
-      <group position={[0, BASE_DROP + cardYFor(fighter.name), 0]}>
+      {/* Outer group the rig can't overwrite — seats the figure low (BASE_DROP),
+          scales it up a touch (CARD_SCALE, feet stay anchored at the group
+          origin), and carries the per-fighter cardY framing nudge on top. */}
+      <group position={[0, BASE_DROP + cardYFor(fighter.name), 0]} scale={CARD_SCALE}>
         <Comp
           fighter={standing}
           art={art}
