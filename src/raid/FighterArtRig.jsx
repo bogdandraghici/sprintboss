@@ -10,8 +10,9 @@ import FighterSprite, { Beacon } from './FighterSprite';
 import { useFighterArt } from './fighterArt';
 import { artScaleFor } from './sprites/roster';
 import { fitPlane } from './bossArtMath';
-import { attackPose, idlePose, victoryPose, DOWN_ROT, SLUMP } from './artPose';
+import { attackPose, idlePose, victoryPose, ATK_TOTAL, DOWN_ROT, SLUMP } from './artPose';
 import { frozen } from './timeBus';
+import { newFlourish, stepFlourish, flourishEligible } from './flourish';
 
 const ART_FIGHTER_H = 2.2; // world height — designer-tuned live in the preview
 const GHOST_LIFE = 0.35;
@@ -29,6 +30,7 @@ function Rig({ fighter, attack, onStrike, position, phase = 0, beaconHeat = 0, t
   const body = useRef();
   const mat = useRef();
   const anim = useRef({ id: null, t: 99, struck: false, points: 1 }); // t seeds past ATK_TOTAL: no phantom attack on mount
+  const fl = useRef(newFlourish());
   const [ghosts, setGhosts] = useState([]);
   const [dust, setDust] = useState([]);
   const nextFx = useRef(0);
@@ -51,10 +53,17 @@ function Rig({ fighter, attack, onStrike, position, phase = 0, beaconHeat = 0, t
     if (ghosts.length && t - ghosts[0].born > GHOST_LIFE) setGhosts((gs) => gs.filter((g) => t - g.born < GHOST_LIFE));
     if (dust.length && t - dust[0].born > DUST_LIFE) setDust((ds) => ds.filter((d) => t - d.born < DUST_LIFE));
 
+    // Ambient shadow-boxing between real attacks — decorative only: no strike,
+    // no ghosts/dust, no onStrike (real damage comes only from completed tickets).
+    const calm = !atk && flourishEligible(fighter.status, tableau);
+    const flT = stepFlourish(fl.current, dt, phase + 1, ATK_TOTAL, calm);
+    const flo = flT != null ? attackPose(flT) : null;
+
     const idle = idlePose(t, phase, fighter.status === 'resting' ? 0.6 : 1);
     let x = 0, y = 0, rot = idle.rot, sy = idle.sy, dim = 1;
     if (fighter.status === 'down') { rot = DOWN_ROT; sy = 1; dim = 0.5; }
     else if (atk) { x = atk.x; rot = atk.rot; sy = atk.sy; }
+    else if (flo) { x = flo.x * 0.85; rot = flo.rot; sy = flo.sy; } // shadow-boxing swing
     else if (tableau === 'victory') { const v = victoryPose(t, phase); y = v.y; sy = v.sy; rot = 0; }
     else if (tableau === 'defeat' || fighter.status === 'exhausted') { rot = SLUMP.rot + idle.rot * 0.5; sy = SLUMP.sy; dim = 0.55; }
     else if (fighter.status === 'resting') dim = 0.8;

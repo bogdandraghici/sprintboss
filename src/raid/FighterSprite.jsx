@@ -5,6 +5,7 @@ import { sheetTexture, setFrame } from './sprites/textures';
 import { headlessFramesFor, paletteFor, FRAME, headAnchors40For, SPRITE_W, SPRITE_H } from './sprites/roster';
 import { avatarTexture } from './avatarTexture';
 import { frozen } from './timeBus';
+import { newFlourish, stepFlourish, flourishEligible } from './flourish';
 
 const PX = 0.0328; // world units per sprite pixel -> 40x56 body ≈ 1.31 x 1.84
 const HEAD_SIZE = 0.48; // avatar disc diameter — still readable from the couch, but the sprite leads (mockup proportions)
@@ -42,12 +43,18 @@ export default function FighterSprite({ fighter, attack, onStrike, position, pha
   const head = useRef();
   const headMat = useRef();
   const anim = useRef({ id: null, t: 0, struck: false, points: 1 });
+  const fl = useRef(newFlourish());
 
   useFrame((state, rawDt) => {
     const dt = frozen() ? 0 : rawDt; // hit-stop freezes the choreography
     const a = anim.current;
     if (attack && attack.id !== a.id && fighter.status !== 'down') { a.id = attack.id; a.t = 0; a.struck = false; a.points = attack.points; }
     const attacking = a.id !== null && a.t < ATK_TOTAL && fighter.status !== 'down';
+    // Ambient shadow-boxing: in the calm battle state, fighters occasionally run
+    // the swing on their own. No strike — purely decorative (real damage comes
+    // only from completed tickets), so it never calls onStrike.
+    const calm = !attacking && flourishEligible(fighter.status, tableau);
+    const flT = stepFlourish(fl.current, dt, phase + 1, ATK_TOTAL, calm);
     let frame;
     let lunge = 0;
     if (attacking) {
@@ -61,6 +68,12 @@ export default function FighterSprite({ fighter, attack, onStrike, position, pha
         a.struck = true;
         onStrike?.(a.points);
       }
+    } else if (flT != null) {
+      let acc = 0;
+      let seg = ATK[ATK.length - 1];
+      for (const s of ATK) { acc += s[0]; if (flT < acc) { seg = s; break; } }
+      frame = seg[1];
+      lunge = seg[2] * 0.85; // a touch lighter than a committed strike — shadow-boxing
     } else if (tableau === 'victory') {
       frame = Math.floor(state.clock.elapsedTime / 0.35 + phase) % 2 ? FRAME.VICTORY_B : FRAME.VICTORY_A;
     } else if (fighter.status === 'down') {

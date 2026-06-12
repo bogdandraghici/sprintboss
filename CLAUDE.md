@@ -12,7 +12,17 @@ Ambient wall-display app that visualizes our live Jira sprint as a boss fight. E
   (queue, working, and blocked) shows the full card for all of its issues and
   scrolls internally rather than truncating; blocked also carries its reason.
   Bottom = truth ticker. Completing a ticket = the owning fighter attacks (hit-stop,
-  sparks, HP drains); scope creep = boss summons minions (cap 6 + horde);
+  sparks, HP drains); between real attacks fighters also **shadow-box** — an
+  ambient swing on a staggered ~4–9s per-fighter cadence so the line never goes
+  static (`src/raid/flourish.js`, render-clock driven; cadence + 0.85× lunge are
+  the tuning knobs). A flourish is purely decorative: no strike, no damage
+  number, no boss hit — only completed tickets deal real damage. Eligibility is
+  the tested `flourishEligible(status, tableau)`: fighting + resting fighters do
+  it; the spent (down/exhausted) and the victory hop sit out. Defeat/overrun does
+  NOT suppress it (the team is still grinding) — note this is the *normal* live
+  state for an overrun-heavy board, so gating it on defeat made the whole scene
+  look frozen.
+  Scope creep = boss summons minions (cap 6 + horde);
   blocked = fighter downed with beacon; boss cracks at 75/50/25% HP
   (`bossStage`) and crumbles on a cleared sprint; sprint overrun = defeat grade.
   Clicking a fighter focuses them — dock, HP bar, scene, and ticker all filter
@@ -44,7 +54,8 @@ Ambient wall-display app that visualizes our live Jira sprint as a boss fight. E
   `dt`, never `Date.now()`). Fighters/boss/minions set `fog={false}` so the wide
   spread isn't washed out by the environment fog (tuned for camera z≈12.4).
 - Pure logic lives in `src/raid/raidState.js` (party/minions/actions/dock/stage
-  selectors), `src/raid/heat.js` (afterglow decay), and `src/raid/sprites/`
+  selectors), `src/raid/heat.js` (afterglow decay), `src/raid/flourish.js`
+  (ambient-swing scheduler), and `src/raid/sprites/`
   (20×28 per-class pixel matrices in `sprites/classes/` + `ops.js` upscale
   pipeline + rasterizer) — all vitest-tested (`npm test`). R3F components are
   verified in the browser preview.
