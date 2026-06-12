@@ -28,6 +28,13 @@ Ambient wall-display app that visualizes our live Jira sprint as a boss fight. E
 ## Architecture rules
 
 - Data layer is sacred: `useSnapshot` (poll + pulse detection), `shared/derive.js` (stats), `timeMachine.js` (retro mode reconstructs any past moment). The arena is a pure function of `view` + short-lived pulses — never put `Date.now()` in scene code; use `view.now`/`view.timeTravel`.
+- Camera pan/zoom is presentation-only interaction (like fighter focus), not part
+  of `view`: wheel zooms toward the cursor, left-drag pans, both suppress the
+  ambient sway while engaged and ease home after idle (Esc / double-click reset).
+  Math is the pure, tested `src/raid/cameraControls.js`; the `CameraRig` in
+  `ArenaScene.jsx` composes it with sway + hit-stop shake (uses the render clock
+  `dt`, never `Date.now()`). Fighters/boss/minions set `fog={false}` so the wide
+  spread isn't washed out by the environment fog (tuned for camera z≈12.4).
 - Pure logic lives in `src/raid/raidState.js` (party/minions/actions/dock/stage
   selectors), `src/raid/heat.js` (afterglow decay), and `src/raid/sprites/`
   (20×28 per-class pixel matrices in `sprites/classes/` + `ops.js` upscale

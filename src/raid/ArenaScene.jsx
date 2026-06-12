@@ -5,6 +5,7 @@ import { cssVar } from './cssVar';
 import { drainShake, addShake } from './shakeBus';
 import { addFreeze, drainFreeze } from './timeBus';
 import { bossStage, deriveTableau } from './raidState';
+import * as cc from './cameraControls';
 import { fighterAuras, fighterBlockHeat, bossScars } from './heat';
 import FighterSprite from './FighterSprite';
 import FighterArtRig from './FighterArtRig';
@@ -27,17 +28,111 @@ function TimeKeeper() {
   return null;
 }
 
+// Home framing: eye slightly below the look point, near side-on.
+const EYE_Y = 1.5, EYE_Z = 12.4, LOOK_Y = 1.65;
+const HOME_DIST = Math.hypot(EYE_Y - LOOK_Y, EYE_Z);
+
+// Interactive pan/zoom layered on the ambient sway + hit-stop shake. Wheel
+// zooms toward the cursor, left-drag pans; both suppress the sway while
+// engaged and ease back home after IDLE_RETURN_S idle. Double-click / Esc
+// reset instantly. Presentation-only — see cameraControls.js for the math.
 function CameraRig() {
-  const { camera } = useThree();
+  const { camera, gl } = useThree();
+  const ctrl = useRef({
+    cur: { pan: { x: 0, y: 0 }, zoom: 1 },
+    tgt: { pan: { x: 0, y: 0 }, zoom: 1 },
+    idle: cc.IDLE_RETURN_S,
+  });
+  const drag = useRef({ down: false, dragging: false, sx: 0, sy: 0, lx: 0, ly: 0, id: null });
+
+  useEffect(() => {
+    const dom = gl.domElement;
+    const vFov = () => (camera.fov * Math.PI) / 180;
+    const rectOf = () => dom.getBoundingClientRect();
+
+    const onWheel = (e) => {
+      e.preventDefault();
+      const c = ctrl.current; c.idle = 0;
+      const r = rectOf();
+      const ndc = { x: ((e.clientX - r.left) / r.width) * 2 - 1, y: -(((e.clientY - r.top) / r.height) * 2 - 1) };
+      const aspect = r.width / r.height;
+      const oldZoom = c.tgt.zoom;
+      const newZoom = cc.clampZoom(oldZoom * (e.deltaY < 0 ? 1.12 : 1 / 1.12));
+      const oldHalf = cc.viewHalf(vFov(), HOME_DIST, aspect, oldZoom);
+      const newHalf = cc.viewHalf(vFov(), HOME_DIST, aspect, newZoom);
+      c.tgt.zoom = newZoom;
+      c.tgt.pan = cc.clampPan(cc.cursorZoomPan(c.tgt.pan, ndc, oldHalf, newHalf), newHalf);
+    };
+    const onDown = (e) => {
+      if (e.button !== 0) return;
+      const d = drag.current;
+      d.down = true; d.dragging = false; d.id = e.pointerId;
+      d.sx = d.lx = e.clientX; d.sy = d.ly = e.clientY;
+    };
+    const onMove = (e) => {
+      const d = drag.current; if (!d.down) return;
+      if (!d.dragging && Math.hypot(e.clientX - d.sx, e.clientY - d.sy) > cc.DRAG_THRESHOLD) {
+        d.dragging = true;
+        try { dom.setPointerCapture(d.id); } catch { /* ignore */ }
+      }
+      if (!d.dragging) return;
+      const c = ctrl.current; c.idle = 0;
+      const r = rectOf();
+      const half = cc.viewHalf(vFov(), HOME_DIST, r.width / r.height, c.tgt.zoom);
+      c.tgt.pan = cc.clampPan(cc.dragToPan(c.tgt.pan, e.clientX - d.lx, e.clientY - d.ly, half, r.width, r.height), half);
+      d.lx = e.clientX; d.ly = e.clientY;
+    };
+    const onUp = (e) => {
+      const d = drag.current;
+      if (d.dragging) {
+        // Keep the drag-release off R3F's click path so it can't focus a
+        // fighter: stop the capture-phase pointerup before it reaches the
+        // canvas, and swallow any synthesized DOM click as a backup.
+        e.stopPropagation();
+        const swallow = (ev) => { ev.stopPropagation(); ev.preventDefault(); };
+        dom.addEventListener('click', swallow, { capture: true, once: true });
+      }
+      d.down = false; d.dragging = false;
+    };
+    const reset = () => { const c = ctrl.current; c.tgt.pan = { x: 0, y: 0 }; c.tgt.zoom = 1; c.idle = cc.IDLE_RETURN_S; };
+    const onKey = (e) => { if (e.key === 'Escape') reset(); };
+
+    dom.addEventListener('wheel', onWheel, { passive: false });
+    dom.addEventListener('pointerdown', onDown);
+    window.addEventListener('pointermove', onMove, { capture: true });
+    window.addEventListener('pointerup', onUp, { capture: true });
+    dom.addEventListener('dblclick', reset);
+    window.addEventListener('keydown', onKey);
+    return () => {
+      dom.removeEventListener('wheel', onWheel);
+      dom.removeEventListener('pointerdown', onDown);
+      window.removeEventListener('pointermove', onMove, { capture: true });
+      window.removeEventListener('pointerup', onUp, { capture: true });
+      dom.removeEventListener('dblclick', reset);
+      window.removeEventListener('keydown', onKey);
+    };
+  }, [camera, gl]);
+
   useFrame((state, dt) => {
     const t = state.clock.elapsedTime;
     const shake = drainShake(dt);
-    // Eye-height, near side-on (mockup staging): the floor reads as a thin
-    // baseline at the fighters' feet, not a ground plane rising behind them.
-    camera.position.x = Math.sin(t * 0.07) * 0.55 + (Math.random() - 0.5) * shake * 0.5;
-    camera.position.y = 1.5 + Math.sin(t * 0.11) * 0.08 + (Math.random() - 0.5) * shake * 0.35;
-    camera.position.z = 12.4;
-    camera.lookAt(0, 1.65, 0);
+    const c = ctrl.current;
+    c.idle += dt;
+    if (c.idle >= cc.IDLE_RETURN_S) { c.tgt.pan.x = 0; c.tgt.pan.y = 0; c.tgt.zoom = 1; }
+    c.cur.zoom = cc.ease(c.cur.zoom, c.tgt.zoom, dt);
+    c.cur.pan.x = cc.ease(c.cur.pan.x, c.tgt.pan.x, dt);
+    c.cur.pan.y = cc.ease(c.cur.pan.y, c.tgt.pan.y, dt);
+
+    const sf = cc.swayFactor(c.cur.pan, c.cur.zoom);
+    const swayX = Math.sin(t * 0.07) * 0.55 * sf;
+    const swayY = Math.sin(t * 0.11) * 0.08 * sf;
+    // Pan translates eye+target together; zoom dollies the eye toward target.
+    const Tx = c.cur.pan.x, Ty = LOOK_Y + c.cur.pan.y;
+    const inv = 1 / c.cur.zoom;
+    camera.position.x = Tx + swayX * inv + (Math.random() - 0.5) * shake * 0.5;
+    camera.position.y = Ty + (EYE_Y - LOOK_Y + swayY) * inv + (Math.random() - 0.5) * shake * 0.35;
+    camera.position.z = EYE_Z * inv;
+    camera.lookAt(Tx, Ty, 0);
   });
   return null;
 }
