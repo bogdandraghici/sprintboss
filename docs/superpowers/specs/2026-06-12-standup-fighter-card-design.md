@@ -55,10 +55,11 @@ Structure:
      the rig's own; simplest is a CSS shadow element).
 2. **Name + class (`.fc-name`)** — full name + a class/role line derived from
    the roster weapon via `weaponClassLabel(name)`.
-3. **Stat grid (`.fc-stats`)** — 6 cells from `cardStats(...)`:
-   Completed · Moved (24h) · In flight · Stale · Blocked · (status as the badge,
-   not a grid cell — grid holds the 5 numbers; if a 6th cell is wanted, add
-   Parked). Color cues: done=teal, stale=gold, blocked=red.
+3. **Stat grid (`.fc-stats`)** — the 5 numeric cells from `cardStats(...)`:
+   Completed · Moved (24h) · In flight · Stale · Blocked. The 6th element is the
+   **status**, surfaced as the `.fc-badge` over the art (not a grid cell), so
+   the card carries all 6 facts. Color cues: done=teal, stale=gold,
+   blocked=red.
 
 ## Data
 
