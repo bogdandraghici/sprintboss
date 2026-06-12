@@ -5,8 +5,10 @@ has an `art: '<slug>'` field and `<slug>.png` exists here. No field / no file /
 load failure → the in-code pixel-matrix fighter renders instead (always safe).
 Renderer: `src/raid/FighterArtRig.jsx` (procedural animation via `src/raid/artPose.js`);
 loader: `src/raid/fighterArt.js`. Pilot shipped June 2026 with one fighter
-(Gabi Muscalu = `paladin`); the rest of the team is added one at a time as
-Bogdan supplies each character image — follow the runbook below.
+(Gabi Muscalu = `paladin`); as of the June 2026 art pass the **entire active
+team** now has painted art (one per roster entry). New hires are added the
+same way — follow the runbook below. Unknown assignees still fall back to the
+pixel-matrix `__recruit__` until given their own art.
 
 ## Adding a fighter (runbook)
 
