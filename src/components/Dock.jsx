@@ -59,22 +59,14 @@ function DockGroup({ group, view, onSelect }) {
         ))}
         {other.length > 0 && (
           <div className="story-cluster">
-            {stories.length > 0 && (
-              <div className="substory">
-                <span className="bar" style={{ background: 'var(--steel-3)' }} />
-                <span className="nm" style={{ color: 'var(--faint)' }}>Other</span>
-                <span className="ct">{other.length}</span>
-              </div>
-            )}
+            <div className="substory">
+              <span className="bar" style={{ background: 'var(--steel-3)' }} />
+              <span className="nm" style={{ color: 'var(--faint)' }}>Other</span>
+              <span className="ct">{other.length}</span>
+            </div>
             <div className="subcards">
               {other.map((i) => (
-                <Ticket
-                  key={i.key}
-                  issue={i}
-                  view={view}
-                  onSelect={onSelect}
-                  storyCaption={i.parentKey ? { name: i.parentName || i.parentKey, color: storyColor(i.parentKey) } : null}
-                />
+                <Ticket key={i.key} issue={i} view={view} onSelect={onSelect} />
               ))}
             </div>
           </div>

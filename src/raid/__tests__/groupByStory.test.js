@@ -44,15 +44,17 @@ describe('groupByStory', () => {
     expect(other).toHaveLength(0);
   });
 
-  it('folds a single-ticket story into other', () => {
+  it('gives a single-ticket story its own cluster (never folds into other)', () => {
     const issues = [
       mk('A-1', 'P-1', 'Alpha', 10),
       mk('A-2', 'P-1', 'Alpha', 20),
       mk('B-1', 'P-2', 'Beta', 5),
     ];
     const { stories, other } = groupByStory(issues);
-    expect(stories.map((s) => s.key)).toEqual(['P-1']);
-    expect(other.map((i) => i.key)).toEqual(['B-1']);
+    // P-2 (stalest = 5) sorts ahead of P-1 (stalest = 10); both are clusters.
+    expect(stories.map((s) => s.key)).toEqual(['P-2', 'P-1']);
+    expect(stories.find((s) => s.key === 'P-2').issues.map((i) => i.key)).toEqual(['B-1']);
+    expect(other).toHaveLength(0);
   });
 
   it('puts parentless tickets into other', () => {
@@ -72,15 +74,16 @@ describe('groupByStory', () => {
     expect(stories.map((s) => s.key)).toEqual(['P-2', 'P-1']);
   });
 
-  it('sorts other by staleness (columnSince asc), intermixing folded + parentless', () => {
+  it('other holds only parentless tickets, sorted by staleness (columnSince asc)', () => {
     const issues = [
       mk('A-1', 'P-1', 'Alpha', 10), mk('A-2', 'P-1', 'Alpha', 20), // cluster
-      mk('S-1', 'P-9', 'Single', 30), // folded singleton
+      mk('S-1', 'P-9', 'Single', 30), // single-ticket story -> its own cluster, NOT other
+      mk('O-2', null, null, 40),       // parentless
       mk('O-1', null, null, 5),        // parentless, stalest
     ];
     const { stories, other } = groupByStory(issues);
-    expect(stories.map((s) => s.key)).toEqual(['P-1']);
-    expect(other.map((i) => i.key)).toEqual(['O-1', 'S-1']); // 5 before 30
+    expect(stories.map((s) => s.key).sort()).toEqual(['P-1', 'P-9']);
+    expect(other.map((i) => i.key)).toEqual(['O-1', 'O-2']); // parentless only, 5 before 40
   });
 
   it('falls back to the parent key as name when parentName is missing', () => {

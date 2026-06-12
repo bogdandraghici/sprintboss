@@ -15,12 +15,13 @@ read or written.)
   (`FighterNames` in `ArenaScene.jsx`: muted `--dim`, low-opacity, focus-aware,
   world-space so it doesn't bob with the body). Below = ticket
   dock (`Dock.jsx`): real tickets grouped by board column and, within each
-  column, sub-grouped by **story** (the Jira parent) — a story with 2+ tickets
-  in that column gets a colored sub-header (`groupByStory`/`storyColor` in
-  `raidState.js`, tested), while singletons + parentless tickets fold into a
-  quiet "Other" cluster (folded singletons keep their story name inline). Every
-  column shows the full card for all of its issues and scrolls internally rather
-  than truncating; blocked also carries its reason. Each card leads with the
+  column, sub-grouped by **story** (the Jira parent) — every story gets its own
+  colored sub-header (even a single-ticket one, so a story reads the same in
+  every column), and only truly parentless tickets collect under a quiet,
+  always-labeled "Other" group (`groupByStory`/`storyColor` in `raidState.js`,
+  tested). Every column shows the full card for all of its issues and scrolls
+  internally rather than truncating; blocked stays flat (no sub-headers) but each
+  card carries its story name inline + its reason. Each card leads with the
   Jira **issue-type icon** (proxied via `/api/icon`, in-code glyph fallback)
   instead of a staleness dot — staleness now reads from the bold age value plus
   a faint red wash on stale cards.

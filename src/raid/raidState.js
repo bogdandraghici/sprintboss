@@ -106,11 +106,12 @@ export function storyColor(parentKey) {
   return STORY_PALETTE[h % STORY_PALETTE.length];
 }
 
-// Group one column's issues by parent story. A parent with 2+ tickets in this
-// column becomes its own colored cluster; singletons + parentless fold into
-// `other`. Clusters ordered worst-first by stalest member; `other` last and
-// sorted by staleness. Pure: input order within a parent is preserved, so pass
-// issues already sorted stalest-first (columnSince asc).
+// Group one column's issues by parent story. Every parent becomes its own
+// colored cluster (even a single ticket), so a story reads the same way in every
+// column; only truly parentless tickets land in `other`. Clusters ordered
+// worst-first by stalest member; `other` last and sorted by staleness. Pure:
+// input order within a parent is preserved, so pass issues already sorted
+// stalest-first (columnSince asc).
 export function groupByStory(issues) {
   const byParent = new Map();
   const other = [];
@@ -120,11 +121,9 @@ export function groupByStory(issues) {
     b.issues.push(it);
     byParent.set(it.parentKey, b);
   }
-  const stories = [];
-  for (const b of byParent.values()) {
-    if (b.issues.length >= 2) stories.push({ key: b.key, name: b.name, color: storyColor(b.key), issues: b.issues });
-    else other.push(...b.issues);
-  }
+  const stories = [...byParent.values()].map((b) => ({
+    key: b.key, name: b.name, color: storyColor(b.key), issues: b.issues,
+  }));
   const stalest = (list) => list.reduce((m, i) => Math.min(m, i.columnSince), Infinity);
   stories.sort((a, b) => stalest(a.issues) - stalest(b.issues) || a.key.localeCompare(b.key));
   other.sort((a, b) => a.columnSince - b.columnSince);

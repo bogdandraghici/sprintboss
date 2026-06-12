@@ -81,29 +81,27 @@ identically in live and retro.
 
 ```
 groupByStory(issues) -> {
-  stories: [ { key, name, color, issues: [...] } ],   // 2+ tickets each
-  other:   [ ...issues ]                               // singletons + parentless
+  stories: [ { key, name, color, issues: [...] } ],   // one per distinct parent
+  other:   [ ...issues ]                               // parentless only
 }
 ```
 
 ### Rules
 
-- **Qualifying story:** a `parentKey` with **2+ tickets in this column** becomes
-  its own `stories[]` cluster. This threshold is **per column**, so the same
-  story can have a colored header in one column (3 tickets) and fold into
-  `other` in another (1 ticket). This is intentional — it groups where grouping
-  pays off and stays quiet where it would just add headers.
-- **`other`:** every ticket whose story has only 1 ticket in this column, plus
-  every parentless ticket (`parentKey == null`). A column where no story reaches
-  2 collapses to just `other` — zero sub-headers.
+- **Every story is a cluster:** each distinct `parentKey` becomes its own
+  `stories[]` cluster — even a single-ticket one. This way a story reads the same
+  in every column (revised from an earlier 2+ threshold, which made a
+  thinly-spread story never earn a header anywhere). The cost is more headers in
+  fragmented columns; accepted for consistency.
+- **`other`:** only truly parentless tickets (`parentKey == null`). It is
+  **always labeled** "Other" when non-empty, even if it's the only group — so no
+  column ever looks unstructured.
 - **Ordering:**
   - Within a story cluster, tickets keep the column's existing sort
     (stalest first / by `columnSince`).
   - Story clusters are ordered worst-first by their **stalest member**, so the
     column still reads urgency-first.
-  - `other` always renders **last**.
-  - Within `other`, keep the existing sort; folded-singleton and parentless
-    tickets intermix by staleness (no sub-ordering by story).
+  - `other` always renders **last**, sorted by staleness.
 
 ### Color assignment
 
