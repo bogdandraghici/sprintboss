@@ -49,7 +49,7 @@ export function createMockSource({ scenario = 'doomed', evolve = true } = {}) {
 
   const issues = [];
   const ISSUE_BASE = 'https://example.atlassian.net';
-  const mk = ({ key, summary, pts, who, createdD, path = [], flags = [], reason = null, addedD = null, parent = null, type = 'Task' }) => {
+  const mk = ({ key, summary, pts, who, createdD, path = [], flags = [], reason = null, addedD = null, parent = null, type = 'Task', prior = 0 }) => {
     const created = t0 - createdD * DAY;
     const transitions = [];
     let prev = 'To Do';
@@ -73,6 +73,11 @@ export function createMockSource({ scenario = 'doomed', evolve = true } = {}) {
       issueType: type,
       issueTypeIcon: null,
       isSubtask: type === 'Sub-task',
+      // Carryover: `prior` synthesizes N closed sprints before "Sprint 42".
+      priorSprints: Array.from({ length: prior }, (_, k) => {
+        const n = 42 - prior + k;
+        return { id: n, name: `Sprint ${n}` };
+      }),
     });
   };
 
@@ -97,13 +102,13 @@ export function createMockSource({ scenario = 'doomed', evolve = true } = {}) {
   mk({ key: 'SB-107', summary: 'Refactor notification fan-out worker', pts: 3, who: NAMES[0], createdD: 9, path: [[6.2, 'In Progress'], [3.9, 'In Review']], parent: ST.notify, type: 'Task' });
   mk({ key: 'SB-108', summary: 'Rate-limit the public search endpoint', pts: 2, who: NAMES[1], createdD: 8, path: [[5.0, 'In Progress'], [2.1, 'In Review']], parent: ST.platform, type: 'Task' });
   mk({ key: 'SB-109', summary: 'Dark-mode tokens for email templates', pts: 3, who: NAMES[2], createdD: 8, path: [[3.0, 'In Progress'], [0.4, 'In Review']], parent: ST.notify, type: 'Sub-task' });
-  mk({ key: 'SB-114', summary: 'GDPR data-residency matrix', pts: 3, who: NAMES[2], createdD: 9, path: [[5.5, 'In Progress'], [3.2, 'In Review']], flags: [[2.4, true]], reason: 'Legal sign-off pending', parent: ST.compliance, type: 'Task' });
+  mk({ key: 'SB-114', summary: 'GDPR data-residency matrix', pts: 3, who: NAMES[2], createdD: 9, path: [[5.5, 'In Progress'], [3.2, 'In Review']], flags: [[2.4, true]], reason: 'Legal sign-off pending', parent: ST.compliance, type: 'Task', prior: 1 });
 
   // --- In Progress (3 on belt + 1 blocked = 4/4, full but not jammed) ---
-  mk({ key: 'SB-110', summary: 'Bulk import: streaming CSV parser', pts: 5, who: NAMES[3], createdD: 8, path: [[5.2, 'In Progress']], parent: ST.billing, type: 'Story' });
+  mk({ key: 'SB-110', summary: 'Bulk import: streaming CSV parser', pts: 5, who: NAMES[3], createdD: 8, path: [[5.2, 'In Progress']], parent: ST.billing, type: 'Story', prior: 1 });
   mk({ key: 'SB-111', summary: 'Session replay sampling config', pts: 3, who: NAMES[4], createdD: 8, path: [[1.6, 'In Progress']], parent: ST.privacy, type: 'Task' });
   mk({ key: 'SB-120', summary: 'URGENT: enterprise SSO cert rotation', pts: 5, who: NAMES[0], createdD: 4.2, path: [[3.9, 'In Progress']], addedD: 4.2, parent: ST.compliance, type: 'Bug' });
-  mk({ key: 'SB-113', summary: 'Payment provider sandbox flow', pts: 5, who: NAMES[1], createdD: 9, path: [[4.5, 'In Progress']], flags: [[3.1, true]], reason: 'Waiting on vendor API keys', parent: ST.billing, type: 'Task' });
+  mk({ key: 'SB-113', summary: 'Payment provider sandbox flow', pts: 5, who: NAMES[1], createdD: 9, path: [[4.5, 'In Progress']], flags: [[3.1, true]], reason: 'Waiting on vendor API keys', parent: ST.billing, type: 'Task', prior: 2 });
 
   // --- To Do ---
   mk({ key: 'SB-112', summary: 'Fix timezone drift in scheduler', pts: null, who: NAMES[5], createdD: 8, type: 'Bug' });
@@ -111,7 +116,7 @@ export function createMockSource({ scenario = 'doomed', evolve = true } = {}) {
   mk({ key: 'SB-116', summary: 'Upgrade Node 20 → 22 across services', pts: 5, who: NAMES[4], createdD: 9, parent: ST.platform, type: 'Task' });
   mk({ key: 'SB-117', summary: 'Consolidate feature-flag SDKs', pts: 2, who: NAMES[5], createdD: 8.5, type: 'Task' });
   mk({ key: 'SB-118', summary: 'Error budget dashboard tile', pts: null, who: NAMES[0], createdD: 8, parent: ST.notify, type: 'Sub-task' });
-  mk({ key: 'SB-119', summary: 'Archive stale workspaces job', pts: 8, who: NAMES[1], createdD: 9, parent: ST.platform, type: 'Story' });
+  mk({ key: 'SB-119', summary: 'Archive stale workspaces job', pts: 8, who: NAMES[1], createdD: 9, parent: ST.platform, type: 'Story', prior: 3 });
   mk({ key: 'SB-121', summary: 'Customer-requested: API key scopes UI', pts: 3, who: NAMES[4], createdD: 1.8, addedD: 1.8, parent: ST.privacy, type: 'Task' });
   mk({ key: 'SB-122', summary: 'Hotfix follow-up: cache invalidation tests', pts: 2, who: NAMES[3], createdD: 0.12, addedD: 0.12, type: 'Bug' });
 
@@ -153,6 +158,7 @@ export function createMockSource({ scenario = 'doomed', evolve = true } = {}) {
       created: nowTs, statusName: 'To Do', transitions: [],
       flagHistory: [], flagged: false, blockedReason: null,
       sprintAddedAt: nowTs,
+      priorSprints: [],
       url: `${ISSUE_BASE}/browse/${key}`,
     });
     return key;
