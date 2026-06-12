@@ -590,6 +590,21 @@ html[data-theme='light'] .substory .nm { color: color-mix(in srgb, var(--nmc, va
 /* no stale wash on light ground — the bold red age numeral carries staleness */
 html[data-theme='light'] .ticket[data-age='stale'] { background: var(--panel-2); }
 
+/* the damage log floats over the dark arena, so it belongs to the scene world:
+   re-declare the dark theme's vars on its subtree and it styles itself dark */
+html[data-theme='light'] .combat-log {
+  --panel: #101822;
+  --line: #1e2c3b;
+  --ink: #e8eef4;
+  --dim: #8da0b3;
+  --faint: #54677a;
+  --steel-2: #43596f;
+  --teal: #2dd4bf;
+  --amber: #fcbf3e;
+  --red: #ff5263;
+  --lime: #a8e34d;
+}
+
 /* framed viewport: the dark arena is a monitor on the light deck — panel
    border language plus a thin dark inner keyline so the seam is deliberate */
 html[data-theme='light'] .arena {
