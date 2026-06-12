@@ -371,6 +371,27 @@ html[data-theme='light'] .standup { background: rgba(231, 228, 220, 0.88); }
 /* ── raid arena ─────────────────────────────────────────────── */
 .raidview { display: flex; flex-direction: column; min-height: 0; gap: 0.6rem; }
 .arena { position: relative; flex: 0 1 22vh; min-height: 0; border: 1px solid var(--line); border-radius: 10px; overflow: hidden; background: var(--bg); }
+.arena-resize {
+  flex: none;
+  height: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: ns-resize;
+  touch-action: none;
+}
+.arena-resize-grip {
+  width: 2.5rem;
+  height: 3px;
+  border-radius: 3px;
+  background: var(--steel-3);
+  transition: background 0.15s ease, width 0.15s ease;
+}
+.arena-resize:hover .arena-resize-grip,
+.arena-resize:active .arena-resize-grip {
+  background: var(--dim);
+  width: 3.5rem;
+}
 
 /* ── raid command deck bands ────────────────────────────────── */
 .raid-top { display: flex; gap: 0.9rem; align-items: flex-start; flex: none; padding: 0.1rem 0.1rem 0; }
