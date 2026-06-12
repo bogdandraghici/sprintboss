@@ -20,7 +20,7 @@ export default function FighterBar({ party = [], focus = null, onFocus = () => {
             className="fighter-chip"
             data-active={active}
             data-dimmed={dimmed}
-            aria-pressed={active}
+            aria-current={active || undefined}
             title={f.name}
             onClick={() => onFocus(f.name)}
           >
