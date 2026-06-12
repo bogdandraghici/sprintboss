@@ -63,3 +63,8 @@ export function hueOf(name) {
   for (const c of String(name || '')) h = (h * 31 + c.charCodeAt(0)) % 360;
   return h;
 }
+
+export function firstName(name) {
+  const first = String(name).split(/[\s._]+/).filter(Boolean)[0] || String(name);
+  return first.charAt(0).toUpperCase() + first.slice(1);
+}

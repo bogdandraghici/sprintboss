@@ -18,6 +18,7 @@ import FloatNum from './FloatNum';
 import SlashFX from './SlashFX';
 import ImpactFX from './ImpactFX';
 import Effects from './Effects';
+import { firstName } from '../lib';
 import Environment from './Environment';
 
 // ?lite — for TVs that can't hold 60fps: lower dpr, no post chain, fewer particles.
@@ -236,14 +237,6 @@ function GroundShadows({ party, minions, tableau, focus }) {
   );
 }
 
-// First name only — keeps the label short under the tight fighter spacing.
-// Splits on space/dot/underscore so "Serban Chiricescu" → "Serban" and
-// "gabriel.muscalu" → "Gabriel".
-function firstNameOf(name) {
-  const first = String(name).split(/[\s._]+/).filter(Boolean)[0] || String(name);
-  return first.charAt(0).toUpperCase() + first.slice(1);
-}
-
 // Subtle identity caption planted on the floor just in front of each fighter's
 // feet (NOT parented to the body) so it stays put while the figure bobs/lunges.
 // Pushed toward the camera (z + NAME_Z) so it reads in front of the boots, not
@@ -269,7 +262,7 @@ function FighterNames({ party, focus }) {
             outlineColor="#0b0f14"
             renderOrder={18}
           >
-            {firstNameOf(f.name)}
+            {firstName(f.name)}
             <meshBasicMaterial color={focused ? cssVar('--ink', '#e8eef4') : cssVar('--dim', '#8da0b3')}
               transparent opacity={op} depthTest={false} depthWrite={false} toneMapped={false} fog={false} />
           </Text>
