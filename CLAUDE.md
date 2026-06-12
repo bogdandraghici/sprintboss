@@ -32,12 +32,21 @@ read or written.)
   colored sub-header (even a single-ticket one, so a story reads the same in
   every column), and only truly parentless tickets collect under a quiet,
   always-labeled "Other" group (`groupByStory`/`storyColor` in `raidState.js`,
-  tested). Every column shows the full card for all of its issues and scrolls
+  tested). Story sub-headers carry a hairline story-wide progress meter
+  (done/total over ALL sprint issues — `storyProgress` in `raidState.js`,
+  tested; never focus-filtered, identical fill for a story in every column;
+  no meter on "Other"/blocked). Every column shows the full card for all of its
+  issues and scrolls
   internally rather than truncating; blocked stays flat (no sub-headers) but each
   card carries its story name inline + its reason. Each card leads with the
   Jira **issue-type icon** (proxied via `/api/icon`, in-code glyph fallback)
   instead of a staleness dot — staleness now reads from the bold age value plus
-  a faint red wash on stale cards.
+  a faint red wash on stale cards. Cards also carry a quiet `×N` **carryover
+  badge** (this is the ticket's Nth sprint; `--dim`, amber at ×3+) sourced from
+  Jira's Agile `closedSprints` field, normalized to `priorSprints` per issue
+  (`priorSprintsOf` in `shared/derive.js`, tested — excludes the current sprint
+  so retro/closed-fallback can't self-count; mock synthesizes four veterans).
+  The ticket modal shows the full history ("4th sprint after Sprint 39, 40, 41").
   Bottom = truth ticker. Completing a ticket = the owning fighter attacks (hit-stop,
   sparks, HP drains); between real attacks fighters also **shadow-box** — an
   ambient swing on a staggered ~4–9s per-fighter cadence so the line never goes

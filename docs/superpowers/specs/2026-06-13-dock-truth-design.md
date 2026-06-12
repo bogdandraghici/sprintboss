@@ -1,7 +1,7 @@
 # Dock truth: story progress micro-bars + carryover badges
 
 **Date:** 2026-06-13
-**Status:** approved design, pending implementation plan
+**Status:** implemented (see docs/superpowers/plans/2026-06-13-dock-truth.md)
 
 ## Why
 
