@@ -1,5 +1,6 @@
 // src/raid/ArenaScene.jsx
 import { Canvas, useFrame, useThree } from '@react-three/fiber';
+import { Text } from '@react-three/drei';
 import * as THREE from 'three';
 import { useMemo, useState, useEffect, useRef } from 'react';
 import { cssVar } from './cssVar';
@@ -11,7 +12,7 @@ import { fighterBlockHeat, bossScars } from './heat';
 import FighterSprite from './FighterSprite';
 import FighterArtRig from './FighterArtRig';
 import { artSlugFor } from './sprites/roster';
-import BossSprite from './BossSprite';
+import BossSprite, { BOSS_X } from './BossSprite';
 import MinionSprite, { minionPos } from './MinionSprite';
 import FloatNum from './FloatNum';
 import SlashFX from './SlashFX';
@@ -230,7 +231,7 @@ function GroundShadows({ party, minions, tableau, focus }) {
         const [x, , z] = minionPos(i);
         return <GroundShadow key={m.key} x={x} z={z} w={0.6} opacity={0.45} />;
       })}
-      {!bossGone && <GroundShadow x={4.6} z={-0.4} w={2.6} d={0.95} opacity={0.55} />}
+      {!bossGone && <GroundShadow x={BOSS_X} z={-0.4} w={2.6} d={0.95} opacity={0.55} />}
     </>
   );
 }
@@ -323,16 +324,16 @@ export default function ArenaScene({ view, party = [], minions = [], horde = 0, 
   useEffect(() => {
     if (summon && summon.id !== summonSeen.current) {
       summonSeen.current = summon.id;
-      addFloat(`+${summon.points}`, '#a3e635', 4.6, 4.4);
+      addFloat(`+${summon.points}`, '#a3e635', BOSS_X, 4.4);
     }
   }, [summon]);
 
   const strike = (points) => {
     addFreeze(Math.min(0.14, 0.06 + points * 0.01)); // hit-stop scaled to points
     addShake(0.25 + Math.min(0.5, points * 0.08));
-    addFloat(`−${points}`, '#7fe7ff', 4.2, 3.6);
-    addSlash(3.4);
-    addImpact(3.5, 2.2, '#ffd479');
+    addFloat(`−${points}`, '#7fe7ff', BOSS_X - 0.4, 3.6);
+    addSlash(BOSS_X - 1.2);
+    addImpact(BOSS_X - 1.1, 2.2, '#ffd479');
   };
 
   // Unattributed hits (no owning fighter, e.g. unassigned tickets) still land,
@@ -391,8 +392,27 @@ export default function ArenaScene({ view, party = [], minions = [], horde = 0, 
         stage={stage} scars={scars} tableau={tableau}
       />
       {tableau !== 'victory' && minions.map((m, i) => (
-        <MinionSprite key={m.key} issue={m} index={i} horde={i === minions.length - 1 ? horde : 0} />
+        <MinionSprite key={m.key} issue={m} index={i} />
       ))}
+      {/* Scope-creep tally hanging just beneath the creep cluster (centre ≈
+          BOSS_X - 1.25). The explicit child material with depthTest off is what
+          lets it paint over the floor — troika manages its own material, so the
+          `material-*` props didn't stick and the floor was clipping every glyph
+          that dipped below the baseline. renderOrder keeps it drawn last. */}
+      {tableau !== 'victory' && horde > 0 && (
+        <Text
+          position={[BOSS_X - 1.25, 0.1, 1.35]}
+          fontSize={0.22}
+          anchorX="center"
+          anchorY="top"
+          outlineWidth={0.012}
+          outlineColor="#0d1016"
+          renderOrder={20}
+        >
+          {`+${horde} scope creep`}
+          <meshBasicMaterial color="#a3e635" transparent depthTest={false} depthWrite={false} toneMapped={false} />
+        </Text>
+      )}
       {floats.map((f) => <FloatNum key={f.id} item={f} onDone={removeFloat} />)}
       {slashes.map((s) => <SlashFX key={s.id} item={s} onDone={removeSlash} />)}
       {impacts.map((im) => <ImpactFX key={im.id} item={im} onDone={removeImpact} />)}

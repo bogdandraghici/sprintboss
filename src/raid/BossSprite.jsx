@@ -9,7 +9,9 @@ import { frozen } from './timeBus';
 import { hueOf } from '../lib';
 
 const PX = 0.064; // matrix fallback: 56x52 -> ≈ 3.6 x 3.3 world units
-const BOSS_X = 4.6;
+// Boss anchor x. Shared with ArenaScene so the contact shadow + hit FX track
+// the dragon. Pushed right of the party to give the fighters breathing room.
+export const BOSS_X = 9;
 const BODY_W = 56 * PX;
 const BODY_H = 52 * PX;
 const ART_H = 4.5; // world height for the loaded sprite (width derives from aspect)
