@@ -19,29 +19,36 @@ const STATUS = {
 };
 
 // Fighter art is ~2.2 world units tall with feet at y=0. Drop the rig by ~half
-// its height so the body centres on the origin the camera looks at.
-const FIGHTER_DROP = -1.05;
+// its height so the body centres on the origin the camera looks at. The camera
+// sits far enough back (z) that a 2.2-tall figure fills only ~70% of the frame
+// — margin top and bottom so heads/feet aren't clipped.
+const FIGHTER_DROP = -1.1;
+const CAM_Z = 5.8;
 
 function CardScene({ fighter }) {
   const art = artSlugFor(fighter.name);
   const Comp = art ? FighterArtRig : FighterSprite;
+  // The card always shows the fighter standing — status is conveyed by the
+  // badge, not the body. Normalising to 'fighting' avoids the downed/slumped
+  // poses (and the down beacon) the rigs render for 'down'/'exhausted'.
+  const standing = { ...fighter, status: 'fighting' };
   return (
     <Canvas
       dpr={LITE ? 1 : [1, 1.75]}
       gl={{ alpha: true, antialias: !LITE }}
-      camera={{ fov: 30, position: [0, 0, 4.2] }}
+      camera={{ fov: 30, position: [0, 0, CAM_Z] }}
     >
       <ambientLight intensity={0.5} />
       <pointLight position={[-4, 5, 4]} intensity={50} color="#7fe7ff" />
       <pointLight position={[4.5, 4, 2]} intensity={45} color="#ff9d5c" />
       <Comp
-        fighter={fighter}
+        fighter={standing}
         art={art}
         lite={LITE}
         phase={0}
         attack={null}
         onStrike={() => {}}
-        beaconHeat={fighter.status === 'down' ? 1 : 0}
+        beaconHeat={0}
         tableau={null}
         focus={null}
         onFocus={() => {}}
