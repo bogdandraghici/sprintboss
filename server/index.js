@@ -79,6 +79,36 @@ app.get('/api/avatar', async (req, res) => {
   }
 });
 
+// Issue-type icons live on the Jira host and need Basic auth — proxy them with
+// the Jira creds, allowlisted to the configured base host only. Falls back to
+// 404 when Jira isn't configured (mock mode), which the client renders as a glyph.
+const JIRA_BASE = (process.env.JIRA_BASE_URL || '').replace(/\/+$/, '');
+const JIRA_ICON_AUTH =
+  process.env.JIRA_EMAIL && process.env.JIRA_API_TOKEN
+    ? 'Basic ' + Buffer.from(`${process.env.JIRA_EMAIL}:${process.env.JIRA_API_TOKEN}`).toString('base64')
+    : null;
+app.get('/api/icon', async (req, res) => {
+  if (!JIRA_BASE || !JIRA_ICON_AUTH) return res.status(404).end();
+  let url;
+  try {
+    url = new URL(req.query.url);
+  } catch {
+    return res.status(400).json({ error: 'Bad url' });
+  }
+  if (url.protocol !== 'https:' || url.hostname !== new URL(JIRA_BASE).hostname) {
+    return res.status(403).json({ error: 'Host not allowed' });
+  }
+  try {
+    const upstream = await fetch(url, { headers: { Authorization: JIRA_ICON_AUTH }, redirect: 'follow' });
+    if (!upstream.ok) return res.status(upstream.status).end();
+    res.set('Content-Type', upstream.headers.get('content-type') || 'image/png');
+    res.set('Cache-Control', 'public, max-age=86400');
+    res.send(Buffer.from(await upstream.arrayBuffer()));
+  } catch (e) {
+    res.status(502).json({ error: e.message });
+  }
+});
+
 // Mock-only levers for demoing hit / heal / block without waiting on chance.
 if (MOCK) {
   app.post('/api/demo/:action', async (req, res) => {
