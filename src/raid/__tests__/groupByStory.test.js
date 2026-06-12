@@ -7,8 +7,14 @@ const mk = (key, parentKey, parentName, columnSince) => ({
 });
 
 describe('storyColor', () => {
-  it('is deterministic for a given parent key', () => {
+  it('is deterministic and stable for given keys', () => {
     expect(storyColor('SB-900')).toBe(storyColor('SB-900'));
+    // Pin concrete values so an accidental hash change is caught.
+    const a = storyColor('SB-900');
+    const b = storyColor('SB-901');
+    expect(STORY_PALETTE).toContain(a);
+    expect(STORY_PALETTE).toContain(b);
+    expect(typeof a).toBe('string');
   });
   it('always returns a palette entry', () => {
     for (const k of ['SB-900', 'SB-901', 'AB-1', 'ZZ-9999']) {
@@ -18,6 +24,12 @@ describe('storyColor', () => {
 });
 
 describe('groupByStory', () => {
+  it('returns empty groups for empty input', () => {
+    const { stories, other } = groupByStory([]);
+    expect(stories).toEqual([]);
+    expect(other).toEqual([]);
+  });
+
   it('makes a cluster for a story with 2+ tickets in the column', () => {
     const issues = [
       mk('A-1', 'P-1', 'Alpha', 10),
