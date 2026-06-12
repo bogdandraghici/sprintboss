@@ -478,3 +478,78 @@ html[data-theme='light'] .standup { background: rgba(231, 228, 220, 0.88); }
 .substory .ct { font-family: var(--font-m); font-size: 0.6rem; color: var(--faint); flex: none; }
 .dock-blocked-card { display: flex; flex-direction: column; gap: 0.15rem; }
 .dock-reason { font-size: 0.66rem; color: var(--red); padding: 0 0.3rem; }
+
+/* ── standup fighter card ──────────────────────────────────────── */
+.su-body {
+  display: flex;
+  gap: 1rem;
+  align-items: stretch;
+  width: 100%;
+}
+.fighter-card {
+  flex: none;
+  width: 280px;
+  display: flex;
+  flex-direction: column;
+  background: linear-gradient(180deg, var(--panel-2), var(--panel));
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  overflow: hidden;
+}
+.fc-art {
+  position: relative;
+  height: 300px;
+  border-bottom: 1px solid var(--line);
+  background: radial-gradient(120% 90% at 50% 18%, #20303b 0%, #0d1319 70%);
+}
+.fc-art canvas { display: block; width: 100% !important; height: 100% !important; }
+.fc-shadow {
+  position: absolute;
+  bottom: 26px;
+  left: 50%;
+  width: 120px;
+  height: 18px;
+  transform: translateX(-50%);
+  border-radius: 50%;
+  background: rgba(0, 0, 0, 0.5);
+  filter: blur(5px);
+  pointer-events: none;
+}
+.fc-badge {
+  position: absolute;
+  top: 12px;
+  left: 12px;
+  z-index: 1;
+  font-size: 0.62rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  padding: 0.2em 0.6em;
+  border-radius: 6px;
+  border: 1px solid var(--teal);
+  color: var(--teal);
+  background: rgba(0, 0, 0, 0.3);
+}
+.fc-badge[data-tone="resting"]   { color: var(--dim); border-color: var(--dim); }
+.fc-badge[data-tone="exhausted"] { color: var(--amber); border-color: var(--amber); }
+.fc-badge[data-tone="down"]      { color: var(--red); border-color: var(--red); }
+.fc-name { padding: 0.85rem 1rem 0.25rem; }
+.fc-n { font-size: 1.25rem; font-weight: 700; }
+.fc-role { font-size: 0.7rem; color: var(--dim); letter-spacing: 0.05em; }
+.fc-stats {
+  padding: 0.6rem 1rem 1.1rem;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.6rem;
+}
+.fc-stat {
+  background: rgba(255, 255, 255, 0.025);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 0.5rem 0.65rem;
+}
+.fc-v { font-size: 1.35rem; font-weight: 700; font-variant-numeric: tabular-nums; }
+.fc-l { font-size: 0.6rem; color: var(--faint); text-transform: uppercase; letter-spacing: 0.06em; }
+.fc-stat[data-tone="done"] .fc-v    { color: var(--teal); }
+.fc-stat[data-tone="stale"] .fc-v   { color: var(--amber); }
+.fc-stat[data-tone="blocked"] .fc-v { color: var(--red); }
