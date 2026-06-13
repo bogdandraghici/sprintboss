@@ -95,6 +95,18 @@ read or written.)
   (20×28 per-class pixel matrices in `sprites/classes/` + `ops.js` upscale
   pipeline + rasterizer) — all vitest-tested (`npm test`). R3F components are
   verified in the browser preview.
+- **Tooltips**: any DOM element explains itself via a `data-tip` attribute,
+  rendered by the single root-mounted `TooltipLayer`
+  (`src/components/TooltipLayer.jsx`, bubble styled as `.tipbox`, z-80 above the
+  modal backdrop); copy comes from pure formatters in `src/tipCopy.js` (tested)
+  in a "metaphor + plain meaning" voice ("Scope added — the boss regains HP.").
+  Never use native `title` attrs (double bubble); nested `data-tip` resolves to
+  the innermost; `Avatar` takes a `tip` prop (`null` suppresses — FighterBar
+  chips do this so the chip's focus-hint tip isn't shadowed). The enrage button
+  is the one exception: its hover math panel carries the definition footer
+  instead of a tip. The 3D arena gets no tooltips — concepts are explained on
+  their DOM counterparts. Retro marks have `pointer-events: auto` (container
+  stays `none`) so their tips fire without stealing scrubber drags.
 - **Standup mode** (`src/components/Modes.jsx`, `StandupOverlay`) shows, beside
   the per-person moved/parked board, a full-height **fighter card**
   (`src/raid/FighterCard.jsx`): a standalone mini R3F `<Canvas>` reusing the

@@ -146,3 +146,20 @@ retro marks (existing titles migrate as-is, no concept change).
 
 "?" legend overlay for the TV case (nobody hovers a wall display); camera and
 resize discoverability hints; tooltips inside the 3D canvas.
+
+## As-built divergences (2026-06-13)
+
+- **ScarTimeline is dead code** — exported from `hud.jsx` but rendered nowhere
+  (RaidView imports only EnrageTimer/HpBar/DamageLog). Its tips were migrated
+  anyway so the strip works if reinstated.
+- **Straggler titles** in `Avatar.jsx` and `Header.jsx` (stale-data chip, demo
+  buttons, theme toggle) migrated verbatim under the no-native-titles rule.
+- **`Avatar` gained a `tip` prop** (default: name tip; `null` suppresses) —
+  FighterBar chips pass `null` so the avatar doesn't shadow the chip's
+  focus-hint tip (innermost-wins).
+- **Retro marks** sat under `pointer-events: none` (the old `title`s were
+  silently dead too); fixed with `z-index: 3` + `pointer-events: auto` on the
+  4×9 px glyphs only — the track stays draggable, a pointerdown exactly on a
+  glyph doesn't seek (documented in the CSS).
+- **`hpSegTip` singularizes** "1 ticket" in tickets mode; `.tipbox` got a
+  lighter shadow override in light mode (matching the `.panel` precedent).
