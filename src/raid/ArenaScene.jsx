@@ -37,7 +37,7 @@ const HOME_DIST = Math.hypot(EYE_Y - LOOK_Y, EYE_Z);
 // Vertical fov tuned (down from 35) so the home framing fits the whole lineup:
 // leftmost fighter near the left border, boss just before the combat log.
 // Narrowing the lens rather than dollying keeps z≈EYE_Z for the fog tuning.
-const ARENA_FOV = 24;
+const ARENA_FOV = 23;
 
 // Interactive pan/zoom layered on the ambient sway + hit-stop shake. Wheel
 // zooms toward the cursor, left-drag pans; both suppress the sway while
