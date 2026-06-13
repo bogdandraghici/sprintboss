@@ -46,6 +46,7 @@ export default function App() {
     const onKey = (e) => {
       if (e.metaKey || e.ctrlKey || e.altKey) return;
       if (document.querySelector('.backdrop')) return; // ticket modal
+      if (document.activeElement?.tagName === 'INPUT') return; // e.g. retro range slider
       const k = e.key.toLowerCase();
       if (k === 'a') setMode('ambient');
       else if (k === 's') setMode('standup');
