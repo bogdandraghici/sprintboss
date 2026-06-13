@@ -3,6 +3,7 @@
 import { useEffect, useMemo, useReducer, useState } from 'react';
 import { fmtCountdown, fmtDate, fmtDays, timeAgo, cls, DAY } from '../lib';
 import { segmentHeat } from '../raid/heat';
+import { bossHpTip, hpSegTip, creepTip, scarStripTip, scarTip, logTagTip } from '../tipCopy';
 
 /* ── enrage timer ─────────────────────────────────────────────── */
 
@@ -54,6 +55,7 @@ export function EnrageTimer({ view }) {
                 ? `${fmtDays(slack)} to spare`
                 : `misses deadline by ${fmtDays(-slack)}`}
         </span>
+        <span style={{ color: 'var(--faint)' }}>enraged = projected finish past sprint end</span>
       </span>
     </button>
   );
@@ -84,12 +86,12 @@ export function HpBar({ view, onSelect, focus = null }) {
   return (
     <div>
       <div className="flex items-baseline justify-between mb-1">
-        <span className="label">Boss HP</span>
+        <span className="label" data-tip={bossHpTip()}>Boss HP</span>
         <span className="mono text-[0.8rem] font-bold">
           <span style={{ color: s.remaining > 0 ? 'var(--ink)' : 'var(--teal)' }}>{s.remaining}</span>
           <span style={{ color: 'var(--faint)' }}> / {s.total} {unit}</span>
           {s.scopeAddedPts > 0 && (
-            <span style={{ color: 'var(--lime)' }}> (+{s.scopeAddedPts} creep)</span>
+            <span style={{ color: 'var(--lime)' }} data-tip={creepTip(s.scopeAddedPts, unit)}> (+{s.scopeAddedPts} creep)</span>
           )}
         </span>
       </div>
@@ -103,7 +105,7 @@ export function HpBar({ view, onSelect, focus = null }) {
             data-scope={issue.addedMidSprint}
             data-blocked={issue.blocked}
             data-dim={focus ? issue.assignee !== focus : undefined}
-            title={`${issue.key} · ${issue.points} ${unit}${issue.done ? ' · done' : ''}${issue.addedMidSprint ? ' · added mid-sprint' : ''}`}
+            data-tip={hpSegTip(issue, unit)}
             onClick={() => onSelect(issue)}
           />
         ))}
@@ -118,6 +120,7 @@ export function ScarTimeline({ view }) {
   const { start, end } = view.sprint;
   const now = view.now;
   const span = end - start;
+  const unit = view.stats.anyEstimated ? 'pts' : 'tickets';
   const pct = (t) => `${Math.max(0, Math.min(100, ((t - start) / span) * 100))}%`;
   const days = Math.floor(span / DAY);
 
@@ -142,7 +145,7 @@ export function ScarTimeline({ view }) {
         </span>
         <span className="mono text-[0.65rem]" style={{ color: 'var(--faint)' }}>{fmtDate(end)}</span>
       </div>
-      <div className="scarline">
+      <div className="scarline" data-tip={scarStripTip()}>
         <div className="scar-track">
           <div className="scar-fill" style={{ width: pct(Math.min(now, end)) }} />
           {Array.from({ length: days - 1 }, (_, i) => (
@@ -154,7 +157,7 @@ export function ScarTimeline({ view }) {
             key={i}
             className="scar"
             style={{ left: pct(g.ts) }}
-            title={`${fmtDate(g.ts)} · +${g.pts}: ${g.keys.slice(0, 6).join(', ')}${g.keys.length > 6 ? ` +${g.keys.length - 6} more` : ''}`}
+            data-tip={scarTip(g, unit)}
           >
             {g.keys.length > 1 ? `+${g.pts}` : '+'}
           </span>
@@ -185,7 +188,7 @@ export function DamageLog({ view }) {
           data-t={e.type}
           style={{ opacity: 1 - i * 0.13 }}
         >
-          <span className="dlog-tag" data-t={e.type}>{LOG_TYPES[e.type]}</span>
+          <span className="dlog-tag" data-t={e.type} data-tip={logTagTip(e.type)}>{LOG_TYPES[e.type]}</span>
           <span className={cls('dlog-delta')}>
             {e.type === 'done' ? `−${e.points}` : e.type === 'scope-added' ? `+${e.points}` : e.key}
           </span>
