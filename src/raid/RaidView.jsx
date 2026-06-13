@@ -8,8 +8,9 @@ import TruthTicker from '../components/TruthTicker';
 import { EnrageTimer, HpBar, DamageLog } from '../components/hud';
 import { deriveParty, deriveMinions, pulseActions } from './raidState';
 import { clampArenaHeight } from './arenaResize';
+import { STANDUP_HINT } from '../discoveryCue';
 
-export default function RaidView({ view, pulses, onSelect }) {
+export default function RaidView({ view, pulses, onSelect, cue = false }) {
   const party = useMemo(() => deriveParty(view), [view]);
   const { minions, horde } = useMemo(() => deriveMinions(view), [view]);
   const actions = pulseActions(pulses, party);
@@ -96,7 +97,7 @@ export default function RaidView({ view, pulses, onSelect }) {
       </div>
       <FighterBar party={party} focus={focus} onFocus={toggleFocus} />
       <Dock view={view} onSelect={onSelect} focus={focus} />
-      <TruthTicker view={view} onSelect={onSelect} focus={focus} />
+      <TruthTicker view={view} onSelect={onSelect} focus={focus} hint={cue ? STANDUP_HINT : null} />
     </section>
   );
 }

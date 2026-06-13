@@ -5,7 +5,7 @@ import { staleCountTip } from '../tipCopy';
 
 // The no-metaphor strip: per-column counts + stale, then every blocker with its
 // reason. When a fighter is focused, every count narrows to their tickets.
-export default function TruthTicker({ view, onSelect, focus = null }) {
+export default function TruthTicker({ view, onSelect, focus = null, hint = null }) {
   const agingOn = !view.flags?.noChangelog;
   const mine = (i) => !focus || i.assignee === focus;
   const lanes = view.columns
@@ -16,6 +16,7 @@ export default function TruthTicker({ view, onSelect, focus = null }) {
   const blocked = view.issues.filter((i) => i.blocked && !i.done && mine(i));
   return (
     <div className="ticker mono">
+      {hint && <span className="ticker-hint">{hint}</span>}
       {lanes.map((c) => {
         const count = focus ? (fcounts.get(c.idx) || 0) : c.count;
         const stale = agingOn

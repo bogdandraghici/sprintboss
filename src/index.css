@@ -423,6 +423,7 @@ html[data-theme='light'] .standup { background: rgba(223, 228, 233, 0.88); }
 .ticker-stale { color: var(--amber); font-style: normal; }
 .ticker-block { color: var(--red); }
 .ticker-ok { color: var(--teal); }
+.ticker-hint { color: var(--teal); font-weight: 600; animation: fade 0.4s ease-out; }
 
 /* ── raid fighter bar ───────────────────────────────────────── */
 .fighter-bar {
