@@ -28,14 +28,17 @@ export function timeAgo(ts, now = Date.now()) {
   return `${Math.round(h / 24)}d ago`;
 }
 
-export function fmtCountdown(ms) {
-  const over = ms < 0;
-  let s = Math.abs(ms) / 1000;
+export function fmtCountdownBody(ms) {
+  const s = Math.abs(ms) / 1000;
   const d = Math.floor(s / 86400);
   const h = Math.floor((s % 86400) / 3600);
   const m = Math.floor((s % 3600) / 60);
-  const body = d > 0 ? `${d}d ${h}h` : h > 0 ? `${h}h ${m}m` : `${m}m`;
-  return over ? `${body} over` : body;
+  return d > 0 ? `${d}d ${h}h` : h > 0 ? `${h}h ${m}m` : `${m}m`;
+}
+
+export function fmtCountdown(ms) {
+  const body = fmtCountdownBody(ms);
+  return ms < 0 ? `${body} over` : body;
 }
 
 export function fmtDate(ts) {

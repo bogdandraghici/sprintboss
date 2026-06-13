@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { firstName, carryoverLabel, ordinal } from '../lib';
+import { firstName, carryoverLabel, ordinal, fmtCountdownBody } from '../lib';
 
 describe('firstName', () => {
   it('takes the first token and capitalizes it', () => {
@@ -43,5 +43,26 @@ describe('ordinal', () => {
     expect(ordinal(11)).toBe('11th');
     expect(ordinal(12)).toBe('12th');
     expect(ordinal(13)).toBe('13th');
+  });
+});
+
+describe('fmtCountdownBody', () => {
+  const D = 86400_000, H = 3600_000, M = 60_000;
+
+  it('formats days + hours', () => {
+    expect(fmtCountdownBody(1 * D + 10 * H)).toBe('1d 10h');
+  });
+
+  it('formats hours + minutes when under a day', () => {
+    expect(fmtCountdownBody(2 * H + 5 * M)).toBe('2h 5m');
+  });
+
+  it('formats minutes only when under an hour', () => {
+    expect(fmtCountdownBody(7 * M)).toBe('7m');
+  });
+
+  it('is sign-independent — never emits "over"', () => {
+    expect(fmtCountdownBody(-(1 * D + 10 * H))).toBe('1d 10h');
+    expect(fmtCountdownBody(-(7 * M))).not.toMatch(/over/);
   });
 });
