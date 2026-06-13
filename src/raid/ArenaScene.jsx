@@ -34,6 +34,10 @@ function TimeKeeper() {
 // Home framing: eye slightly below the look point, near side-on.
 const EYE_Y = 1.5, EYE_Z = 12.4, LOOK_Y = 1.65;
 const HOME_DIST = Math.hypot(EYE_Y - LOOK_Y, EYE_Z);
+// Vertical fov tuned (down from 35) so the home framing fits the whole lineup:
+// leftmost fighter near the left border, boss just before the combat log.
+// Narrowing the lens rather than dollying keeps z≈EYE_Z for the fog tuning.
+const ARENA_FOV = 25.5;
 
 // Interactive pan/zoom layered on the ambient sway + hit-stop shake. Wheel
 // zooms toward the cursor, left-drag pans; both suppress the sway while
@@ -388,7 +392,7 @@ export default function ArenaScene({ view, party = [], minions = [], horde = 0, 
   return (
     <Canvas
       dpr={LITE ? 1 : [1, 1.75]}
-      camera={{ fov: 35, position: [0, 2.1, 12.4] }}
+      camera={{ fov: ARENA_FOV, position: [0, 2.1, EYE_Z] }}
       gl={{ antialias: false }}
       style={{ position: 'absolute', inset: 0 }}
     >
