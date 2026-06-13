@@ -26,7 +26,7 @@ export default function FighterBar({ party = [], focus = null, onFocus = () => {
             data-tip={chipTip(f.name, active)}
             onClick={() => onFocus(f.name)}
           >
-            <Avatar name={f.name} src={f.avatar} size="2.4rem" />
+            <Avatar name={f.name} src={f.avatar} size="2.4rem" tip={null} />
             <span className="fighter-chip-name">{firstName(f.name)}</span>
           </button>
         );
