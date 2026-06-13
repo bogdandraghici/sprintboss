@@ -1,4 +1,11 @@
-export default function Header({ view, mode, setMode, theme, setTheme, refetch }) {
+// Draft glyphs (Bogdan's art pass may swap these) + per-view tooltip copy.
+const VIEWS = {
+  ambient: { glyph: '◍', tip: 'Ambient — the live boss fight (A)' },
+  standup: { glyph: '☰', tip: 'Standup — each fighter\'s daily board (S)' },
+  retro:   { glyph: '⏪', tip: 'Retro — scrub the whole sprint (R)' },
+};
+
+export default function Header({ view, mode, setMode, theme, setTheme, refetch, cue = false }) {
   const demo = async (action) => {
     await fetch(`/api/demo/${action}`, { method: 'POST' });
     refetch();
@@ -23,9 +30,17 @@ export default function Header({ view, mode, setMode, theme, setTheme, refetch }
             <button className="chip" onClick={() => demo('block')} data-tip="Block a ticket (demo)">block</button>
           </span>
         )}
+        <span className="label label-faint">view</span>
         <div className="seg-ctl">
           {['ambient', 'standup', 'retro'].map((m) => (
-            <button key={m} data-on={mode === m} onClick={() => setMode(m)}>
+            <button
+              key={m}
+              data-on={mode === m}
+              data-cue={m === 'standup' && cue}
+              onClick={() => setMode(m)}
+              data-tip={VIEWS[m].tip}
+            >
+              <span className="seg-glyph" aria-hidden="true">{VIEWS[m].glyph}</span>
               {m}
             </button>
           ))}
