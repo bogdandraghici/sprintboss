@@ -234,23 +234,6 @@ button { font: inherit; color: inherit; background: none; border: 0; padding: 0;
 }
 @keyframes seg-grow { from { flex-grow: 0 !important; opacity: 0; } }
 
-/* scar timeline */
-.scarline { position: relative; height: 2.2rem; }
-.scar-track { position: absolute; left: 0; right: 0; top: 50%; height: 0.35rem; transform: translateY(-50%); background: var(--inset); border-radius: 1rem; border: 1px solid var(--line); }
-.scar-fill { position: absolute; left: 0; top: 0; bottom: 0; background: linear-gradient(90deg, var(--steel-2), var(--dim)); border-radius: 1rem; opacity: 0.6; }
-.scar {
-  position: absolute; top: 50%; transform: translate(-50%, -50%);
-  min-width: 1.05rem; height: 1.05rem; padding: 0 0.22rem; border-radius: 0.55rem;
-  background: var(--panel); border: 2px solid var(--lime);
-  color: var(--lime); display: grid; place-items: center;
-  font-family: var(--font-m); font-size: 0.62rem; font-weight: 700; line-height: 1;
-  animation: scar-pop 0.5s cubic-bezier(0.2, 0.9, 0.3, 1.4);
-  z-index: 2; box-sizing: border-box;
-}
-@keyframes scar-pop { from { transform: translate(-50%, -50%) scale(0); } }
-.scar-now { position: absolute; top: 0; bottom: 0; width: 2px; background: var(--ink); opacity: 0.7; transform: translateX(-50%); }
-.scar-day { position: absolute; top: 50%; width: 1px; height: 0.7rem; transform: translate(-50%, -50%); background: var(--line-2); }
-
 /* damage log — borderless lines that fade with age */
 .dlog { display: flex; flex-direction: column; gap: 0.22rem; overflow: hidden; }
 .dlog-row {

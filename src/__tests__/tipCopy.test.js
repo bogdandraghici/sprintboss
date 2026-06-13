@@ -1,7 +1,6 @@
 import { describe, it, expect } from 'vitest';
-import { fmtDate } from '../lib';
 import {
-  ageTip, carryTip, scopeTip, hpSegTip, bossHpTip, scarStripTip, scarTip,
+  ageTip, carryTip, scopeTip, hpSegTip, bossHpTip,
   creepTip, logTagTip, LOG_TAG_TIPS, storyMeterTip, statusTip, STATUS_TIPS,
   chipTip, staleCountTip, beaconTip, unestimatedTip,
 } from '../tipCopy';
@@ -51,16 +50,6 @@ describe('hpSegTip', () => {
   });
   it('singularizes a 1-ticket segment', () => {
     expect(hpSegTip({ ...base, points: 1 }, 'tickets')).toBe('MT-1 · 1 ticket');
-  });
-});
-
-describe('scarTip', () => {
-  it('lists up to 6 keys then counts the rest', () => {
-    const g = { ts: 1750000000000, pts: 9, keys: ['A', 'B'] };
-    expect(scarTip(g, 'pts')).toBe(`${fmtDate(g.ts)} · +9 pts joined mid-sprint: A, B`);
-    const big = { ts: g.ts, pts: 9, keys: ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H'] };
-    expect(scarTip(big, 'pts'))
-      .toBe(`${fmtDate(g.ts)} · +9 pts joined mid-sprint: A, B, C, D, E, F +2 more`);
   });
 });
 
@@ -133,7 +122,7 @@ describe('unestimatedTip', () => {
 
 describe('static tips', () => {
   it('exist and are non-empty', () => {
-    for (const t of [scopeTip(), bossHpTip(), scarStripTip(), beaconTip()]) {
+    for (const t of [scopeTip(), bossHpTip(), beaconTip()]) {
       expect(typeof t).toBe('string');
       expect(t.length).toBeGreaterThan(10);
     }

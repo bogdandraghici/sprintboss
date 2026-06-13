@@ -149,9 +149,16 @@ resize discoverability hints; tooltips inside the 3D canvas.
 
 ## As-built divergences (2026-06-13)
 
-- **ScarTimeline is dead code** — exported from `hud.jsx` but rendered nowhere
-  (RaidView imports only EnrageTimer/HpBar/DamageLog). Its tips were migrated
-  anyway so the strip works if reinstated.
+- **ScarTimeline removed.** It was dead code (exported from `hud.jsx` but rendered
+  nowhere — RaidView imports only EnrageTimer/HpBar/DamageLog). Bogdan opted to
+  delete it; the component, its CSS (`.scarline`/`.scar-track`/`.scar-fill`/
+  `.scar`/`.scar-now`/`.scar-day`), and the `scarStripTip`/`scarTip` formatters
+  (+ tests) are gone. The "Scope scars" copy-table rows above are therefore
+  unimplemented by design. (Boss-body scars in the 3D arena are a separate,
+  still-live feature.)
+- **Card key+summary tip dropped.** The `.ticket` button no longer carries a
+  `data-tip` — summaries already render in full on the card, so it was redundant
+  noise. Child tips (age, carryover, scope key, type icon) are unaffected.
 - **Straggler titles** in `Avatar.jsx` and `Header.jsx` (stale-data chip, demo
   buttons, theme toggle) migrated verbatim under the no-native-titles rule.
 - **`Avatar` gained a `tip` prop** (default: name tip; `null` suppresses) —

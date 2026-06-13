@@ -3,7 +3,7 @@
 // Pure formatters only; components set the result as data-tip and the shared
 // TooltipLayer renders it. Dynamic thresholds (aging, ordinals, counts) are
 // always interpolated, never vague.
-import { fmtDays, fmtDate, ordinal, firstName } from './lib';
+import { fmtDays, ordinal, firstName } from './lib';
 
 export function ageTip(days, band, aging) {
   if (!aging || band === 'off') return null;
@@ -33,15 +33,6 @@ export function hpSegTip(issue, unit) {
 
 export const bossHpTip = () =>
   'Boss HP = open work. One segment per ticket — it drains as tickets land; gold burned in the last ~2h.';
-
-export const scarStripTip = () =>
-  'Scope scars — each ✚ marks tickets that joined after the sprint started.';
-
-export function scarTip(group, unit) {
-  const keys = group.keys.slice(0, 6).join(', ') +
-    (group.keys.length > 6 ? ` +${group.keys.length - 6} more` : '');
-  return `${fmtDate(group.ts)} · +${group.pts} ${unit} joined mid-sprint: ${keys}`;
-}
 
 export function creepTip(n, unit) {
   return `${n} ${unit} joined after sprint start — the boss healed.`;

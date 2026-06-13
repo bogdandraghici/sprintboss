@@ -43,7 +43,6 @@ export default function Ticket({ issue, view, onSelect, accent = null, storyCapt
       data-unestimated={!issue.estimated}
       data-scope={issue.addedMidSprint}
       onClick={() => onSelect(issue)}
-      data-tip={`${issue.key} — ${issue.summary}`}
       style={accent ? { borderLeftColor: accent, borderLeftWidth: '3px' } : undefined}
     >
       <IssueTypeIcon src={issue.issueTypeIcon} type={issue.issueType} />

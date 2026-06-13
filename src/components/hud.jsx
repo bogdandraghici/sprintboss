@@ -3,7 +3,7 @@
 import { useEffect, useMemo, useReducer, useState } from 'react';
 import { fmtCountdown, fmtDate, fmtDays, timeAgo, cls, DAY } from '../lib';
 import { segmentHeat } from '../raid/heat';
-import { bossHpTip, hpSegTip, creepTip, scarStripTip, scarTip, logTagTip } from '../tipCopy';
+import { bossHpTip, hpSegTip, creepTip, logTagTip } from '../tipCopy';
 
 /* ── enrage timer ─────────────────────────────────────────────── */
 
@@ -109,60 +109,6 @@ export function HpBar({ view, onSelect, focus = null }) {
             onClick={() => onSelect(issue)}
           />
         ))}
-      </div>
-    </div>
-  );
-}
-
-/* ── scar timeline (scope creep history) ──────────────────────── */
-
-export function ScarTimeline({ view }) {
-  const { start, end } = view.sprint;
-  const now = view.now;
-  const span = end - start;
-  const unit = view.stats.anyEstimated ? 'pts' : 'tickets';
-  const pct = (t) => `${Math.max(0, Math.min(100, ((t - start) / span) * 100))}%`;
-  const days = Math.floor(span / DAY);
-
-  // Cluster scope events per sprint day: 37 individual scars is noise,
-  // "day 4: +9" is a story.
-  const byDay = new Map();
-  for (const e of view.events) {
-    if (e.type !== 'scope-added') continue;
-    const d = Math.floor((e.ts - start) / DAY);
-    const g = byDay.get(d) || { ts: start + (d + 0.5) * DAY, pts: 0, keys: [] };
-    g.pts += e.points;
-    g.keys.push(e.key);
-    byDay.set(d, g);
-  }
-  const scars = [...byDay.values()];
-
-  return (
-    <div>
-      <div className="flex items-baseline justify-between">
-        <span className="mono text-[0.65rem]" style={{ color: 'var(--faint)' }}>
-          {fmtDate(start)} <span style={{ color: 'var(--lime)' }}>✚</span> scars = scope creep
-        </span>
-        <span className="mono text-[0.65rem]" style={{ color: 'var(--faint)' }}>{fmtDate(end)}</span>
-      </div>
-      <div className="scarline" data-tip={scarStripTip()}>
-        <div className="scar-track">
-          <div className="scar-fill" style={{ width: pct(Math.min(now, end)) }} />
-          {Array.from({ length: days - 1 }, (_, i) => (
-            <span key={i} className="scar-day" style={{ left: pct(start + (i + 1) * DAY) }} />
-          ))}
-        </div>
-        {scars.map((g, i) => (
-          <span
-            key={i}
-            className="scar"
-            style={{ left: pct(g.ts) }}
-            data-tip={scarTip(g, unit)}
-          >
-            {g.keys.length > 1 ? `+${g.pts}` : '+'}
-          </span>
-        ))}
-        <span className="scar-now" style={{ left: pct(Math.min(now, end)) }} />
       </div>
     </div>
   );
