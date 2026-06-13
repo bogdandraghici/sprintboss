@@ -4,7 +4,7 @@ import { initials, hueOf } from '../lib';
 // Photo thumbnail when a URL is available and loads; initials otherwise.
 // tip: overrides the tooltip text. Pass null to suppress it entirely; omit to
 // use the default name tip.
-export default function Avatar({ name, src, size = '2rem', tip = undefined }) {
+export default function Avatar({ name, src, size, tip = undefined }) {
   const [broken, setBroken] = useState(false);
   const dim = size ? { width: size, height: size } : null;
   const tipText = tip === undefined ? (name || 'Unassigned') : tip;
