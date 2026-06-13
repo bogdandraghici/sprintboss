@@ -367,8 +367,15 @@ html[data-theme='light'] .standup { background: rgba(223, 228, 233, 0.88); }
 @keyframes retro-in { from { opacity: 0; transform: translateY(1rem); } }
 .retro-slider { position: relative; flex: 1; height: 2rem; display: flex; align-items: center; }
 .retro-slider input { width: 100%; accent-color: var(--teal); position: relative; z-index: 2; }
-.retro-marks { position: absolute; left: 0; right: 0; top: 0; bottom: 0; pointer-events: none; }
-.retro-mark { position: absolute; top: 0.05rem; transform: translateX(-50%); font-size: 0.55rem; font-weight: 700; }
+/* .retro-marks must sit ABOVE the input (z-index: 2) so pointer events can
+   reach individual marks. The container stays pointer-events:none so the
+   vast majority of the track — between marks — stays freely draggable. Only
+   the tiny per-mark glyphs (≈0.55rem / ~9px) get pointer-events:auto, so
+   hovering them fires the TooltipLayer. Trade-off: a pointerdown that lands
+   exactly on a mark pixel won't initiate a slider drag at that spot; given
+   the ~9px glyph size this is an acceptable and uncommon miss. */
+.retro-marks { position: absolute; left: 0; right: 0; top: 0; bottom: 0; pointer-events: none; z-index: 3; }
+.retro-mark { position: absolute; top: 0.05rem; transform: translateX(-50%); font-size: 0.55rem; font-weight: 700; pointer-events: auto; }
 .retro-mark[data-t='done'] { color: var(--teal); }
 .retro-mark[data-t='scope-added'] { color: var(--lime); }
 .retro-mark[data-t='blocked'] { color: var(--red); }
