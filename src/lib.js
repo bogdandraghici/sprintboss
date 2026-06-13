@@ -36,11 +36,6 @@ export function fmtCountdownBody(ms) {
   return d > 0 ? `${d}d ${h}h` : h > 0 ? `${h}h ${m}m` : `${m}m`;
 }
 
-export function fmtCountdown(ms) {
-  const body = fmtCountdownBody(ms);
-  return ms < 0 ? `${body} over` : body;
-}
-
 export function fmtDate(ts) {
   return new Date(ts).toLocaleDateString(undefined, { month: 'short', day: 'numeric' });
 }

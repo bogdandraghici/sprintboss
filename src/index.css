@@ -255,7 +255,7 @@ button { font: inherit; color: inherit; background: none; border: 0; padding: 0;
 .dlog-who { color: var(--dim); overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
 .dlog-ago { color: var(--faint); font-size: 0.65rem; }
 
-/* enrage timer — instrument readout */
+/* enrage timer — instrument readout (base = on-track 'ok' state: teal edge, ink numeral) */
 .enrage {
   display: flex; align-items: center; gap: 0.8rem; position: relative;
   height: 4.5rem; min-width: 13rem; box-sizing: border-box;

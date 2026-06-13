@@ -27,7 +27,7 @@ export function EnrageTimer({ view }) {
   const tag = cleared ? '✦ Cleared' : s.enraged ? '⚠ Enraged' : 'On track';
 
   return (
-    <button className="enrage" data-state={state} data-open={open} onClick={() => setOpen((o) => !o)}>
+    <button className="enrage" data-state={state} data-open={open} aria-expanded={open} onClick={() => setOpen((o) => !o)}>
       <span className="enrage-body">
         <span className="label label-faint block">Enrage timer · {suffix}</span>
         <span className="enrage-count">{fmtCountdownBody(ms)}</span>
