@@ -573,6 +573,19 @@ html[data-theme='light'] .standup { background: rgba(223, 228, 233, 0.88); }
 .fc-stat[data-tone="stale"] .fc-v   { color: var(--amber); }
 .fc-stat[data-tone="blocked"] .fc-v { color: var(--red); }
 
+/* ── tooltip layer (shared bubble for all data-tip elements) ───── */
+.tipbox {
+  position: fixed; z-index: 80; pointer-events: none;
+  transform: translate(-50%, calc(-100% - 0.45rem));
+  max-width: 280px; padding: 0.35rem 0.6rem;
+  background: var(--panel-2); border: 1px solid var(--line-2); border-radius: 6px;
+  color: var(--ink); font-size: 0.72rem; line-height: 1.4;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.35);
+  animation: tip-in 120ms ease-out;
+}
+.tipbox[data-below] { transform: translate(-50%, 0.45rem); }
+@keyframes tip-in { from { opacity: 0; } }
+
 /* ── steel-daylight overrides ───────────────────────────────────────
    Hardcoded colors tuned for dark ground, re-tuned for light. Shadows go
    softer and bluer (ink-steel, not black). Dark mode is untouched. */

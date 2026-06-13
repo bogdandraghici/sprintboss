@@ -6,6 +6,7 @@ import TicketModal from './components/TicketModal';
 import { StandupOverlay, RetroBar } from './components/Modes';
 import { BootScreen, NoSprintScreen } from './components/Screens';
 import RaidView from './raid/RaidView';
+import TooltipLayer from './components/TooltipLayer';
 
 function useTheme() {
   const [theme, setTheme] = useState(() => localStorage.getItem('sb-theme') || 'dark');
@@ -55,6 +56,7 @@ export default function App() {
         <RetroBar snap={snap} t={retroT} setT={setRetroT} onExit={exitToAmbient} />
       )}
       {selected && <TicketModal issue={selected} view={view} onClose={() => setSelected(null)} />}
+      <TooltipLayer />
     </div>
   );
 }
