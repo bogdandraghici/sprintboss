@@ -11,16 +11,16 @@ export default function Header({ view, mode, setMode, theme, setTheme, refetch }
         <h1 className="text-[0.95rem] font-semibold tracking-wide truncate m-0">{view.sprint.name}</h1>
         {view.closedFallback && <span className="chip" style={{ color: 'var(--amber)' }}>CLOSED SPRINT</span>}
         {view.timeTravel && <span className="chip" style={{ color: 'var(--amber)' }}>⏪ TIME TRAVEL</span>}
-        {view.stale && <span className="chip" style={{ color: 'var(--red)' }} title={view.staleError}>STALE DATA</span>}
+        {view.stale && <span className="chip" style={{ color: 'var(--red)' }} data-tip={view.staleError}>STALE DATA</span>}
       </div>
 
       <div className="ml-auto flex items-center gap-3 flex-none">
         {view.source === 'mock' && (
           <span className="flex items-center gap-1.5" style={{ opacity: 0.65 }}>
             <span className="chip" style={{ color: 'var(--amber)' }}>MOCK</span>
-            <button className="chip" onClick={() => demo('hit')} title="Complete a ticket (demo)">hit</button>
-            <button className="chip" onClick={() => demo('heal')} title="Add scope (demo)">heal</button>
-            <button className="chip" onClick={() => demo('block')} title="Block a ticket (demo)">block</button>
+            <button className="chip" onClick={() => demo('hit')} data-tip="Complete a ticket (demo)">hit</button>
+            <button className="chip" onClick={() => demo('heal')} data-tip="Add scope (demo)">heal</button>
+            <button className="chip" onClick={() => demo('block')} data-tip="Block a ticket (demo)">block</button>
           </span>
         )}
         <div className="seg-ctl">
@@ -33,7 +33,7 @@ export default function Header({ view, mode, setMode, theme, setTheme, refetch }
         <button
           className="iconbtn"
           onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
-          title="Toggle theme"
+          data-tip="Toggle theme"
         >
           {theme === 'dark' ? '☀' : '☾'}
         </button>

@@ -1,6 +1,7 @@
 // src/components/TruthTicker.jsx
 import { ageBand } from '../lib';
 import { focusColumnCounts } from '../raid/raidState';
+import { staleCountTip } from '../tipCopy';
 
 // The no-metaphor strip: per-column counts + stale, then every blocker with its
 // reason. When a fighter is focused, every count narrows to their tickets.
@@ -24,7 +25,7 @@ export default function TruthTicker({ view, onSelect, focus = null }) {
         return (
           <span key={c.name} className="ticker-col">
             {c.name.toLowerCase()} <b>{count}</b>
-            {stale > 0 && <i className="ticker-stale"> {stale} stale</i>}
+            {stale > 0 && <i className="ticker-stale" data-tip={staleCountTip(view.aging)}> {stale} stale</i>}
           </span>
         );
       })}

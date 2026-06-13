@@ -240,7 +240,7 @@ export function RetroBar({ snap, t, setT, onExit }) {
               className="retro-mark"
               data-t={e.type}
               style={{ left: `${((e.ts - start) / span) * 100}%` }}
-              title={`${e.key} · ${fmtDate(e.ts)}`}
+              data-tip={`${e.key} · ${fmtDate(e.ts)}`}
             >
               {e.type === 'done' ? '▾' : e.type === 'scope-added' ? '✚' : '⛌'}
             </span>

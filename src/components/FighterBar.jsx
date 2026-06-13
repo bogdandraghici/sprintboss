@@ -6,6 +6,7 @@
 // empty-space click in the arena.
 import Avatar from './Avatar';
 import { firstName } from '../lib';
+import { chipTip } from '../tipCopy';
 
 export default function FighterBar({ party = [], focus = null, onFocus = () => {} }) {
   if (party.length === 0) return null;
@@ -22,7 +23,7 @@ export default function FighterBar({ party = [], focus = null, onFocus = () => {
             data-active={active}
             data-dimmed={dimmed}
             aria-current={active || undefined}
-            title={f.name}
+            data-tip={chipTip(f.name, active)}
             onClick={() => onFocus(f.name)}
           >
             <Avatar name={f.name} src={f.avatar} size="2.4rem" />

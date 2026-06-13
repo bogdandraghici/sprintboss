@@ -10,6 +10,7 @@ import FighterArtRig from './FighterArtRig';
 import { artSlugFor, cardYFor } from './sprites/roster';
 import { LITE } from './ArenaScene';
 import { cardStats } from './cardStats';
+import { statusTip } from '../tipCopy';
 
 const STATUS = {
   fighting:  { label: 'Fighting',  tone: 'fighting' },
@@ -74,7 +75,7 @@ export default function FighterCard({ fighter, movedCount }) {
   return (
     <div className="fighter-card">
       <div className="fc-art">
-        <span className="fc-badge" data-tone={status.tone}>{status.label}</span>
+        <span className="fc-badge" data-tone={status.tone} data-tip={statusTip(fighter.status)}>{status.label}</span>
         <CardScene fighter={fighter} />
         <div className="fc-shadow" />
       </div>

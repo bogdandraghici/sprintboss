@@ -12,7 +12,7 @@ export default function Avatar({ name, src, size }) {
         className="avatar"
         src={src}
         alt={name || 'Unassigned'}
-        title={name || 'Unassigned'}
+        data-tip={name || 'Unassigned'}
         loading="lazy"
         referrerPolicy="no-referrer"
         onError={() => setBroken(true)}
@@ -23,7 +23,7 @@ export default function Avatar({ name, src, size }) {
   return (
     <span
       className="avatar"
-      title={name || 'Unassigned'}
+      data-tip={name || 'Unassigned'}
       style={{
         background: name ? `hsl(${hueOf(name)} 45% 42%)` : 'var(--steel-3)',
         ...(size ? { ...dim, fontSize: `calc(${size} * 0.42)` } : null),
