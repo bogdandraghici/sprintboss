@@ -61,6 +61,14 @@ describe('fmtCountdownBody', () => {
     expect(fmtCountdownBody(7 * M)).toBe('7m');
   });
 
+  it('emits 0m at the zero boundary', () => {
+    expect(fmtCountdownBody(0)).toBe('0m');
+  });
+
+  it('keeps a zero second field (2h 0m)', () => {
+    expect(fmtCountdownBody(2 * H)).toBe('2h 0m');
+  });
+
   it('is sign-independent — never emits "over"', () => {
     expect(fmtCountdownBody(-(1 * D + 10 * H))).toBe('1d 10h');
     expect(fmtCountdownBody(-(7 * M))).not.toMatch(/over/);
