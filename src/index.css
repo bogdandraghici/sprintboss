@@ -294,7 +294,7 @@ html[data-theme='light'] .backdrop { background: rgba(28, 39, 51, 0.4); }
 }
 .seg-ctl button:last-child { border-right: 0; }
 .seg-ctl button:hover { color: var(--ink); }
-.seg-ctl button[data-on='true'] { background: var(--ink); color: var(--bg); box-shadow: inset 0 -2px 0 var(--teal); }
+.seg-ctl button[data-on='true'] { background: var(--ink); color: var(--bg); }
 .seg-glyph { font-size: 0.85em; opacity: 0.9; }
 /* discovery cue: the standup button breathes while the wall sits idle in
    ambient, drawing the eye to a view people might not know exists. */
