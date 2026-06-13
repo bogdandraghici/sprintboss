@@ -255,19 +255,35 @@ button { font: inherit; color: inherit; background: none; border: 0; padding: 0;
 .dlog-who { color: var(--dim); overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
 .dlog-ago { color: var(--faint); font-size: 0.65rem; }
 
-/* enrage timer */
-.enrage { display: flex; align-items: center; justify-content: space-between; gap: 0.8rem; position: relative; }
-.enrage-count { font-family: var(--font-m); font-size: 1.7rem; font-weight: 700; line-height: 1; }
-.enrage-chip {
-  font-family: var(--font-m); font-size: 0.78rem; font-weight: 700; letter-spacing: 0.1em;
-  padding: 0.35em 0.8em; border-radius: 0.35rem;
+/* enrage timer — instrument readout */
+.enrage {
+  display: flex; align-items: center; gap: 0.8rem; position: relative;
+  height: 4.5rem; min-width: 13rem; box-sizing: border-box;
+  padding: 0.6rem 0.85rem; text-align: left;
+  background: var(--panel); border: 1px solid var(--line);
+  border-left: 4px solid var(--teal); border-radius: 0.4rem;
 }
-.enrage-chip[data-s='ok'] { color: var(--teal); padding: 0; } /* quiet text, no frame: red gets the drama */
-.enrage-chip[data-s='enraged'] {
-  color: #fff; background: var(--red);
-  animation: enrage-pulse 1.2s ease-in-out infinite;
+.enrage-body { display: flex; flex-direction: column; gap: 0.35rem; min-width: 0; }
+.enrage-count { font-family: var(--font-m); font-size: 1.7rem; font-weight: 700; line-height: 1; color: var(--ink); }
+.enrage-tag {
+  margin-left: auto; white-space: nowrap;
+  font-family: var(--font-m); font-size: 0.7rem; font-weight: 700; letter-spacing: 0.12em;
+  color: var(--teal);
 }
-@keyframes enrage-pulse { 50% { box-shadow: 0 0 1.2rem var(--red); } }
+
+.enrage[data-state='enraged'] {
+  --eglow: rgba(255, 82, 99, 0.14);
+  --eglow-hi: rgba(255, 82, 99, 0.30);
+  border-left-color: var(--red);
+  box-shadow: inset 3px 0 1.6rem var(--eglow);
+  animation: enrage-edge 1.6s ease-in-out infinite;
+}
+.enrage[data-state='enraged'] .enrage-count,
+.enrage[data-state='enraged'] .enrage-tag { color: var(--red); }
+.enrage[data-state='cleared'] .enrage-count,
+.enrage[data-state='cleared'] .enrage-tag { color: var(--teal); }
+@keyframes enrage-edge { 50% { box-shadow: inset 3px 0 1.6rem var(--eglow-hi); } }
+
 .enrage-math {
   position: absolute; right: 0; top: calc(100% + 0.4rem); z-index: 30;
   background: var(--panel); border: 1px solid var(--line-2); border-radius: 0.5rem;
@@ -601,6 +617,10 @@ html[data-theme='light'] body {
 
 html[data-theme='light'] .panel { box-shadow: 0 0.4rem 1.4rem rgba(28, 39, 51, 0.14); }
 html[data-theme='light'] .enrage-math { box-shadow: 0 0.8rem 2rem rgba(28, 39, 51, 0.25); }
+html[data-theme='light'] .enrage[data-state='enraged'] {
+  --eglow: rgba(210, 51, 65, 0.10);
+  --eglow-hi: rgba(210, 51, 65, 0.22);
+}
 html[data-theme='light'] .tipbox { box-shadow: 0 6px 18px rgba(28, 39, 51, 0.18); }
 html[data-theme='light'] .avatar { border-color: rgba(28, 39, 51, 0.25); }
 html[data-theme='light'] .fc-stat { background: rgba(28, 39, 51, 0.035); }

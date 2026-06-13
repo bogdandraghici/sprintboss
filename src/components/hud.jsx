@@ -1,7 +1,7 @@
 // src/components/hud.jsx
 // Raid-frame widgets for the arena HUD.
 import { useEffect, useMemo, useReducer, useState } from 'react';
-import { fmtCountdown, fmtDate, fmtDays, timeAgo, cls, DAY } from '../lib';
+import { fmtCountdownBody, fmtDate, fmtDays, timeAgo, cls, DAY } from '../lib';
 import { segmentHeat } from '../raid/heat';
 import { bossHpTip, hpSegTip, creepTip, logTagTip } from '../tipCopy';
 
@@ -21,20 +21,18 @@ export function EnrageTimer({ view }) {
   const unit = s.anyEstimated ? 'pts' : 'tickets';
   const slack = s.projectedFinish ? (view.sprint.end - s.projectedFinish) / DAY : null;
 
+  const cleared = s.remaining <= 0 && s.total > 0;
+  const state = cleared ? 'cleared' : s.enraged ? 'enraged' : 'ok';
+  const suffix = cleared ? (ms > 0 ? 'to spare' : 'done') : ms < 0 ? 'over' : 'left';
+  const tag = cleared ? '✦ Cleared' : s.enraged ? '⚠ Enraged' : 'On track';
+
   return (
-    <button className="enrage" data-open={open} onClick={() => setOpen((o) => !o)}>
-      <span className="text-left">
-        <span className="label label-faint block">Enrage timer</span>
-        <span className="enrage-count" style={ms < 0 ? { color: 'var(--red)' } : null}>
-          {fmtCountdown(ms)}
-        </span>
+    <button className="enrage" data-state={state} data-open={open} onClick={() => setOpen((o) => !o)}>
+      <span className="enrage-body">
+        <span className="label label-faint block">Enrage timer · {suffix}</span>
+        <span className="enrage-count">{fmtCountdownBody(ms)}</span>
       </span>
-      <span className="text-right">
-        <span className="enrage-chip" data-s={s.enraged ? 'enraged' : 'ok'}>
-          {s.remaining <= 0 && s.total > 0 ? '✦ CLEARED' : s.enraged ? '⚠ ENRAGED' : 'ON TRACK'}
-        </span>
-        <span className="label label-faint block mt-1">ends {fmtDate(view.sprint.end)}</span>
-      </span>
+      <span className="enrage-tag">{tag}</span>
 
       <span className="enrage-math">
         <span>remaining <b>{s.remaining} {unit}</b></span>
@@ -46,6 +44,7 @@ export function EnrageTimer({ view }) {
           projected finish{' '}
           <b>{s.remaining <= 0 ? 'done' : s.projectedFinish ? fmtDate(s.projectedFinish) : 'never at this pace'}</b>
         </span>
+        <span>sprint ends <b>{fmtDate(view.sprint.end)}</b></span>
         <span style={{ color: s.enraged ? 'var(--red)' : 'var(--teal)', fontWeight: 700 }}>
           {s.remaining <= 0
             ? 'scope cleared'
