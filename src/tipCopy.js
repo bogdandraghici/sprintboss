@@ -23,7 +23,8 @@ export function carryTip(priorSprints) {
 export const scopeTip = () => 'Joined mid-sprint — scope creep.';
 
 export function hpSegTip(issue, unit) {
-  let t = `${issue.key} · ${issue.points} ${unit}`;
+  const unitLabel = unit === 'tickets' ? (issue.points === 1 ? 'ticket' : 'tickets') : unit;
+  let t = `${issue.key} · ${issue.points} ${unitLabel}`;
   if (issue.done) t += ' · done';
   if (issue.blocked) t += ' · blocked';
   if (issue.addedMidSprint) t += ' · joined mid-sprint (scope)';

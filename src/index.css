@@ -608,6 +608,7 @@ html[data-theme='light'] body {
 
 html[data-theme='light'] .panel { box-shadow: 0 0.4rem 1.4rem rgba(28, 39, 51, 0.14); }
 html[data-theme='light'] .enrage-math { box-shadow: 0 0.8rem 2rem rgba(28, 39, 51, 0.25); }
+html[data-theme='light'] .tipbox { box-shadow: 0 6px 18px rgba(28, 39, 51, 0.18); }
 html[data-theme='light'] .avatar { border-color: rgba(28, 39, 51, 0.25); }
 html[data-theme='light'] .fc-stat { background: rgba(28, 39, 51, 0.035); }
 

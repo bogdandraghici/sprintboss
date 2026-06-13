@@ -49,6 +49,9 @@ describe('hpSegTip', () => {
     expect(hpSegTip({ ...base, done: true, addedMidSprint: true }, 'pts'))
       .toBe('MT-1 · 3 pts · done · joined mid-sprint (scope)');
   });
+  it('singularizes a 1-ticket segment', () => {
+    expect(hpSegTip({ ...base, points: 1 }, 'tickets')).toBe('MT-1 · 1 ticket');
+  });
 });
 
 describe('scarTip', () => {
