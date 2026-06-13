@@ -91,6 +91,20 @@ reconstruction. It reads `mode` (UI state) and wall-clock elapsed only.
   reads as a view control with the active mode obvious; `A/S/R` switch and are
   suppressed while a ticket modal is open; both themes.
 
+## As-built divergences (2026-06-13)
+
+- **Active-state teal underline dropped.** The spec called for "ink-invert +
+  teal accent." In dark mode (primary theme) the active pill is the light
+  `--ink` fill, and a bright teal underline on it measured ~1.59:1 — invisible.
+  The ink-invert pill alone already reads across a room, so the teal underline
+  was removed. Brand teal still appears in the cue glow and the ticker hint.
+- **A/S/R shortcuts also bail when any `<input>` has focus** (not just the
+  ticket modal) so the retro range slider can't be knocked out of retro by a
+  stray letter key.
+- Minor polish deferred to Bogdan's art pass: the `☰` standup glyph reads like
+  a menu icon; the ticker hint has no inter-item separator / fade-out and
+  reflows the ticker ~226px when it appears.
+
 ## Out of scope / future
 
 - **C — contextual standup-time prompt** (auto/scheduled CTA): deferred.

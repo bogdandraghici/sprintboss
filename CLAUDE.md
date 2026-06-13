@@ -107,6 +107,17 @@ read or written.)
   instead of a tip. The 3D arena gets no tooltips — concepts are explained on
   their DOM counterparts. Retro marks have `pointer-events: auto` (container
   stays `none`) so their tips fire without stealing scrubber drags.
+- **View discoverability**: the header view-switcher (`Header.jsx`) is an
+  explicit `view` control — glyph + label per mode, active state = ink-invert
+  pill (no teal underline; it was invisible on the light pill in dark mode), and
+  per-view `data-tip`s naming each view + its A/S/R shortcut. A
+  presentation-only discovery cue (`src/discoveryCue.js`: pure `discoveryPhase` +
+  `useDiscoveryCue` hook, tested) fires a gentle ~7s window every ~80s while idle
+  in **ambient** — the standup button breathes (`.seg-ctl button[data-cue]`,
+  `@keyframes cue-glow`) and the truth ticker rotates in `STANDUP_HINT`.
+  Ambient-only; never touches `view`/retro (like fighter focus / camera pan).
+  A/S/R shortcuts + the cue are wired in `App.jsx` (shortcuts suppressed while a
+  ticket modal or any input has focus).
 - **Standup mode** (`src/components/Modes.jsx`, `StandupOverlay`) shows, beside
   the per-person moved/parked board, a full-height **fighter card**
   (`src/raid/FighterCard.jsx`): a standalone mini R3F `<Canvas>` reusing the
