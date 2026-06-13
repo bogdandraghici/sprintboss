@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import Avatar from './Avatar';
-import { ageBand, fmtDays, carryoverLabel, ordinal } from '../lib';
+import { ageBand, fmtDays, carryoverLabel } from '../lib';
+import { ageTip, carryTip, scopeTip } from '../tipCopy';
 
 // Generic fallback glyph for unknown types / mock (no iconUrl) / proxy miss.
 function GenericTypeGlyph() {
@@ -16,13 +17,13 @@ function IssueTypeIcon({ src, type }) {
   const [broken, setBroken] = useState(false);
   if (src && !broken) {
     return (
-      <span className="itype" title={type || ''}>
+      <span className="itype" data-tip={type || undefined}>
         <img src={src} alt={type || 'issue'} loading="lazy" onError={() => setBroken(true)} />
       </span>
     );
   }
   return (
-    <span className="itype" title={type || ''}>
+    <span className="itype" data-tip={type || undefined}>
       <GenericTypeGlyph />
     </span>
   );
@@ -42,23 +43,27 @@ export default function Ticket({ issue, view, onSelect, accent = null, storyCapt
       data-unestimated={!issue.estimated}
       data-scope={issue.addedMidSprint}
       onClick={() => onSelect(issue)}
-      title={`${issue.key} — ${issue.summary}`}
+      data-tip={`${issue.key} — ${issue.summary}`}
       style={accent ? { borderLeftColor: accent, borderLeftWidth: '3px' } : undefined}
     >
       <IssueTypeIcon src={issue.issueTypeIcon} type={issue.issueType} />
-      <span className="ticket-key">
+      <span className="ticket-key" data-tip={issue.addedMidSprint ? scopeTip() : undefined}>
         {issue.key}
         {carry && (
           <span
             className="ticket-carry"
             data-heavy={nthSprint >= 3 || undefined}
-            title={`${ordinal(nthSprint)} sprint for this ticket`}
+            data-tip={carryTip(issue.priorSprints)}
           >
             {carry}
           </span>
         )}
       </span>
-      {band !== 'off' && <span className="ticket-age">{fmtDays(issue.daysInColumn)}</span>}
+      {band !== 'off' && (
+        <span className="ticket-age" data-tip={ageTip(issue.daysInColumn, band, view.aging)}>
+          {fmtDays(issue.daysInColumn)}
+        </span>
+      )}
       {issue.estimated && <span className="ticket-pts">{issue.points}</span>}
       <span className="ticket-face">
         <Avatar name={issue.assignee} src={issue.assigneeAvatar} />

@@ -1,6 +1,7 @@
 import { useEffect } from 'react';
 import Avatar from './Avatar';
 import { ageBand, fmtDays, fmtDate, ordinal } from '../lib';
+import { unestimatedTip, beaconTip } from '../tipCopy';
 
 export default function TicketModal({ issue, view, onClose }) {
   useEffect(() => {
@@ -32,7 +33,11 @@ export default function TicketModal({ issue, view, onClose }) {
             </span>
           )}
           {issue.done && <span className="chip" style={{ color: 'var(--teal)' }}>DONE</span>}
-          {!issue.estimated && <span className="chip" style={{ color: 'var(--amber)', borderStyle: 'dashed' }}>UNESTIMATED</span>}
+          {!issue.estimated && (
+            <span className="chip" style={{ color: 'var(--amber)', borderStyle: 'dashed' }} data-tip={unestimatedTip(issue.points, unit)}>
+              UNESTIMATED
+            </span>
+          )}
           <button className="iconbtn ml-auto" onClick={onClose} aria-label="Close">✕</button>
         </div>
 
@@ -42,6 +47,7 @@ export default function TicketModal({ issue, view, onClose }) {
           <div
             className="mb-4 rounded-md px-3 py-2 mono text-[0.78rem] font-semibold flex items-center gap-2"
             style={{ border: '1px solid var(--red)', color: 'var(--red)', background: 'var(--glow-red)' }}
+            data-tip={beaconTip()}
           >
             <span className="beacon" /> BLOCKED{issue.blockedReason ? ` — ${issue.blockedReason}` : ''}
           </div>

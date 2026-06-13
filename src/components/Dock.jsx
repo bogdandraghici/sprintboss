@@ -7,6 +7,7 @@
 import { useMemo } from 'react';
 import Ticket from './Ticket';
 import { deriveDock, groupByStory, storyColor, storyProgress } from '../raid/raidState';
+import { storyMeterTip } from '../tipCopy';
 
 export default function Dock({ view, onSelect, focus = null }) {
   const { groups, blocked } = useMemo(() => deriveDock(view, focus), [view, focus]);
@@ -58,7 +59,7 @@ function DockGroup({ group, view, onSelect, progress }) {
                 <span className="nm">{s.name}</span>
                 <span className="ct">{s.issues.length}</span>
               </div>
-              <div className="story-meter" style={{ '--barc': s.color }} title={p ? `${p.done}/${p.total} done` : undefined}>
+              <div className="story-meter" style={{ '--barc': s.color }} data-tip={storyMeterTip(p)}>
                 <span style={{ width: `${pct}%` }} />
               </div>
               <div className="subcards">
