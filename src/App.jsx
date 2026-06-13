@@ -7,6 +7,7 @@ import { StandupOverlay, RetroBar } from './components/Modes';
 import { BootScreen, NoSprintScreen } from './components/Screens';
 import RaidView from './raid/RaidView';
 import TooltipLayer from './components/TooltipLayer';
+import { useDiscoveryCue } from './discoveryCue';
 
 function useTheme() {
   const [theme, setTheme] = useState(() => localStorage.getItem('sb-theme') || 'dark');
@@ -24,6 +25,7 @@ export default function App() {
   const [mode, setMode] = useState('ambient');
   const [selected, setSelected] = useState(null);
   const [retroT, setRetroT] = useState(null);
+  const cue = useDiscoveryCue(mode);
 
   const exitToAmbient = useCallback(() => {
     setMode('ambient');
@@ -38,6 +40,21 @@ export default function App() {
     if (mode !== 'retro' && retroT != null) setRetroT(null);
   }, [mode, snap, retroT]);
 
+  // A / S / R jump between views — quick discoverability for whoever's driving.
+  // Suppressed while the ticket modal owns the keys, or when a modifier is held.
+  useEffect(() => {
+    const onKey = (e) => {
+      if (e.metaKey || e.ctrlKey || e.altKey) return;
+      if (document.querySelector('.backdrop')) return; // ticket modal
+      const k = e.key.toLowerCase();
+      if (k === 'a') setMode('ambient');
+      else if (k === 's') setMode('standup');
+      else if (k === 'r') setMode('retro');
+    };
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+  }, []);
+
   if (!snap || !snap.sprint) {
     if (!snap) return <BootScreen error={error} />;
     return <NoSprintScreen />;
@@ -47,9 +64,9 @@ export default function App() {
 
   return (
     <div className="app" data-enraged={view.stats.enraged}>
-      <Header view={view} mode={mode} setMode={setMode} theme={theme} setTheme={setTheme} refetch={refetch} />
+      <Header view={view} mode={mode} setMode={setMode} theme={theme} setTheme={setTheme} refetch={refetch} cue={cue} />
       <main className="flex-1 grid gap-3 min-h-0" style={{ gridTemplateColumns: '1fr' }}>
-        <RaidView view={view} pulses={mode === 'retro' ? [] : pulses} onSelect={setSelected} />
+        <RaidView view={view} pulses={mode === 'retro' ? [] : pulses} onSelect={setSelected} cue={cue} />
       </main>
       {mode === 'standup' && <StandupOverlay snap={snap} onExit={exitToAmbient} onSelect={setSelected} />}
       {mode === 'retro' && retroT != null && (
