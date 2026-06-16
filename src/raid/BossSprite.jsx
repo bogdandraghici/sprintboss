@@ -86,10 +86,11 @@ export default function BossSprite({ enraged, hit, summon, stage = 0, scars = []
 
     // Flash white on hit + a green wash while casting. Enrage reddens the art
     // by tint (the matrix path reddens via palette swap instead, so skip it).
-    // Painted art already carries its own colour — enrage is a gentle warm/angry
-    // shift, not a flat red multiply (which would crush the illustration to a blob).
+    // The painted molten boss already runs hot, so the sprite tint is only a
+    // whisper — the enrage read is carried by the scene's red rim light + faster
+    // red embers (ArenaScene), not by crushing the illustration redder.
     const redden = usingArt && enraged;
-    const r0 = redden ? 1.18 : 1, g0 = redden ? 0.82 : 1, b0 = redden ? 0.78 : 1;
+    const r0 = redden ? 1.08 : 1, g0 = redden ? 0.93 : 1, b0 = redden ? 0.91 : 1;
     const w = f.flash * 3;
     mat.current.color.setRGB(r0 + w, g0 + w + (castActive ? 1.0 : 0), b0 + w);
 
@@ -130,12 +131,15 @@ export default function BossSprite({ enraged, hit, summon, stage = 0, scars = []
   );
 }
 
-// Glowing molten crack through the body — count grows with HP stage.
+// Glowing molten crack through the body — count grows with HP stage. The
+// painted boss already has baked-in lava veins, so these HP-stage streaks stay
+// faint and thin: a fresh-fracture accent that escalates with damage without
+// doubling the art's own cracks into mush.
 function Crack({ c }) {
   return (
     <mesh position={[c.x, c.y, 0.02]} rotation={[0, 0, c.rot]}>
-      <planeGeometry args={[0.05, c.len]} />
-      <meshBasicMaterial color="#ff9d3d" transparent opacity={0.85} toneMapped={false} depthWrite={false} />
+      <planeGeometry args={[0.035, c.len]} />
+      <meshBasicMaterial color="#ffb347" transparent opacity={0.4} toneMapped={false} depthWrite={false} />
     </mesh>
   );
 }
