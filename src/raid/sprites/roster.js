@@ -76,6 +76,7 @@ export const ROSTER = {
   'Ana Spataru':       { hair: 'long',  weapon: 'staff',   palette: { H: '#2f5a8c', A: '#f0d878' }, art: 'ana' },
   'Gregor Buza':       { hair: 'short', weapon: 'sword',   palette: { H: '#3a2a1a', A: '#9c7a4a' }, art: 'gregor' },
   'Sebastian Raduta':  { hair: 'long',  weapon: 'staff',   palette: { H: '#2e2018', A: '#5fa84a' }, art: 'sebi' },
+  'Darius Suditu':     { hair: 'short', weapon: 'staff',   palette: { H: '#2e2117', A: '#2bb6c8' }, art: 'darius' },
   '__recruit__':       { hair: 'buzz',  weapon: 'sword',   palette: { H: '#3a3a3a', A: '#6b7280' } },
 };
 
