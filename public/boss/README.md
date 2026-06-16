@@ -31,6 +31,15 @@ Generate a **calm, neutral** boss. The scene adds, in code:
 
 So: don't draw it already-red, already-cracked, or mid-animation. One clean idle pose.
 
+> **Current shipped boss runs hot (June 2026).** The active `idle.png` is a
+> crowned magma golem that already carries heavy baked-in lava veins and flame.
+> To stop the engine overlays from doubling into mush, the enrage tint and the
+> HP-stage crack streaks were **softened** in `src/raid/BossSprite.jsx` (tint
+> ≈1.08/0.93/0.91, crack opacity 0.4), and the enrage read now leans on the
+> scene's red rim light + embers. If you later swap back to a genuinely **calm**
+> boss, bump those back up (the original values were tint 1.18/0.82/0.78, crack
+> opacity 0.85) or the damage/enrage escalation will barely show.
+
 ## Generation prompt (pixel-art)
 
 Paste into your image generator. Tuned to match the scene (dark slate hall, ember light, HD-2D):
