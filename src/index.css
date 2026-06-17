@@ -293,6 +293,46 @@ button { font: inherit; color: inherit; background: none; border: 0; padding: 0;
 }
 .enrage:hover .enrage-math, .enrage[data-open='true'] .enrage-math { display: flex; }
 
+/* ── boot / loading screen ──────────────────────────────────────── */
+/* Theme-independent: pure black, white text, one indeterminate bar. */
+.boot {
+  position: fixed; inset: 0; z-index: 100;
+  background: #000; color: #fff;
+  display: grid; place-items: center;
+  animation: fade 0.3s ease-out;
+}
+.boot-inner {
+  display: flex; flex-direction: column; align-items: center;
+  gap: 1.5rem; text-align: center; padding: 2rem; max-width: 32rem;
+}
+.boot-title {
+  font-family: var(--font-d); font-weight: 600;
+  font-size: 1.05rem; letter-spacing: 0.55em; text-indent: 0.55em;
+  color: #fff;
+}
+.boot-bar {
+  width: 12rem; height: 2px; border-radius: 2px; overflow: hidden;
+  background: rgba(255, 255, 255, 0.12);
+}
+.boot-bar > span {
+  display: block; height: 100%; width: 38%; border-radius: 2px;
+  background: #fff; animation: boot-slide 1.25s cubic-bezier(0.45, 0, 0.55, 1) infinite;
+}
+.boot-bar--err > span { background: #ff5263; animation: none; width: 100%; opacity: 0.85; }
+@keyframes boot-slide {
+  0% { transform: translateX(-130%); }
+  100% { transform: translateX(330%); }
+}
+.boot-status {
+  font-family: var(--font-m); font-size: 0.7rem;
+  letter-spacing: 0.24em; text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.5);
+}
+.boot-status--err { color: #ff7a7a; }
+.boot-sub { margin: 0; font-family: var(--font-m); font-size: 0.78rem; color: rgba(255, 255, 255, 0.7); }
+.boot-hint { margin: 0; font-family: var(--font-m); font-size: 0.68rem; line-height: 1.5; color: rgba(255, 255, 255, 0.38); }
+.boot-hint b { color: rgba(255, 255, 255, 0.6); font-weight: 600; }
+
 /* ── modal, modes, header ───────────────────────────────────────── */
 
 .backdrop { position: fixed; inset: 0; background: rgba(4, 8, 12, 0.55); backdrop-filter: blur(3px); z-index: 60; display: grid; place-items: center; animation: fade 0.18s ease-out; }

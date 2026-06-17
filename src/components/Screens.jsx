@@ -2,23 +2,22 @@ import BossFigure from './BossFigure';
 
 export function BootScreen({ error }) {
   return (
-    <div className="app items-center justify-center">
-      <div className="panel pop-in flex flex-col items-center gap-4 px-10 py-8 max-w-[34rem] text-center">
-        <div style={{ width: '9rem', opacity: error ? 0.45 : 1, filter: error ? 'grayscale(0.8)' : 'none' }}>
-          <BossFigure hpFrac={1} />
-        </div>
+    <div className="boot">
+      <div className="boot-inner">
+        <div className="boot-title">SPRINT BOSS</div>
         {error ? (
           <>
-            <div className="label" style={{ color: 'var(--red)' }}>Can't reach the floor</div>
-            <p className="text-[0.85rem] m-0" style={{ color: 'var(--dim)' }}>{error}</p>
-            <p className="text-[0.75rem] m-0 mono" style={{ color: 'var(--faint)' }}>
+            <div className="boot-bar boot-bar--err"><span /></div>
+            <div className="boot-status boot-status--err">Can't reach the floor</div>
+            <p className="boot-sub">{error}</p>
+            <p className="boot-hint">
               Check .env (JIRA_BASE_URL, JIRA_EMAIL, JIRA_API_TOKEN, JIRA_BOARD_ID) — or run <b>npm run mock</b>.
             </p>
           </>
         ) : (
           <>
-            <div className="label" style={{ color: 'var(--teal)' }}>Clocking in…</div>
-            <p className="text-[0.85rem] m-0" style={{ color: 'var(--dim)' }}>Waking the boss, warming up the belt.</p>
+            <div className="boot-bar"><span /></div>
+            <div className="boot-status">Clocking in…</div>
           </>
         )}
       </div>
